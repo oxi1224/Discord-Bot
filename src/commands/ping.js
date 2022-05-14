@@ -3,7 +3,7 @@ import { updateCommandList } from '../updateSlashCommands.js';
 export async function main() {
   const { client } = await import('../../bot.js');
 
-  updateCommandList('ping', 'Replies with ping');
+  updateCommandList({ name: 'ping', description: 'replies with ping' }, 'ping');
 
   client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;

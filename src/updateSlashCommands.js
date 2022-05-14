@@ -5,20 +5,15 @@ import { CLIENT_ID, GUILD_ID, TOKEN } from './auth.js';
 const rest = new REST({ version: '9' }).setToken(TOKEN);
 const commands = [];
 
-export async function updateCommandList(name, description) {
-  commands.push({
-      name: name,
-      description: description
-  });
+export async function updateCommandList(data, name) {
+  commands.push(data);
   try {
-      console.log('Started refreshing application (/) commands.');
-
-  await rest.put(
-    Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
-    { body: commands },
-  );
-
-    console.log('Successfully reloaded application (/) commands.');
+    console.log(`Updating ${name} (/) command`);
+    await rest.put(
+      Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
+      { body: commands },
+    );
+    console.log(`Successfully reloaded ${name} (/) command.`);
   } catch (error) {
     console.error(error);
   }

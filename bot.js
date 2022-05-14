@@ -8,6 +8,8 @@ client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-startCommands();
-
-client.login(TOKEN);
+(async function start() {
+  client.isReady ? console.log('a') : setTimeout(start(), 500);
+  await client.login(TOKEN)
+    .then(startCommands);
+})();
