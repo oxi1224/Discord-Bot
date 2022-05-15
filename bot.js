@@ -1,6 +1,7 @@
 import { TOKEN } from './src/auth.js';
 import { Client } from 'discord.js';
 import { startCommands } from './src/startCommands.js';
+import { createLogsTable } from './src/db.js';
 
 export const client = new Client({ intents: 32767 });
 
@@ -9,7 +10,8 @@ client.on('ready', () => {
 });
 
 (async function start() {
-  client.isReady ? console.log('a') : setTimeout(start(), 500);
+  client.isReady ? console.log('') : setTimeout(start(), 500);
   await client.login(TOKEN)
-    .then(startCommands);
+    .then(await createLogsTable())
+    .then(startCommands());
 })();

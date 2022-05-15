@@ -14,7 +14,8 @@ export async function main() {
   //     // } else message.react('❌');
   //   }
   // });
-
+  
+  // Create ban slash command
   const banData = new SlashCommandBuilder()
     .setName('ban')
     .setDescription('Bans given user')
@@ -27,19 +28,23 @@ export async function main() {
     .addStringOption(option => option.setName('reason')
       .setDescription('Enter the ban reason')
       .setRequired(false));
- 
+  
+  // ban the user when interaction is called
   client.on('interactionCreate', async interaction => {
+    const banList = await interaction.guild.bans.fetch();
     if (!interaction.isCommand()) return;
     if (interaction.commandName === 'ban') {
+      // check for appropriate permissions
       if (interaction.member.permissions.has('BAN_MEMBERS')) {
-        // console.log(interaction.options.get('user').value);
-        await interaction.options.get('user').member.ban().then(interaction.reply('L bozo'));
-      } else {
-        interaction.reply('Insufficient Permissions');
-      }
+        // check if user is already banned
+        if (!(banList.find(x => x.user.id === interaction.options.get('user').value) === undefined)) return interaction.reply(`${interaction.options.get('user').user} is already banned`);
+        // ban the user
+        await interaction.options.get('user').member.ban().then(interaction.reply(`${interaction.options.get('user').user} has been banned`));
+      } else { interaction.reply('Insufficient Permissions'); }
     }
   });
 
+  // create unban slash commmand
   const unBanData = new SlashCommandBuilder()
     .setName('unban')
     .setDescription('unbans given user')
@@ -47,25 +52,30 @@ export async function main() {
       .setDescription('Enter user to unban')
       .setRequired(true));
 
+  // unban the user when interaction is called
   client.on('interactionCreate', async interaction => {
     const banList = await interaction.guild.bans.fetch();
     if (!interaction.isCommand()) return;
     if (interaction.commandName === 'unban') {
+      // check for appropriate permissions
       if (interaction.member.permissions.has('BAN_MEMBERS')) {
-        if (banList.find(x => x.user.id === interaction.options.get('user').value) === undefined) return interaction.reply('User is not banned');
-        await unBan(interaction.options.get('user')).then(interaction.reply('Member unbanned'));
-      } else {
-        interaction.reply('Insufficient Permissions');
-      }
+        // check if user is banned
+        if (banList.find(x => x.user.id === interaction.options.get('user').value) === undefined) return interaction.reply(`${interaction.options.get('user').user} is not banned`);
+        // call the unban function
+        await unBan(interaction.options.get('user')).then(interaction.reply(`${interaction.options.get('user').user} has been unbanned`));
+      } else { interaction.reply('Insufficient Permissions'); }
     }
   });
 
+  // unbans given user with given reason
   async function unBan(user, reason) {
     const id = client.users.resolveId(user.user);
     if (!id) throw new Error('BAN_RESOLVE_ID');
     await client.api.guilds('613024666079985702').bans(id).delete({ reason });
     return client.users.resolve(user.user);
   }
+
+  // update slash command list
   updateCommandList(banData, 'ban');
   updateCommandList(unBanData, 'unban');
 }
