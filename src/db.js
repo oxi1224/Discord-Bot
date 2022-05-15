@@ -1,7 +1,7 @@
 import { createRequire } from 'module';
 import { PG_USER, PG_HOST, PG_PASSWORD, PG_DATABASE, PG_PORT } from './auth.js'; 
 const require = createRequire(import.meta.url);
-const { Client, Pool } = require('pg');
+const { Client } = require('pg');
 
 const config = {
   user: PG_USER,
@@ -12,9 +12,9 @@ const config = {
   ssl: { rejectUnauthorized: false }
 };
 
-export const client = new Client(config);
-export const pool = new Pool(config);
+const client = new Client(config);
 
+// create main table if it doesnt exist
 export async function createLogsTable() {
   client.connect();
   const createTableText = `
@@ -26,17 +26,17 @@ export async function createLogsTable() {
   );
   `;
   await client.query(createTableText);
-  await changeRowValues('1', { warns: ['test', 'test2'], mutes: ['test3', 'test4'], bans: ['test5', 'test6'] });
-  console.log(await client.query('SELECT * FROM punishmentLogs'));
   client.end();
 }
 
+// create row from user id
 export async function createUserRow(id) {
-  // client.connect();
-  await client.query('INSERT INTO punishmentLogs(id, warns, mutes, bans) VALUES($1, $2, $3, $4)', [id, [], [], []]);
-  // client.end();
+  client.connect();
+  await client.query('INSERT INTO punishmentLogs(id, warns, mutes, bans) VALUES($1, $2, $3, $4)', [id, [{}], [{}], [{}]]);
+  client.end();
 }
 
+// read row from the database
 export async function readFromDb(id) {
   client.connect();
   const row = await client.query(
@@ -44,18 +44,29 @@ export async function readFromDb(id) {
     FROM punishmentLogs 
     WHERE id = ${id}::text`);
   client.end();
-  return row.result.rows;
+  return row.result;
 }
 
-// FINISH THIS FUNCTION BECAUSE IT ERRORS
-export async function changeRowValues(id, { warns = [], mutes = [], bans = [] }) {
-  await client.query(
-    `UPDATE punishmentLogs
-    SET (warns, mutes, bans) = (${warns}, ${mutes}, ${bans})
-    WHERE id = ${id}::text`
-  );
+// change one or many column values in a row
+export async function changeColumnValues(id, { warns = [{}], mutes = [{}], bans = [{}] }) {
+  client.connect();
+  const query = {
+    name: 'change-row-value',
+    text: 'UPDATE punishmentLogs SET (warns, mutes, bans) = ($2, $3, $4) WHERE id = $1::text RETURNING *',
+    values: [id, warns, mutes, bans],
+  };
+  client
+    .query(query)
+    .then(res => console.log(res.rows[0]))
+    .catch(e => console.error(e.stack));
+  
+  client.end();
 }
 
+// check if row exists
 export async function existsRow(id) {
-  return await client.query(`select exists(select 1 from contact where id=${id}::text`);
+  client.connect();
+  const bool = await client.query(`select exists(select 1 from contact where id=${id}::text`);
+  client.end();
+  return bool;
 }
