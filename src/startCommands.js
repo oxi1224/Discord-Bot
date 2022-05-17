@@ -1,7 +1,9 @@
-import { main as pingCommands } from './commands/ping.js';
-import { main as banCommands } from './commands/ban.js';
+import { main as ping } from './commands/ping.js';
+import { main as ban } from './commands/moderation/ban.js';
+import { main as unban } from './commands/moderation/unban.js';
 
 export async function startCommands() {
-  await pingCommands();
-  await banCommands();
+  ping();
+  ban();
+  unban();
 }

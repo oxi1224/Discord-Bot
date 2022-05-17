@@ -1,7 +1,7 @@
 import { updateCommandList } from '../updateSlashCommands.js';
 
 export async function main() {
-  const { client } = await import('../../bot.js');
+  const { client } = await import('../bot.js');
 
   // update interaction list
   updateCommandList({ name: 'ping', description: 'replies with ping' }, 'ping');
