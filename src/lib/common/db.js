@@ -32,14 +32,6 @@ export async function createLogsTable() {
   );
   `;
   await client.query(createTableText);
-  // await client.query('INSERT INTO expiringPunishments(id, punishmentInfo) VALUES($1, $2)', ['1', [{}]]);
-  // await client.query({ 
-  //   name: 'expiring-db-value-change', 
-  //   text: 'UPDATE expiringPunishments SET (punishmentInfo) = ($1)', 
-  //   values: ['a']
-  // })
-  console.log((await client.query('SELECT * FROM expiringPunishments')).rows[0].punishmentinfo);
-
 }
 
 // create row from user id

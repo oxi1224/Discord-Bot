@@ -1,4 +1,4 @@
-import { updateCommandList } from '../updateSlashCommands.js';
+import { updateCommandList } from '../lib/updateSlashCommands.js';
 
 export async function main() {
   const { client } = await import('../bot.js');

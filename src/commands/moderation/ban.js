@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { updateCommandList } from '../../updateSlashCommands.js';
-import { performBan } from '../../util/util.js';
+import { updateCommandList } from '../../lib/updateSlashCommands.js';
+import { performBan } from '../../lib/util/util.js';
 
 export async function main() {
   const { client } = await import('../../bot.js');

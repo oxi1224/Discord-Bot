@@ -1,7 +1,7 @@
-import { TOKEN } from './common/auth.js';
+import { TOKEN } from './lib/common/auth.js';
 import { Client } from 'discord.js';
-import { startCommands } from './startCommands.js';
-import { createLogsTable } from './common/db.js';
+import { startCommands } from './lib/startCommands.js';
+import { createLogsTable } from './lib/common/db.js';
 
 export const client = new Client({ intents: 32767 });
 
