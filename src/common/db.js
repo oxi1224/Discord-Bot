@@ -25,9 +25,21 @@ export async function createLogsTable() {
     bans JSONB [],
     kicks JSONB []
   );
+
+  CREATE TABLE IF NOT EXISTS expiringPunishments (
+    id text,
+    punishmentInfo JSONB []
+  );
   `;
   await client.query(createTableText);
-  console.log(((await client.query('SELECT bans FROM punishmentLogs WHERE id=974318351721574422::text')).rows[0].bans));
+  // await client.query('INSERT INTO expiringPunishments(id, punishmentInfo) VALUES($1, $2)', ['1', [{}]]);
+  // await client.query({ 
+  //   name: 'expiring-db-value-change', 
+  //   text: 'UPDATE expiringPunishments SET (punishmentInfo) = ($1)', 
+  //   values: ['a']
+  // })
+  console.log((await client.query('SELECT * FROM expiringPunishments')).rows[0].punishmentinfo);
+
 }
 
 // create row from user id
@@ -39,7 +51,7 @@ export async function createUserRow(id) {
 export async function readFromDb(id) {
   const row = await client.query(
     `SELECT * 
-    FROM punishmentLogs 
+    FROM punishmentLogs
     WHERE id = ${id}::text`);
   return row.rows;
 }
