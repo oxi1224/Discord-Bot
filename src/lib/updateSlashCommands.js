@@ -5,7 +5,7 @@ import { CLIENT_ID, GUILD_ID, TOKEN } from './common/auth.js';
 const rest = new REST({ version: '9' }).setToken(TOKEN);
 const commands = [];
 
-export async function updateCommandList(data, name) {
+export async function updateSlashCommands(data, name) {
   commands.push(data);
   try {
     console.log(`Updating ${name} (/) command`);

@@ -26,47 +26,42 @@ export function getExpirationDate(duration, startTime) {
     return (parseInt(numberInDuration[0]) * 604800000) + startTime;
   case 'm':
     return (parseInt(numberInDuration[0]) * 2678400000) + startTime;
+  default:
+    return null;
   }
 }
 
-export async function performBan(action, userId, reason, moderator, duration, guild) {
-  const banList = await guild.bans.fetch();
-  const userBansList = await readFromDb(userId, 'PunishmentLogs');
-  // check if user is already banned
-  if (!(banList.find(x => x.user.id === userId) === undefined)) return action.reply(`<@${userId}> is already banned`);
-  // ban the user
-  guild.members.ban(userId, { reason: reason })
-    .then(action.reply(`<@${userId}> has been banned`))
-    // .then(async () => {try {client.users.get(userId).send(`You've been banned in `);} catch {}})
-    .then(async () => {
-      // create user's row if doesn't exist
-      if (!(await existsRow(userId))) await createUserRow(userId);
-      // get the previous bans
-      const bansList = await userBansList[0].bans;
-      // update the ban list
-      bansList.push({
-        user: userId,
-        moderator: moderator,
-        reason: reason,
-        punishmentTime: new Date().getTime(),
-        punishmentExpires: getExpirationDate(duration, new Date().getTime()),
-        punishmentId: generateModLogID()
-      });
-      // sort the updated ban list and update cell in db
-      await changeColumnValues(userId, { bans: bansList.sort((a, b) => parseFloat(a.punishmentTime) - parseFloat(b.punishmentTime)) });
-      
-      // write to expiringPunishments db if there is a duration
-      if (duration !== null) {
-        const expiringPunishmentsList = await dbClient.query('SELECT * FROM expiringPunishments');
-        const expiringPunishments = expiringPunishmentsList.rows[0].punishmentinfo;
-        expiringPunishments.push({
-          user: userId,
-          punishmentType: 'ban',
-          punishmentExpires: await getExpirationDate(duration, new Date().getTime()),
-        });
-        await dbClient.query('UPDATE expiringPunishments SET punishmentInfo=$1 WHERE id=1::text', [expiringPunishments.sort((a, b) => parseFloat(a.punishmentExpires) - parseFloat(b.punishmentExpires))])
-          .then(res => console.log(res.rows[0]))
-          .catch(e => console.error(e.stack));
-      }
+export async function logPunishment(userId, reason, moderator, duration, column) {
+  if (!(await existsRow(userId))) await createUserRow(userId);
+  // get the previous bans
+  const userPunishmentsList = (await readFromDb(userId, 'PunishmentLogs'))[0][column];
+  // update the ban list
+  userPunishmentsList.push({
+    user: userId,
+    moderator: moderator,
+    reason: reason,
+    punishmentTime: new Date().getTime(),
+    punishmentExpires: getExpirationDate(duration, new Date().getTime()),
+    punishmentId: generateModLogID()
+  });
+  // sort the updated ban list and update cell in db
+  await changeColumnValues(userId, changeColumnValues[column] = { [column]: userPunishmentsList.sort((a, b) => parseFloat(a.punishmentTime) - parseFloat(b.punishmentTime)) });
+  
+  // write to expiringPunishments db if there is a duration
+  if (duration !== null) {
+    const expiringPunishments = (await dbClient.query('SELECT punishmentInfo FROM expiringPunishments')).rows[0].punishmentInfo;
+    expiringPunishments.push({
+      user: userId,
+      punishmentType: column.split('').slice(0, -1).join(''),
+      punishmentExpires: await getExpirationDate(duration, new Date().getTime()),
     });
+    await dbClient.query('UPDATE expiringPunishments SET punishmentInfo=$1', [expiringPunishments.sort((a, b) => parseFloat(b.punishmentExpires) - parseFloat(a.punishmentExpires))])
+      .then(res => console.log(res.rows[0]))
+      .catch(e => console.error(e.stack));
+  }
+}
+
+export async function dmUser(user, content) {
+  await user.createDM();
+  await user.send(content);
 }

@@ -22,21 +22,24 @@ export async function createLogsTable() {
     id text,
     warns JSONB [],
     mutes JSONB [],
+    unmutes JSONB [],
     bans JSONB [],
+    unbans JSONB [],
     kicks JSONB []
   );
 
   CREATE TABLE IF NOT EXISTS expiringPunishments (
-    id text,
     punishmentInfo JSONB []
   );
   `;
   await client.query(createTableText);
+  await client.query('INSERT INTO expiringPunishments(punishmentInfo) VALUES($1)', [[]])
+  console.log((await client.query('SELECT punishmentInfo FROM expiringPunishments')).rows);
 }
 
 // create row from user id
 export async function createUserRow(id) {
-  await client.query('INSERT INTO punishmentLogs(id, warns, mutes, bans, kicks) VALUES($1, $2, $3, $4, $5)', [id, [{}], [{}], [{}], [{}]]);
+  await client.query('INSERT INTO punishmentLogs(id, warns, mutes, unmutes, bans, unbans, kicks) VALUES($1, $2, $3, $4, $5, $6, $7)', [id, [], [], [], [], [], []]);
 }
 
 // read row from the database
@@ -49,12 +52,11 @@ export async function readFromDb(id) {
 }
 
 // change one or many column values in a row
-export async function changeColumnValues(id, { warns = [{}], mutes = [{}], bans = [{}], kicks = [{}] }) {
-  
+export async function changeColumnValues(id, { warns = [{}], mutes = [{}], unmutes = [{}], bans = [{}], unbans = [{}], kicks = [{}] }) {
   const query = {
     name: 'change-row-value',
-    text: 'UPDATE punishmentLogs SET (warns, mutes, bans, kicks) = ($2, $3, $4, $5) WHERE id = $1::text',
-    values: [id, warns, mutes, bans, kicks],
+    text: 'UPDATE punishmentLogs SET (warns, mutes, unmutes, bans, unbans, kicks) = ($2, $3, $4, $5, $6, $7) WHERE id = $1::text',
+    values: [id, warns, mutes, unmutes, bans, unbans, kicks],
   };
   client
     .query(query)

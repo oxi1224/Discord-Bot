@@ -5,7 +5,7 @@ import { createLogsTable } from './lib/common/db.js';
 
 export const client = new Client({ intents: 32767 });
 
-client.on('ready', () => {
+client.on('ready', async () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
