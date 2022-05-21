@@ -34,7 +34,7 @@ export async function createLogsTable() {
   `;
   await client.query(createTableText);
   await client.query('INSERT INTO expiringPunishments(punishmentInfo) VALUES($1)', [[]])
-  console.log((await client.query('SELECT punishmentInfo FROM expiringPunishments')).rows);
+  console.log((await client.query('SELECT punishmentInfo FROM expiringPunishments')).rows[0]);
 }
 
 // create row from user id
