@@ -53,6 +53,12 @@ export async function main() {
 
     await performBan(interaction, userId, reason, duration, guild)
       .then(logPunishment(userId, reason, moderator, duration, 'bans'));
+    await logAction('Member Banned', `
+    User: <@${userId}>
+    Moderator: ${moderator}
+    Reason: ${reason}
+    Duration: ${duration}
+    `);
   });
   updateSlashCommands(banData, 'ban');
 
@@ -69,7 +75,6 @@ export async function main() {
     } catch {
       await action.reply(`Failed to dm <@${userId}>, user still punished`);
     }
-    await logAction('Member Banned', `${user}`);
     await guild.members.ban(userId, { reason: reason });
   }
 }

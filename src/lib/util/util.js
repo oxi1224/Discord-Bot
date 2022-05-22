@@ -49,7 +49,8 @@ export async function logPunishment(userId, reason, moderator, duration, column)
   
   // write to expiringPunishments db if there is a duration
   if (duration !== null) {
-    const expiringPunishments = (await dbClient.query('SELECT punishmentInfo FROM expiringPunishments')).rows[0].punishmentInfo;
+    // not an array
+    const expiringPunishments = (await dbClient.query('SELECT punishmentInfo FROM expiringPunishments')).rows[0].punishmentinfo;
     expiringPunishments.push({
       user: userId,
       punishmentType: column.split('').slice(0, -1).join(''),

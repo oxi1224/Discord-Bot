@@ -29,12 +29,12 @@ export async function createLogsTable() {
   );
 
   CREATE TABLE IF NOT EXISTS expiringPunishments (
-    punishmentInfo JSONB []
+    punishmentInfo JSONB [] UNIQUE
   );
   `;
   await client.query(createTableText);
-  await client.query('INSERT INTO expiringPunishments(punishmentInfo) VALUES($1)', [[]])
-  console.log((await client.query('SELECT punishmentInfo FROM expiringPunishments')).rows[0]);
+  await client.query('INSERT INTO expiringPunishments(punishmentInfo) VALUES($1) ON CONFLICT DO NOTHING', [[]]);
+  console.log((await client.query('SELECT punishmentInfo FROM expiringPunishments')).rows.length);
 }
 
 // create row from user id
@@ -52,7 +52,7 @@ export async function readFromDb(id) {
 }
 
 // change one or many column values in a row
-export async function changeColumnValues(id, { warns = [{}], mutes = [{}], unmutes = [{}], bans = [{}], unbans = [{}], kicks = [{}] }) {
+export async function changeColumnValues(id, { warns = [], mutes = [], unmutes = [], bans = [], unbans = [], kicks = [] }) {
   const query = {
     name: 'change-row-value',
     text: 'UPDATE punishmentLogs SET (warns, mutes, unmutes, bans, unbans, kicks) = ($2, $3, $4, $5, $6, $7) WHERE id = $1::text',
