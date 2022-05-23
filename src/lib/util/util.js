@@ -31,9 +31,10 @@ export function getExpirationDate(duration, startTime) {
   }
 }
 
-export async function logPunishment(userId, reason, moderator, duration, column) {
+export async function logPunishment(userId, reason, moderator, column, duration) {
   if (!(await existsRow(userId))) await createUserRow(userId);
   // get the previous bans
+  console.log(column, typeof column);
   const userPunishmentsList = (await readFromDb(userId, 'PunishmentLogs'))[0][column];
   // update the ban list
   userPunishmentsList.push({
@@ -49,14 +50,14 @@ export async function logPunishment(userId, reason, moderator, duration, column)
   
   // write to expiringPunishments db if there is a duration
   if (duration !== null) {
-    // not an array
-    const expiringPunishments = (await dbClient.query('SELECT punishmentInfo FROM expiringPunishments')).rows[0].punishmentinfo;
+    
+    const expiringPunishments = await (await dbClient.query('SELECT punishmentInfo FROM expiringPunishments WHERE id=0::text')).rows[0].punishmentinfo;
     expiringPunishments.push({
       user: userId,
       punishmentType: column.split('').slice(0, -1).join(''),
       punishmentExpires: await getExpirationDate(duration, new Date().getTime()),
     });
-    await dbClient.query('UPDATE expiringPunishments SET punishmentInfo=$1', [expiringPunishments.sort((a, b) => parseFloat(b.punishmentExpires) - parseFloat(a.punishmentExpires))])
+    await dbClient.query('UPDATE expiringPunishments SET punishmentInfo=$1 WHERE id=0::text', [expiringPunishments.sort((a, b) => parseFloat(b.punishmentExpires) - parseFloat(a.punishmentExpires))])
       .then(res => console.log(res.rows[0]))
       .catch(e => console.error(e.stack));
   }

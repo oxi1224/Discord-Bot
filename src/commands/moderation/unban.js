@@ -1,36 +1,25 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
+import { logPunishment, dmUser } from '../../lib/util/util.js';
 
 export async function main() {
   const { client } = await import('../../bot.js');
-
-  async function unBan(user, reason) {
-    const id = client.users.resolveId(user.user);
-    if (!id) throw new Error('BAN_RESOLVE_ID');
-    await client.api.guilds('613024666079985702').bans(id).delete({ reason: reason });
-    return client.users.resolve(user.user);
-  }
   
-  // client.on('messageCreate', message => {
-  //   if (!message.content.startsWith('!') || message.author.bot) return;
-  //   const args = message.content.slice(1).trim().split(' ');
-  //   const command = args.shift().toLowerCase();
-  //   if (!(command == 'unban')) return;
-  //   if (!(message.member.permissions.has('BAN_MEMBERS'))) return message.reply('Insufficient Permissions');
-  // 
-  //   const userId = message.mentions.users.first().id || args[0];
-  //   const duration = args[1] === args[-1] ? null : args[1];
-  //   const reason = args.slice(duration == null ? 1 : 1 + args.indexOf(duration)).join(' ') || null;
-  //   const moderator = message.author;
-  //   const guild = message.guild;
-  // 
-  //   try {
-  //     performBan(message, userId, reason, moderator, duration, guild);
-  //   } catch {
-  //     message.reply('Something went wrong, please make sure all the provided information is correct');
-  //   }
-  // 
-  // });
+  client.on('messageCreate', async message => {
+    if (!message.content.startsWith('!') || message.author.bot) return;
+    const args = message.content.slice(1).trim().split(' ').filter(str => str !== '');
+    const command = args.shift().toLowerCase();
+    if (!(command == 'unban')) return;
+    if (!(message.member.permissions.has('BAN_MEMBERS'))) return message.react('<:error:978329348924899378>');
+  
+    const userId = message.mentions.users.first() === undefined ? args[0] : message.mentions.users.first().id; 
+    const reason = args.slice(1).join(' ') || null;
+    const moderator = message.author;
+    const guild = message.guild;
+
+    await unBan(userId, reason, message, guild)
+      .then(logPunishment(userId, reason, moderator, 'unbans'));
+  });
 
   // create unban slash commmand
   const unBanData = new SlashCommandBuilder()
@@ -44,12 +33,32 @@ export async function main() {
   client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
     if (!(interaction.commandName === 'unban')) return;
-    const banList = await interaction.guild.bans.fetch();
-    if (!(interaction.member.permissions.has('BAN_MEMBERS'))) return interaction.reply('Insufficient Permissions');
-    // check if user is banned
-    if (banList.find(x => x.user.id === interaction.options.get('user').value) === undefined) return interaction.reply(`${interaction.options.get('user').user} is not banned`);
-    await unBan(interaction.options.get('user')).then(interaction.reply(`${interaction.options.get('user').user} has been unbanned`));
+    if (!(interaction.member.permissions.has('BAN_MEMBERS'))) return interaction.reply({ content: 'Insufficient Permissions', ephemeral: true });
+    
+    const userId = interaction.options.get('user').value;
+    const reason = interaction.options.get('reason') == null ? null : interaction.options.get('reason').value;
+    const moderator = interaction.member.user;
+    const guild = interaction.guild;
+
+    await unBan(userId, reason, interaction, guild)
+      .then(logPunishment(userId, reason, moderator, 'unbans'));
   });
 
   updateSlashCommands(unBanData, 'unban');
+
+  async function unBan(userId, reason, action, guild) {
+    const user = await client.users.fetch(userId, false);
+    const banList = await action.guild.bans.fetch();
+    if (banList.find(x => x.user.id === userId) === undefined) return action.reply(`${user} is not banned`);
+    if (!userId) throw new Error('BAN_RESOLVE_ID');
+    await guild.bans(userId).delete({ reason: reason });
+    await action.reply(`${user} has been unbanned`);
+    try {
+      await dmUser(user, (`You've been unbanned in ${guild}. Reason: ${reason}`));
+      await action.reply(`${user} has been banned`);
+    } catch {
+      await action.reply(`Failed to dm ${user} action still performed`);
+    }
+    return client.users.resolve(user);
+  }
 }

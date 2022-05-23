@@ -9,11 +9,12 @@ export async function main() {
   // listen for ban command
   client.on('messageCreate', async message => {
     if (!message.content.startsWith('!') || message.author.bot) return;
-    const args = message.content.slice(1).trim().split(' ');
+    const args = message.content.slice(1).trim().split(' ').filter(str => str !== '');
     const command = args.shift().toLowerCase();
     if (!(command == 'ban')) return;
-    if (!(message.member.permissions.has('BAN_MEMBERS'))) return message.reply('Insufficient Permissions');
+    if (!(message.member.permissions.has('BAN_MEMBERS'))) return message.react('<:error:978329348924899378>');
 
+    console.log(args);
     const userId = message.mentions.users.first() === undefined ? args[0] : message.mentions.users.first().id; 
     const duration = args[1] === args[-1] ? null : args[1];
     const reason = args.slice(duration == null ? 1 : 1 + args.indexOf(duration)).join(' ') || null;
@@ -21,7 +22,7 @@ export async function main() {
     const guild = message.guild;
 
     await performBan(message, userId, reason, duration, guild)
-      .then(logPunishment(userId, reason, moderator, duration, 'bans'));
+      .then(logPunishment(userId, reason, moderator, 'bans', duration));
 
     await logAction('Member Banned', `
     User: <@${userId}>
@@ -49,7 +50,7 @@ export async function main() {
   client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
     if (!(interaction.commandName === 'ban')) return;
-    if (!(interaction.member.permissions.has('BAN_MEMBERS'))) return interaction.reply('Insufficient Permissions');
+    if (!(interaction.member.permissions.has('BAN_MEMBERS'))) return interaction.reply({ content: 'Insufficient Permissions', ephemeral: true });
     
     const userId = interaction.options.get('user').value;
     const reason = interaction.options.get('reason') == null ? null : interaction.options.get('reason').value;
@@ -58,7 +59,7 @@ export async function main() {
     const guild = interaction.guild;
 
     await performBan(interaction, userId, reason, duration, guild)
-      .then(logPunishment(userId, reason, moderator, duration, 'bans'));
+      .then(logPunishment(userId, reason, moderator, 'bans', duration));
       
     await logAction('Member Banned', `
     User: <@${userId}>
@@ -80,7 +81,7 @@ export async function main() {
       await dmUser(user, (`You've been banned ${duration == null ? 'permanently' : `for ${duration}`} in ${guild}. Reason: ${reason}`));
       await action.reply(`${user} has been banned`);
     } catch {
-      await action.reply(`Failed to dm <@${userId}>, user still punished`);
+      await action.reply(`Failed to dm ${user}, action still performed`);
     }
     await guild.members.ban(userId, { reason: reason });
   }

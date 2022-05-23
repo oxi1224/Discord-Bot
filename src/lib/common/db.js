@@ -29,10 +29,14 @@ export async function createLogsTable() {
   );
 
   CREATE TABLE IF NOT EXISTS expiringPunishments (
-    punishmentInfo JSONB [] UNIQUE
+    id text,
+    punishmentInfo JSONB []
   );
   `;
   await client.query(createTableText);
+  console.log((await readFromDb('974318351721574422', 'PunishmentLogs'))[0]['unbans']);
+  (await client.query('SELECT * FROM expiringPunishments')).rows.length < 1 ?
+    await client.query('INSERT INTO expiringPunishments(id, punishmentInfo) VALUES($1, $2)', ['0', []]) : null;
 }
 
 // create row from user id
