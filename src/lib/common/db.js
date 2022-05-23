@@ -33,8 +33,6 @@ export async function createLogsTable() {
   );
   `;
   await client.query(createTableText);
-  await client.query('INSERT INTO expiringPunishments(punishmentInfo) VALUES($1) ON CONFLICT DO NOTHING', [[]]);
-  console.log((await client.query('SELECT punishmentInfo FROM expiringPunishments')).rows.length);
 }
 
 // create row from user id
