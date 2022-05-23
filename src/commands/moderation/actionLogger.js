@@ -84,11 +84,11 @@ export async function main() {
 
 export async function logAction(title, description) {
   const { client } = await import('../../bot.js');
-  const exampleEmbed = new MessageEmbed()
+  const embed = new MessageEmbed()
     .setColor('#0099ff')
     .setTitle(title)
     .setDescription(description)
     .setTimestamp();
     
-  await client.channels.cache.get('977566053062303764').send({ embeds: [exampleEmbed] });
+  await client.channels.cache.get('977566053062303764').send({ embeds: [embed] });
 }

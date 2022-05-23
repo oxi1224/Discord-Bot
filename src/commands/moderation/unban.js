@@ -4,7 +4,6 @@ import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
 export async function main() {
   const { client } = await import('../../bot.js');
 
-  // unbans given user with given reason
   async function unBan(user, reason) {
     const id = client.users.resolveId(user.user);
     if (!id) throw new Error('BAN_RESOLVE_ID');

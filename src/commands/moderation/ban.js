@@ -23,6 +23,12 @@ export async function main() {
     await performBan(message, userId, reason, duration, guild)
       .then(logPunishment(userId, reason, moderator, duration, 'bans'));
 
+    await logAction('Member Banned', `
+    User: <@${userId}>
+    Moderator: ${moderator}
+    Reason: ${reason}
+    Duration: ${duration}
+    `);
   });
 
   // Create ban slash command
@@ -53,6 +59,7 @@ export async function main() {
 
     await performBan(interaction, userId, reason, duration, guild)
       .then(logPunishment(userId, reason, moderator, duration, 'bans'));
+      
     await logAction('Member Banned', `
     User: <@${userId}>
     Moderator: ${moderator}
