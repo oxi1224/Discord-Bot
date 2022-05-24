@@ -21,11 +21,10 @@ export async function main() {
     await warn(userId, reason, message, guild)
       .then(logPunishment(userId, reason, moderator, 'warns'));
 
-    await logAction('Member Warned', `
-      User: <@${userId}>
-      Moderator: ${moderator}
-      Reason: ${reason}
-    `);
+    await logAction('Member Warned', [
+      { name: 'Moderator', value: `${moderator}` },
+      { name: 'Reason', value: `${reason}` }
+    ], userId);
   });
 
   // create unban slash commmand
@@ -53,20 +52,21 @@ export async function main() {
     await warn(userId, reason, interaction, guild)
       .then(logPunishment(userId, reason, moderator, 'warns'));
     
-    await logAction('Member Warned', `
-      User: <@${userId}>
-      Moderator: ${moderator}
-      Reason: ${reason}
-    `);
+    await logAction('Member Warned', [
+      { name: 'Moderator', value: `${moderator}` },
+      { name: 'Reason', value: `${reason}` }
+    ], userId);
   });
 
   updateSlashCommands(warnData, 'warn');
 
   async function warn(userId, reason, action, guild) {
+    if (reason === null) return action.reply('**Reason** cannot be **empty**');
     const user = await client.users.fetch(userId, false);
     try {
-      await dmUser(user, (`You've been warned in ${guild}. Reason: ${reason}`));
-      await action.reply(`${user} has been warned`);
+      await dmUser(user, (`You've been **warned** in **${guild}**.
+**Reason**: \`\`${reason}\`\``));
+      await action.reply(`${user} has been **warned**`);
     } catch {
       await action.reply(`Failed to dm ${user} action still performed`);
     }

@@ -14,7 +14,6 @@ export async function main() {
     if (!(command == 'ban')) return;
     if (!(message.member.permissions.has('BAN_MEMBERS'))) return message.react('<:error:978329348924899378>');
 
-    console.log(args);
     const userId = message.mentions.users.first() === undefined ? args[0] : message.mentions.users.first().id; 
     const duration = args[1] === args[-1] ? null : args[1];
     const reason = args.slice(duration == null ? 1 : 1 + args.indexOf(duration)).join(' ') || null;
@@ -27,8 +26,8 @@ export async function main() {
     await logAction('Member Banned', `
     User: <@${userId}>
     Moderator: ${moderator}
-    Reason: ${reason}
-    Duration: ${duration}
+    Reason: \`\`${reason}\`\`
+    Duration: \`\`${duration}\`\`
     `);
   });
 
@@ -61,12 +60,11 @@ export async function main() {
     await performBan(interaction, userId, reason, duration, guild)
       .then(logPunishment(userId, reason, moderator, 'bans', duration));
       
-    await logAction('Member Banned', `
-    User: <@${userId}>
-    Moderator: ${moderator}
-    Reason: ${reason}
-    Duration: ${duration}
-    `);
+    await logAction('Member Warned', [
+      { name: 'Moderator', value: `${moderator}` },
+      { name: 'Reason', value: `${reason}` },
+      { name: 'Duration', value: `${duration}` }
+    ], userId);
   });
   updateSlashCommands(banData, 'ban');
 
@@ -75,11 +73,12 @@ export async function main() {
     const banList = await guild.bans.fetch();
     const user = await client.users.fetch(userId, false);
     // check if user is already banned
-    if (!(banList.find(x => x.user.id === userId) === undefined)) return action.reply(`${user} is already banned`);
+    if (!(banList.find(x => x.user.id === userId) === undefined)) return action.reply(`${user} is **already** banned`);
     // ban the user
     try {
-      await dmUser(user, (`You've been banned ${duration == null ? 'permanently' : `for ${duration}`} in ${guild}. Reason: ${reason}`));
-      await action.reply(`${user} has been banned`);
+      await dmUser(user, (`You've been **banned** ${duration == null ? '**permanently**' : `**for ${duration}**`} in **${guild}**. 
+**Reason**: \`\`${reason}\`\``));
+      await action.reply(`${user} has been **banned**`);
     } catch {
       await action.reply(`Failed to dm ${user}, action still performed`);
     }

@@ -24,7 +24,7 @@ export async function main() {
     await logAction('Member Unbanned', `
       User: <@${userId}>
       Moderator: ${moderator}
-      Reason: ${reason}
+      Reason: \`\`${reason}\`\`
     `);
   });
 
@@ -50,11 +50,10 @@ export async function main() {
     await unBan(userId, reason, interaction, guild)
       .then(logPunishment(userId, reason, moderator, 'unbans'));
 
-    await logAction('Member Unbanned', `
-      User: <@${userId}>
-      Moderator: ${moderator}
-      Reason: ${reason}
-    `);
+    await logAction('Member Unbanned', [
+      { name: 'Moderator', value: `${moderator}` },
+      { name: 'Reason', value: `${reason}` }
+    ], userId);
   });
 
   updateSlashCommands(unBanData, 'unban');
@@ -62,13 +61,17 @@ export async function main() {
   async function unBan(userId, reason, action, guild) {
     const user = await client.users.fetch(userId, false);
     const banList = await action.guild.bans.fetch();
-    if (banList.find(x => x.user.id === userId) === undefined) return action.reply(`${user} is not banned`);
+
+    if (banList.find(x => x.user.id === userId) === undefined) return action.reply(`${user} is **not** banned`);
     if (!userId) throw new Error('BAN_RESOLVE_ID');
+
     await guild.bans(userId).delete({ reason: reason });
     await action.reply(`${user} has been unbanned`);
+
     try {
-      await dmUser(user, (`You've been unbanned in ${guild}. Reason: ${reason}`));
-      await action.reply(`${user} has been banned`);
+      await dmUser(user, (`You've been **unbanned** in **${guild}**. 
+**Reason**: \`\`${reason}\`\``));
+      await action.reply(`${user} has been **banned**`);
     } catch {
       await action.reply(`Failed to dm ${user} action still performed`);
     }
