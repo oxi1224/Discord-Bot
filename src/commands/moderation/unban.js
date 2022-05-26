@@ -21,11 +21,10 @@ export async function main() {
     await unBan(userId, reason, message, guild)
       .then(logPunishment(userId, reason, moderator, 'unbans'));
     
-    await logAction('Member Unbanned', `
-      User: <@${userId}>
-      Moderator: ${moderator}
-      Reason: \`\`${reason}\`\`
-    `);
+    await logAction('Member Unbanned', [
+      { name: 'Moderator', value: `${moderator}` },
+      { name: 'Reason', value: `${reason}` }
+    ], userId);
   });
 
   // create unban slash commmand

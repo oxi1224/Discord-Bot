@@ -63,6 +63,7 @@ export async function main() {
   async function warn(userId, reason, action, guild) {
     if (reason === null) return action.reply('**Reason** cannot be **empty**');
     const user = await client.users.fetch(userId, false);
+    if (!(await guild.member.fetch(userId))) return action.reply(`${user} is not in the server`);
     try {
       await dmUser(user, (`You've been **warned** in **${guild}**.
 **Reason**: \`\`${reason}\`\``));
