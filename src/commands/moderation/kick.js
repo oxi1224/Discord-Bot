@@ -6,6 +6,7 @@ import { logAction } from './actionLogger.js';
 export async function main() {
   const { client } = await import('../../bot.js');
   
+  // listen for messages
   client.on('messageCreate', async message => {
     if (!message.content.startsWith('!') || message.author.bot) return;
     const args = message.content.slice(1).trim().split(' ').filter(str => str !== '');
@@ -27,7 +28,7 @@ export async function main() {
     ], userId);
   });
 
-  // create unban slash commmand
+  // create kick slash commmand
   const kickData = new SlashCommandBuilder()
     .setName('kick')
     .setDescription('kicks given user')
@@ -38,7 +39,7 @@ export async function main() {
       .setDescription('Enter the kick reason')
       .setRequired(false));
 
-  // unban the user when interaction is called
+  // listen for interaction
   client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
     if (!(interaction.commandName === 'kick')) return;
@@ -57,6 +58,7 @@ export async function main() {
       { name: 'Reason', value: `${reason}` }
     ], userId);
   });
+
   updateSlashCommands(kickData, 'kick');
 
   async function performKick(userId, reason, action, guild) {

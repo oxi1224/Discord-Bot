@@ -6,7 +6,7 @@ import { logAction } from './actionLogger.js';
 export async function main() {
   const { client } = await import('../../bot.js');
 
-  // listen for ban command
+  // Listen for ban commands
   client.on('messageCreate', async message => {
     if (!message.content.startsWith('!') || message.author.bot) return;
     const args = message.content.slice(1).trim().split(' ').filter(str => str !== '');
@@ -44,7 +44,7 @@ export async function main() {
       .setDescription('Enter the ban reason')
       .setRequired(false));
   
-  // ban the user when interaction is called
+  // Listen for ban interactions
   client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
     if (!(interaction.commandName === 'ban')) return;
@@ -65,18 +65,16 @@ export async function main() {
       { name: 'Duration', value: `${duration}` }
     ], userId);
   });
-  updateSlashCommands(banData, 'ban');
 
+  updateSlashCommands(banData, 'ban');
 
   async function performBan(action, userId, reason, duration, guild) {
     const banList = await guild.bans.fetch();
     const user = await client.users.fetch(userId, false);
-    // check if user is already banned
     if (!(banList.find(x => x.user.id === userId) === undefined)) return action.reply(`${user} is **already** banned`);
-    // ban the user
     try {
       await dmUser(user, (`You've been **banned** ${duration == null ? '**permanently**' : `**for ${duration}**`} in **${guild}**. 
-**Reason**: \`\`${reason}\`\``));
+      **Reason**: \`\`${reason}\`\``));
       await action.reply(`${user} has been **banned**`);
     } catch {
       await action.reply(`Failed to dm ${user}, action still performed`);

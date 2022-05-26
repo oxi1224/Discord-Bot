@@ -6,7 +6,7 @@ export async function main() {
   // update interaction list
   updateSlashCommands({ name: 'ping', description: 'replies with ping' }, 'ping');
 
-  // listen for ping interaction
+  // Listen for ping interactions
   client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
     if (interaction.commandName === 'ping') {
@@ -15,10 +15,9 @@ export async function main() {
     }
   });
 
-  // listen for sent messages starting with !ping
+  // Listen for ping commands
   client.on('messageCreate', message => {
     if (message.content == '!ping') {
-      // reply with ping
       message.channel.send(`${new Date() - message.createdTimestamp} ms`);
     }
   });

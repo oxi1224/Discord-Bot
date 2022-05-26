@@ -6,6 +6,7 @@ import { logAction } from './actionLogger.js';
 export async function main() {
   const { client } = await import('../../bot.js');
   
+  // Listen for warn commands
   client.on('messageCreate', async message => {
     if (!message.content.startsWith('!') || message.author.bot) return;
     const args = message.content.slice(1).trim().split(' ').filter(str => str !== '');
@@ -27,7 +28,7 @@ export async function main() {
     ], userId);
   });
 
-  // create unban slash commmand
+  // Create warn slash commmand
   const warnData = new SlashCommandBuilder()
     .setName('warn')
     .setDescription('warns given user')
@@ -38,7 +39,7 @@ export async function main() {
       .setDescription('Enter the warn reason')
       .setRequired(true));
 
-  // unban the user when interaction is called
+  // Listen for warn interactions
   client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
     if (!(interaction.commandName === 'warn')) return;

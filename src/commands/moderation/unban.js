@@ -6,6 +6,7 @@ import { logAction } from './actionLogger.js';
 export async function main() {
   const { client } = await import('../../bot.js');
   
+  // Listen for unban commands   
   client.on('messageCreate', async message => {
     if (!message.content.startsWith('!') || message.author.bot) return;
     const args = message.content.slice(1).trim().split(' ').filter(str => str !== '');
@@ -35,7 +36,7 @@ export async function main() {
       .setDescription('Enter user to unban')
       .setRequired(true));
 
-  // unban the user when interaction is called
+  // Listen for unban interaction
   client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
     if (!(interaction.commandName === 'unban')) return;
@@ -65,12 +66,10 @@ export async function main() {
     if (!userId) throw new Error('BAN_RESOLVE_ID');
 
     await guild.bans(userId).delete({ reason: reason });
-    await action.reply(`${user} has been unbanned`);
-
     try {
       await dmUser(user, (`You've been **unbanned** in **${guild}**. 
 **Reason**: \`\`${reason}\`\``));
-      await action.reply(`${user} has been **banned**`);
+      await action.reply(`${user} has been **unbanned**`);
     } catch {
       await action.reply(`Failed to dm ${user} action still performed`);
     }
