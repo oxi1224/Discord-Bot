@@ -10,66 +10,65 @@ export async function main() {
     if (!message.content.startsWith('!') || message.author.bot) return;
     const args = message.content.slice(1).trim().split(' ').filter(str => str !== '');
     const command = args.shift().toLowerCase();
-    if (!(command == 'warn')) return;
-    if (!(message.member.permissions.has('MANAGE_NICKNAMES'))) return message.react('<:error:978329348924899378>');
+    if (!(command == 'kick')) return;
+    if (!(message.member.permissions.has('KICK_MEMBERS'))) return message.react('<:error:978329348924899378>');
   
     const userId = message.mentions.users.first() === undefined ? args[0] : message.mentions.users.first().id; 
     const reason = args.slice(1).join(' ') || null;
     const moderator = message.author;
     const guild = message.guild;
 
-    await warn(userId, reason, message, guild)
-      .then(logPunishment(userId, reason, moderator, 'warns'));
+    await performKick(userId, reason, message, guild)
+      .then(logPunishment(userId, reason, moderator, 'kicks'));
 
-    await logAction('Member Warned', [
+    await logAction('Member Kicked', [
       { name: 'Moderator', value: `${moderator}` },
       { name: 'Reason', value: `${reason}` }
     ], userId);
   });
 
   // create unban slash commmand
-  const warnData = new SlashCommandBuilder()
-    .setName('warn')
-    .setDescription('warns given user')
+  const kickData = new SlashCommandBuilder()
+    .setName('kick')
+    .setDescription('kicks given user')
     .addUserOption(option => option.setName('user')
-      .setDescription('Enter a user to warn')
+      .setDescription('Enter a user to kick')
       .setRequired(true))
     .addStringOption(option => option.setName('reason')
-      .setDescription('Enter the warn reason')
-      .setRequired(true));
+      .setDescription('Enter the kick reason')
+      .setRequired(false));
 
   // unban the user when interaction is called
   client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
-    if (!(interaction.commandName === 'warn')) return;
-    if (!(interaction.member.permissions.has('MANAGE_NICKNAMES'))) return interaction.reply({ content: 'Insufficient Permissions', ephemeral: true });
+    if (!(interaction.commandName === 'kick')) return;
+    if (!(interaction.member.permissions.has('KICK_MEMBERS'))) return interaction.reply({ content: 'Insufficient Permissions', ephemeral: true });
     
     const userId = interaction.options.get('user').value;
     const reason = interaction.options.get('reason') == null ? null : interaction.options.get('reason').value;
     const moderator = interaction.member.user;
     const guild = interaction.guild;
 
-    await warn(userId, reason, interaction, guild)
+    await performKick(userId, reason, interaction, guild)
       .then(logPunishment(userId, reason, moderator, 'warns'));
     
-    await logAction('Member Warned', [
+    await logAction('Member Kicked', [
       { name: 'Moderator', value: `${moderator}` },
       { name: 'Reason', value: `${reason}` }
     ], userId);
   });
+  updateSlashCommands(kickData, 'kick');
 
-  updateSlashCommands(warnData, 'warn');
-
-  async function warn(userId, reason, action, guild) {
-    if (reason === null) return action.reply('**Reason** cannot be **empty**');
+  async function performKick(userId, reason, action, guild) {
     const user = await client.users.fetch(userId, false);
-    if (!(await guild.member.fetch(userId))) return action.reply(`${user} is not in the server`);
+    if (!(await guild.members.fetch(userId))) return action.reply(`${user} is not in the server`);
     try {
-      await dmUser(user, (`You've been **warned** in **${guild}**.
+      await dmUser(user, (`You've been **kicked** from **${guild}**.
 **Reason**: \`\`${reason}\`\``));
-      await action.reply(`${user} has been **warned**`);
+      await action.reply(`${user} has been **kicked**`);
     } catch {
       await action.reply(`Failed to dm ${user} action still performed`);
     }
+    await (await guild.members.fetch(userId)).kick({ reason: reason });
   }
 }
