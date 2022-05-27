@@ -19,13 +19,7 @@ export async function main() {
     const moderator = message.author;
     const guild = message.guild;
 
-    await performKick(userId, reason, message, guild)
-      .then(logPunishment(userId, reason, moderator, 'kicks'));
-
-    await logAction('Member Kicked', [
-      { name: 'Moderator', value: `${moderator}` },
-      { name: 'Reason', value: `${reason}` }
-    ], userId);
+    await performKick(userId, reason, message, guild, moderator);
   });
 
   // create kick slash commmand

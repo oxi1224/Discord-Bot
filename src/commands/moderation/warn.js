@@ -19,13 +19,7 @@ export async function main() {
     const moderator = message.author;
     const guild = message.guild;
 
-    await warn(userId, reason, message, guild)
-      .then(logPunishment(userId, reason, moderator, 'warns'));
-
-    await logAction('Member Warned', [
-      { name: 'Moderator', value: `${moderator}` },
-      { name: 'Reason', value: `${reason}` }
-    ], userId);
+    await warn(userId, reason, message, guild, moderator);
   });
 
   // Create warn slash commmand

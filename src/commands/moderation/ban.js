@@ -20,14 +20,7 @@ export async function main() {
     const moderator = message.author;
     const guild = message.guild;
 
-    await performBan(message, userId, reason, duration, guild)
-      .then(logPunishment(userId, reason, moderator, 'bans', duration));
-
-    await logAction('Member Banned', [
-      { name: 'Moderator', value: `${moderator}` },
-      { name: 'Reason', value: `${reason}` },
-      { name: 'Duration', value: `${duration}` }
-    ], userId);
+    await performBan(message, userId, reason, duration, guild, moderator);
   });
 
   // Create ban slash command
@@ -74,7 +67,7 @@ export async function main() {
     }
 
     logPunishment(userId, reason, moderator, 'bans', duration);
-    await logAction('Member Banned', [
+    logAction('Member Banned', [
       { name: 'Moderator', value: `${moderator}` },
       { name: 'Reason', value: `${reason}` },
       { name: 'Duration', value: `${duration}` }

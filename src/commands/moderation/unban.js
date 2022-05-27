@@ -19,13 +19,7 @@ export async function main() {
     const moderator = message.author;
     const guild = message.guild;
 
-    await unBan(userId, reason, message, guild)
-      .then(logPunishment(userId, reason, moderator, 'unbans'));
-    
-    await logAction('Member Unbanned', [
-      { name: 'Moderator', value: `${moderator}` },
-      { name: 'Reason', value: `${reason}` }
-    ], userId);
+    await unBan(userId, reason, message, guild, moderator); 
   });
 
   // create unban slash commmand
@@ -46,6 +40,7 @@ export async function main() {
     const reason = interaction.options.get('reason') == null ? null : interaction.options.get('reason').value;
     const moderator = interaction.member.user;
     const guild = interaction.guild;
+
     await unBan(userId, reason, interaction, guild, moderator); 
   });
 
