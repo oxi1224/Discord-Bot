@@ -50,18 +50,12 @@ export async function main() {
     const moderator = interaction.member.user;
     const guild = interaction.guild;
 
-    await performKick(userId, reason, interaction, guild)
-      .then(logPunishment(userId, reason, moderator, 'warns'));
-    
-    await logAction('Member Kicked', [
-      { name: 'Moderator', value: `${moderator}` },
-      { name: 'Reason', value: `${reason}` }
-    ], userId);
+    await performKick(userId, reason, interaction, guild, moderator);
   });
 
   updateSlashCommands(kickData, 'kick');
 
-  async function performKick(userId, reason, action, guild) {
+  async function performKick(userId, reason, action, guild, moderator) {
     const user = await client.users.fetch(userId, false);
     if (!(await guild.members.fetch(userId))) return action.reply(`${user} is not in the server`);
     try {
@@ -71,6 +65,11 @@ export async function main() {
     } catch {
       await action.reply(`Failed to dm ${user} action still performed`);
     }
+    logPunishment(userId, reason, moderator, 'warns');
+    logAction('Member Kicked', [
+      { name: 'Moderator', value: `${moderator}` },
+      { name: 'Reason', value: `${reason}` }
+    ], userId);
     await (await guild.members.fetch(userId)).kick({ reason: reason });
   }
 }

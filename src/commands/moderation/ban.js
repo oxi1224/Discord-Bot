@@ -56,19 +56,12 @@ export async function main() {
     const moderator = interaction.member.user;
     const guild = interaction.guild;
 
-    await performBan(interaction, userId, reason, duration, guild)
-      .then(logPunishment(userId, reason, moderator, 'bans', duration));
-      
-    await logAction('Member Banned', [
-      { name: 'Moderator', value: `${moderator}` },
-      { name: 'Reason', value: `${reason}` },
-      { name: 'Duration', value: `${duration}` }
-    ], userId);
+    await performBan(interaction, userId, reason, duration, guild, moderator);
   });
 
   updateSlashCommands(banData, 'ban');
 
-  async function performBan(action, userId, reason, duration, guild) {
+  async function performBan(action, userId, reason, duration, guild, moderator) {
     const banList = await guild.bans.fetch();
     const user = await client.users.fetch(userId, false);
     if (!(banList.find(x => x.user.id === userId) === undefined)) return action.reply(`${user} is **already** banned`);
@@ -79,6 +72,13 @@ export async function main() {
     } catch {
       await action.reply(`Failed to dm ${user}, action still performed`);
     }
+
+    logPunishment(userId, reason, moderator, 'bans', duration);
+    await logAction('Member Banned', [
+      { name: 'Moderator', value: `${moderator}` },
+      { name: 'Reason', value: `${reason}` },
+      { name: 'Duration', value: `${duration}` }
+    ], userId);
     await guild.members.ban(userId, { reason: reason });
   }
 }

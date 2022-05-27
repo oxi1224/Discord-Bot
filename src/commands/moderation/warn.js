@@ -50,21 +50,15 @@ export async function main() {
     const moderator = interaction.member.user;
     const guild = interaction.guild;
 
-    await warn(userId, reason, interaction, guild)
-      .then(logPunishment(userId, reason, moderator, 'warns'));
-    
-    await logAction('Member Warned', [
-      { name: 'Moderator', value: `${moderator}` },
-      { name: 'Reason', value: `${reason}` }
-    ], userId);
+    await warn(userId, reason, interaction, guild, moderator);
   });
 
   updateSlashCommands(warnData, 'warn');
 
-  async function warn(userId, reason, action, guild) {
+  async function warn(userId, reason, action, guild, moderator) {
     if (reason === null) return action.reply('**Reason** cannot be **empty**');
     const user = await client.users.fetch(userId, false);
-    if (!(await guild.member.fetch(userId))) return action.reply(`${user} is not in the server`);
+    if (!(await guild.members.fetch(userId))) return action.reply(`${user} is not in the server`);
     try {
       await dmUser(user, (`You've been **warned** in **${guild}**.
 **Reason**: \`\`${reason}\`\``));
@@ -72,5 +66,10 @@ export async function main() {
     } catch {
       await action.reply(`Failed to dm ${user} action still performed`);
     }
+    logPunishment(userId, reason, moderator, 'warns');
+    await logAction('Member Warned', [
+      { name: 'Moderator', value: `${moderator}` },
+      { name: 'Reason', value: `${reason}` }
+    ], userId);
   }
 }
