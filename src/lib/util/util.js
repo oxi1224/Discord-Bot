@@ -34,20 +34,20 @@ export function getExpirationDate(duration, startTime) {
 // Log punishment to punishmentLogs database and to expiringPunishments if it expires
 export async function logPunishment(userId, reason, moderator, column, duration) {
   if (!(await existsRow(userId))) await createUserRow(userId);
-  // get the previous bans
+  // get the previous punishments
   const userPunishmentsList = (await readFromDb(userId, 'PunishmentLogs'))[0][column];
-  // update the ban list
+  // update the punishment list
   userPunishmentsList.push({
     user: userId,
     moderator: moderator,
     reason: reason,
-    punishmentTIme: column.split('').slice(0, -1).join(''),
+    punishmentType: column.split('').slice(0, -1).join(''),
     punishmentTime: new Date().getTime(),
     punishmentExpires: getExpirationDate(duration, new Date().getTime()),
     punishmentId: generateModLogID()
   });
-  // sort the updated ban list and update cell in db
-  await changeColumnValues(userId, column, userPunishmentsList.sort((a, b) => parseFloat(b.punishmentTime) - parseFloat(a.punishmentTime)));
+  // sort the updated ounishment list and update cell in db
+  await changeColumnValues(userId, column, userPunishmentsList);
   
   // write to expiringPunishments db if there is a duration
   if (!(duration === null || duration === undefined)) {

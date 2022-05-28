@@ -24,6 +24,7 @@ export async function main() {
     client.on(type, async message => {
       switch (type) {
       case ('messageDelete'):
+        if (message.embeds) return;
         return await logAction('Message Deleted', [
           { name: 'Channel', value: `${message.channel}` },
           { name: 'Author', value: `${message.author}` },
@@ -75,7 +76,7 @@ export async function main() {
       });
       newUser.roles.cache.forEach(role => {
         if (oldUser.roles.cache.has(role.id)) return;
-        logAction('Role Removed', [{ name: 'Role', value: `${role}` }], newUser.user.id);
+        logAction('Role Added', [{ name: 'Role', value: `${role}` }], newUser.user.id);
       });
     }
   });

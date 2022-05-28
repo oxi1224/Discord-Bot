@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
 import { readFromDb } from '../../lib/common/db.js';
+import { MessageActionRow, MessageButton, MessageEmbed } from 'discord.js';
 
 export async function main() {
   const { client } = await import('../../bot.js');
@@ -13,13 +14,13 @@ export async function main() {
     if (!(command == 'modlogs')) return;
     if (!(message.member.permissions.has('BAN_MEMBERS'))) return message.react('<:error:978329348924899378>');
 
-    const userId = message.mentions.users.first() === undefined ? args[0] : message.mentions.users.first().id; 
-    await updateSlashCommands(userId);
+    const userId = message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; 
+    await showModlogs(userId, message);
   });
 
   // Create ban slash command
   const modlogs = new SlashCommandBuilder()
-    .setName('ban')
+    .setName('modlogs')
     .setDescription('Shows the modlogs of given user')
     .addUserOption(option => option.setName('user')
       .setDescription('Enter whose modlogs to show')
@@ -32,12 +33,44 @@ export async function main() {
     if (!(interaction.member.permissions.has('BAN_MEMBERS'))) return interaction.reply({ content: 'Insufficient Permissions', ephemeral: true });
     
     const userId = interaction.options.get('user').value;
-    await updateSlashCommands(userId);
+    await showModlogs(userId, interaction);
   });
 
   updateSlashCommands(modlogs, 'modlogs');
 
-  async function showModlogs(userId) {
+  async function showModlogs(userId, action) {
     const punishmentsJson = (await readFromDb(userId))[0];
+    const usersPunishments = (punishmentsJson.warns).concat(
+      punishmentsJson.mutes, punishmentsJson.unmutes, 
+      punishmentsJson.bans, punishmentsJson.unbans, 
+      punishmentsJson.kicks
+    );
+    usersPunishments.sort((a, b) => parseFloat(b.punishmentTime) - parseFloat(a.punishmentTime));
+    
+    const embed = new MessageEmbed()
+      .setColor('#0099ff')
+      .setTitle(`${userId}'s modlogs`)
+      .setTimestamp();
+  
+    const buttonsRow = new MessageActionRow()
+      .addComponents(
+        new MessageButton()
+          .setCustomId('modlog-delete')
+          .setLabel('Delete')
+          .setStyle('DANGER')
+      );
+
+    usersPunishments.forEach(el => embed.addField(`Type: ${el.punishmentType}`, `Reason: ${el.reason}
+Moderator: <@${el.moderator.id}>
+Punnishment time: ${new Date(el.punishmentTime).toLocaleDateString()}
+Expires: ${el.punishmentExpires === null ? 'false' : new Date(el.punishmentExpires).toLocaleDateString()}
+Modlog ID: ${el.punishmentId}`));
+    await action.reply({ embeds: [embed], components: [buttonsRow] });
   }
+  client.on('interactionCreate', async interaction => {
+    if (!interaction.isButton()) return;
+    if (!interaction.customId == 'modlog-delete') return;
+    if (!interaction.member.permissions.has('MANAGE_MESSAGES')) return;
+    await interaction.message.delete();
+  });
 }

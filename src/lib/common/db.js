@@ -34,10 +34,6 @@ export async function createLogsTable() {
   );
   `;
   await client.query(createTableText);
-  const test = (await readFromDb('974318351721574422'))[0];
-  const arr = [];
-  console.log(test);
-  // console.log(arr.concat(test.warns, test.mutes, test.unmutes, test.bans, test.unbans, test.kicks));
   (await client.query('SELECT * FROM expiringPunishments')).rows.length < 1 ?
     await client.query('INSERT INTO expiringPunishments(id, punishmentInfo) VALUES($1, $2)', ['0', []]) : null;
 }
@@ -58,13 +54,8 @@ export async function readFromDb(id) {
 
 // change one or many column values in a row
 export async function changeColumnValues(id, column, data) {
-  const query = {
-    name: 'change-row-value',
-    text: `UPDATE punishmentLogs SET ${column}=$2 WHERE id = $1::text`,
-    values: [id, data],
-  };
   client
-    .query(query)
+    .query(`UPDATE punishmentLogs SET ${column}=$2 WHERE id = $1::text`, [id, data])
     .then(res => console.log(res.rows[0]))
     .catch(e => console.error(e.stack));
 }
