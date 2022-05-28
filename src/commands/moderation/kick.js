@@ -60,7 +60,7 @@ export async function main() {
     } catch {
       await action.reply(`Failed to dm ${user} action still performed`);
     }
-    logPunishment(userId, reason, moderator, 'warns');
+    logPunishment(userId, reason, moderator, 'kicks');
     logAction('Member Kicked', [
       { name: 'Moderator', value: `${moderator}` },
       { name: 'Reason', value: `${reason}` }

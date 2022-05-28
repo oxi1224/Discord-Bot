@@ -14,13 +14,12 @@ export async function main() {
     if (!(command == 'ban')) return;
     if (!(message.member.permissions.has('BAN_MEMBERS'))) return message.react('<:error:978329348924899378>');
     const userId = message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; 
-    const duration = (args[1] == args.at(-1)) ? null : args[1];
+    const duration = (!(args[1] == args.at(-1)) && /^\d+(min|h|d|w|m)/.test(args[1])) ? args[1] : null;
     const reason = args.slice(duration == null ? 1 : 1 + args.indexOf(duration)).join(' ') || null;
     const moderator = message.author;
     const guild = message.guild;
     await performBan(message, userId, reason, duration, guild, moderator);
   });
-
   // Create ban slash command
   const banData = new SlashCommandBuilder()
     .setName('ban')
