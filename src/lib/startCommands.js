@@ -6,6 +6,7 @@ import { main as warn } from '../commands/moderation/warn.js';
 import { main as kick } from '../commands/moderation/kick.js';
 import { main as expiringPunishments } from '../commands/moderation/expiringPunishments.js';
 
+// Executes the main function from each command's file
 export async function startCommands() {
   // moderation
   ping();

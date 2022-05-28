@@ -49,6 +49,7 @@ export async function main() {
 
   updateSlashCommands(kickData, 'kick');
 
+  // Custom kick function
   async function performKick(userId, reason, action, guild, moderator) {
     const user = await client.users.fetch(userId, false);
     if (!(await guild.members.fetch(userId))) return action.reply(`${user} is not in the server`);

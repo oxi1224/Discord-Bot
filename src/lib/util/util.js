@@ -31,6 +31,7 @@ export function getExpirationDate(duration, startTime) {
   }
 }
 
+// Log punishment to punishmentLogs database and to expiringPunishments if it expires
 export async function logPunishment(userId, reason, moderator, column, duration) {
   if (!(await existsRow(userId))) await createUserRow(userId);
   // get the previous bans
@@ -61,6 +62,7 @@ export async function logPunishment(userId, reason, moderator, column, duration)
     .catch(e => console.error(e.stack));
 }
 
+// Dm's user
 export async function dmUser(user, content) {
   await user.createDM();
   await user.send(content);

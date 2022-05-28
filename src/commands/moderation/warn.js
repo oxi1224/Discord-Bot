@@ -49,6 +49,7 @@ export async function main() {
 
   updateSlashCommands(warnData, 'warn');
 
+  // Warns given user
   async function warn(userId, reason, action, guild, moderator) {
     if (reason === null) return action.reply('**Reason** cannot be **empty**');
     const user = await client.users.fetch(userId, false);

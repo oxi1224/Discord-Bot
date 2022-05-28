@@ -45,6 +45,8 @@ export async function main() {
   });
 
   updateSlashCommands(unBanData, 'unban');
+
+  // Unbans given user
   async function unBan(userId, reason, action, guild, moderator) {
     const user = await client.users.fetch(userId, false);
     const banList = await action.guild.bans.fetch();

@@ -3,6 +3,7 @@ import { MessageEmbed } from 'discord.js';
 export async function main() {
   const { client } = await import('../../bot.js');
 
+  // Listens for channel related changes
   for (const type of ['channelCreate', 'channelDelete', 'channelPinsUpdate', 'channelUpdate']) {
     client.on(type, async channel => {
       switch (type) {
@@ -18,6 +19,7 @@ export async function main() {
     });
   }
 
+  // Listens for deleted messages and reactions
   for (const type of ['messageDelete', 'messageReactionRemoveAll']) {
     client.on(type, async message => {
       switch (type) {
@@ -35,6 +37,8 @@ export async function main() {
       }
     });
   }
+
+  // Listens for message edits
   client.on('messageUpdate', async (oldMessage, newMessage) => {
     await logAction('Message Edited', [
       { name: 'Old message', value: `${oldMessage.content}` },
@@ -43,6 +47,7 @@ export async function main() {
     ]);
   });
 
+  // Listens for role updates
   for (const type of ['roleCreate', 'roleDelete', 'roleUpdate']) {
     client.on(type, async role => {
       switch (type) {
@@ -55,6 +60,8 @@ export async function main() {
       }
     });
   }
+
+  // Listens for added/deleted roles from a user
   client.on('guildMemberUpdate', async (oldUser, newUser) => {
     if (oldUser.nickname !== newUser.nickname) {
       logAction('Nickname Changed', [
@@ -74,7 +81,7 @@ export async function main() {
   });
 }
 
-
+// Logs the action to the logging channel
 export async function logAction(title, fieldsToAdd, userId) {
   const { client } = await import('../../bot.js');
   const fields = fieldsToAdd;
@@ -88,6 +95,7 @@ export async function logAction(title, fieldsToAdd, userId) {
     fields.unshift({ name: 'User', value: `${user}` });
     embed.setAuthor({ name: `${user.username}#${user.discriminator}`, iconURL: `https://cdn.discordapp.com/avatars/${userId}/${user.avatar}.webp` });
   }
+  // Add fields from fieldsToAdd to the embed
   fields.forEach(obj => embed.addField(obj.name, obj.value));
   await client.channels.cache.get('977566053062303764').send({ embeds: [embed] });
 }
