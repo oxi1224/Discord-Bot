@@ -13,13 +13,11 @@ export async function main() {
     const command = args.shift().toLowerCase();
     if (!(command == 'ban')) return;
     if (!(message.member.permissions.has('BAN_MEMBERS'))) return message.react('<:error:978329348924899378>');
-
-    const userId = message.mentions.users.first() === undefined ? args[0] : message.mentions.users.first().id; 
-    const duration = args[1] === args[-1] ? null : args[1];
+    const userId = message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; 
+    const duration = (args[1] == args.at(-1)) ? null : args[1];
     const reason = args.slice(duration == null ? 1 : 1 + args.indexOf(duration)).join(' ') || null;
     const moderator = message.author;
     const guild = message.guild;
-
     await performBan(message, userId, reason, duration, guild, moderator);
   });
 
@@ -60,7 +58,7 @@ export async function main() {
     if (!(banList.find(x => x.user.id === userId) === undefined)) return action.reply(`${user} is **already** banned`);
     try {
       await dmUser(user, (`You've been **banned** ${duration == null ? '**permanently**' : `**for ${duration}**`} in **${guild}**. 
-      **Reason**: \`\`${reason}\`\``));
+**Reason**: \`\`${reason}\`\``));
       await action.reply(`${user} has been **banned**`);
     } catch {
       await action.reply(`Failed to dm ${user}, action still performed`);

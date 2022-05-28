@@ -41,28 +41,29 @@ export async function logPunishment(userId, reason, moderator, column, duration)
     user: userId,
     moderator: moderator,
     reason: reason,
+    punishmentTIme: column.split('').slice(0, -1).join(''),
     punishmentTime: new Date().getTime(),
     punishmentExpires: getExpirationDate(duration, new Date().getTime()),
     punishmentId: generateModLogID()
   });
   // sort the updated ban list and update cell in db
-  await changeColumnValues(userId, changeColumnValues[column] = { [column]: userPunishmentsList.sort((a, b) => parseFloat(a.punishmentTime) - parseFloat(b.punishmentTime)) });
+  await changeColumnValues(userId, column, userPunishmentsList.sort((a, b) => parseFloat(b.punishmentTime) - parseFloat(a.punishmentTime)));
   
   // write to expiringPunishments db if there is a duration
-  if (duration === null || duration === undefined) return;
-    
-  const expiringPunishments = (await (await dbClient.query('SELECT punishmentInfo FROM expiringPunishments WHERE id=0::text')).rows[0].punishmentinfo) || [];
-  expiringPunishments.push({
-    user: userId,
-    punishmentType: column.split('').slice(0, -1).join(''),
-    punishmentExpires: await getExpirationDate(duration, new Date().getTime()),
-  });
-  await dbClient.query('UPDATE expiringPunishments SET punishmentInfo=$1 WHERE id=0::text', [expiringPunishments.sort((a, b) => parseFloat(b.punishmentExpires) - parseFloat(a.punishmentExpires))])
-    .then(res => console.log(res.rows[0]))
-    .catch(e => console.error(e.stack));
+  if (!(duration === null || duration === undefined)) {
+    const expiringPunishments = (await (await dbClient.query('SELECT punishmentInfo FROM expiringPunishments WHERE id=0::text')).rows[0].punishmentinfo) || [];
+    expiringPunishments.push({
+      user: userId,
+      punishmentType: column.split('').slice(0, -1).join(''),
+      punishmentExpires: await getExpirationDate(duration, new Date().getTime()),
+    });
+    await dbClient.query('UPDATE expiringPunishments SET punishmentInfo=$1 WHERE id=0::text', [expiringPunishments.sort((a, b) => parseFloat(b.punishmentExpires) - parseFloat(a.punishmentExpires))])
+      .then(res => console.log(res.rows[0]))
+      .catch(e => console.error(e.stack));
+  }
 }
 
-// Dm's user
+// Dm's a user
 export async function dmUser(user, content) {
   await user.createDM();
   await user.send(content);
