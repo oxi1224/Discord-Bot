@@ -1,5 +1,5 @@
 import { createUserRow, readFromDb, changeColumnValues, existsRow, client as dbClient } from '../common/db.js';
-
+import { MessageEmbed } from 'discord.js';
 // generates modlog id
 export function generateModLogID() {
   const chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890'.slice('');
@@ -67,4 +67,23 @@ export async function logPunishment(userId, reason, moderator, column, duration)
 export async function dmUser(user, content) {
   await user.createDM();
   await user.send(content);
+}
+
+// Logs the action to the logging channel
+export async function logAction(title, fieldsToAdd, { userId = undefined, channelId = '977566053062303764' }) {
+  const { client } = await import('../../bot.js');
+  const fields = fieldsToAdd;
+  const embed = new MessageEmbed()
+    .setColor('#0099ff')
+    .setTitle(title)
+    .setTimestamp();
+    
+  if (!(userId === undefined)) {
+    const user = await client.users.fetch(userId, false);
+    fields.unshift({ name: 'User', value: `${user}` });
+    embed.setAuthor({ name: `${user.username}#${user.discriminator}`, iconURL: `https://cdn.discordapp.com/avatars/${userId}/${user.avatar}.webp` });
+  }
+  // Add fields from fieldsToAdd to the embed
+  fields.forEach(obj => embed.addField(obj.name, obj.value));
+  await client.channels.cache.get(channelId).send({ embeds: [embed] });
 }
