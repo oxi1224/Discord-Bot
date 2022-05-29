@@ -1,4 +1,4 @@
-import { createUserRow, readFromDb, changeColumnValues, existsRow, client as dbClient } from '../common/db.js';
+import * as db from '../common/db.js';
 import { MessageEmbed } from 'discord.js';
 // generates modlog id
 export function generateModLogID() {
@@ -33,34 +33,37 @@ export function getExpirationDate(duration, startTime) {
 
 // Log punishment to punishmentLogs database and to expiringPunishments if it expires
 export async function logPunishment(userId, reason, moderator, column, duration) {
-  if (!(await existsRow(userId))) await createUserRow(userId);
+  if (!(await db.existsRow(userId))) await db.createUserRow(userId);
   // get the previous punishments
-  const userPunishmentsList = (await readFromDb(userId, 'PunishmentLogs'))[0][column];
+  const userPunishmentsList = (await db.readFromDb(userId, 'PunishmentLogs'))[0][column];
+  const punishmentType = column.split('').slice(0, -1).join('');
   // update the punishment list
   userPunishmentsList.push({
     user: userId,
     moderator: moderator,
     reason: reason,
-    punishmentType: column.split('').slice(0, -1).join(''),
+    punishmentType: punishmentType,
     punishmentTime: new Date().getTime(),
     punishmentExpires: getExpirationDate(duration, new Date().getTime()),
     punishmentId: generateModLogID()
   });
   // sort the updated ounishment list and update cell in db
-  await changeColumnValues(userId, column, userPunishmentsList);
+  await db.changeColumnValues(userId, column, userPunishmentsList);
   
+  if (!(['bans', 'mutes', 'unbans', 'unmutes'].includes(column))) return;
   // write to expiringPunishments db if there is a duration
+  let expiringPunishments = await db.fetchExpiringPunishments() || [];
+  if (column === 'unbans' || column === 'unmutes') {
+    expiringPunishments = expiringPunishments.filter(json => { return !(json.user == userId && json.punishmentType == punishmentType); });
+  }
   if (!(duration === null || duration === undefined)) {
-    const expiringPunishments = (await (await dbClient.query('SELECT punishmentInfo FROM expiringPunishments WHERE id=0::text')).rows[0].punishmentinfo) || [];
     expiringPunishments.push({
       user: userId,
-      punishmentType: column.split('').slice(0, -1).join(''),
+      punishmentType: punishmentType,
       punishmentExpires: await getExpirationDate(duration, new Date().getTime()),
     });
-    await dbClient.query('UPDATE expiringPunishments SET punishmentInfo=$1 WHERE id=0::text', [expiringPunishments.sort((a, b) => parseFloat(b.punishmentExpires) - parseFloat(a.punishmentExpires))])
-      .then(res => console.log(res.rows[0]))
-      .catch(e => console.error(e.stack));
   }
+  await db.updateExpiringPunishments(expiringPunishments.sort((a, b) => parseFloat(b.punishmentExpires) - parseFloat(a.punishmentExpires)));
 }
 
 // Dm's a user

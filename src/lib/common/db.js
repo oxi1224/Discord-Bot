@@ -14,7 +14,7 @@ const config = {
 
 export const client = new Client(config);
 
-// create main table if it doesnt exist
+// Create main table if it doesnt exist
 export async function createLogsTable() {
   client.connect();
   const createTableText = `
@@ -38,12 +38,12 @@ export async function createLogsTable() {
     await client.query('INSERT INTO expiringPunishments(id, punishmentInfo) VALUES($1, $2)', ['0', []]) : null;
 }
 
-// create row from user id
+// Create row from user id
 export async function createUserRow(id) {
   await client.query('INSERT INTO punishmentLogs(id, warns, mutes, unmutes, bans, unbans, kicks) VALUES($1, $2, $3, $4, $5, $6, $7)', [id, [], [], [], [], [], []]);
 }
 
-// read row from the database
+// Read row from the database
 export async function readFromDb(id) {
   const row = await client.query(
     `SELECT * 
@@ -52,7 +52,7 @@ export async function readFromDb(id) {
   return row.rows;
 }
 
-// change one or many column values in a row
+// Change one or many column values in a row
 export async function changeColumnValues(id, column, data) {
   client
     .query(`UPDATE punishmentLogs SET ${column}=$2 WHERE id = $1::text`, [id, data])
@@ -60,8 +60,19 @@ export async function changeColumnValues(id, column, data) {
     .catch(e => console.error(e.stack));
 }
 
-// check if row exists
+// Check if row exists
 export async function existsRow(id) {
   const response = await client.query(`select 1 from punishmentLogs where id=${id}::text`);
   return response.rows.length < 1 ? false : true;
+}
+
+// Update the expiringPunishments database with updated punishment list
+export async function updateExpiringPunishments(expiringPunishments) {
+  await client.query('UPDATE expiringPunishments SET punishmentInfo=$1 WHERE id=0::text', [expiringPunishments])
+    .then(res => console.log(res.rows[0]))
+    .catch(e => console.error(e.stack));
+}
+
+export async function fetchExpiringPunishments() {
+  return await (await client.query('SELECT punishmentInfo FROM expiringPunishments WHERE id=0::text')).rows[0].punishmentinfo;
 }

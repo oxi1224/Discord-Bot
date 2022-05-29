@@ -1,9 +1,9 @@
 import { dmUser, logPunishment, logAction } from '../../lib/util/util.js';
-import { client as dbClient } from '../../lib/common/db.js';
+import { updateExpiringPunishments, fetchExpiringPunishments } from '../../lib/common/db.js';
 
 export async function main() {
   const { client } = await import('../../bot.js');
-  let expiringPunishments = await (await dbClient.query('SELECT punishmentInfo FROM expiringPunishments WHERE id=0::text')).rows[0].punishmentinfo;
+  let expiringPunishments = await fetchExpiringPunishments();
   // Check if the expiration date from the punishment closest to expiring is greater than current date
   if (expiringPunishments.length === 0 || !(expiringPunishments.at(-1).punishmentExpires <= new Date().getTime())) return;
 
@@ -40,8 +40,5 @@ export async function main() {
     break;  
   }
 
-  // Update the database with updated punishment list
-  await dbClient.query('UPDATE expiringPunishments SET punishmentInfo=$1 WHERE id=0::text', [expiringPunishments])
-    .then(res => console.log(res.rows[0]))
-    .catch(e => console.error(e.stack));
+  await updateExpiringPunishments(expiringPunishments);
 }
