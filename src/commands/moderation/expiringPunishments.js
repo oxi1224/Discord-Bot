@@ -1,5 +1,4 @@
-import { dmUser, logPunishment } from '../../lib/util/util.js';
-import { logAction } from './actionLogger.js';
+import { dmUser, logPunishment, logAction } from '../../lib/util/util.js';
 import { client as dbClient } from '../../lib/common/db.js';
 
 export async function main() {
@@ -14,14 +13,16 @@ export async function main() {
 
   switch (expiringPunishments.at(-1).punishmentType) {
   case 'ban':
-    // Unban the user
-    await guild.bans.remove(userId);
-    await logAction('Member Unbanned', [{ name: 'Reason', value: 'Punishment Expired' }], userId);
-    try { await dmUser(user, `You've been unbanned in **${guild}** \n Reason: \`\`Punishment Expired\`\` `); } 
-    catch {null;}
-    // Filter out all bans in the array that have the same user
-    expiringPunishments = expiringPunishments.filter(json => { return !(json.user == userId && json.punishmentType == ' ban'); });
-    await logPunishment(userId, 'Punishment expired.', client.user, 'unbans');
+    try {
+      // Unban the user
+      await guild.bans.remove(userId);
+      await logAction('Member Unbanned', [{ name: 'Reason', value: 'Punishment Expired' }], userId);
+      try { await dmUser(user, `You've been unbanned in **${guild}** \n Reason: \`\`Punishment Expired\`\` `); } 
+      catch {null;}
+      // Filter out all bans in the array that have the same user
+      expiringPunishments = expiringPunishments.filter(json => { return !(json.user == userId && json.punishmentType == ' ban'); });
+      await logPunishment(userId, 'Punishment expired.', client.user, 'unbans');
+    } catch {null;}
     break;
     
   case 'mute':

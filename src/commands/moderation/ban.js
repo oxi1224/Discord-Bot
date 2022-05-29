@@ -1,7 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
-import { logPunishment, dmUser } from '../../lib/util/util.js';
-import { logAction } from './actionLogger.js';
+import { logPunishment, dmUser, logAction } from '../../lib/util/util.js';
 
 export async function main() {
   const { client } = await import('../../bot.js');
@@ -68,7 +67,7 @@ export async function main() {
       { name: 'Moderator', value: `${moderator}` },
       { name: 'Reason', value: `${reason}` },
       { name: 'Duration', value: `${duration}` }
-    ], userId);
+    ], { userId: userId });
     await guild.members.ban(userId, { reason: reason });
   }
 }

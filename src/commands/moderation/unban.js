@@ -1,7 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
-import { logPunishment, dmUser } from '../../lib/util/util.js';
-import { logAction } from './actionLogger.js';
+import { logPunishment, dmUser, logAction } from '../../lib/util/util.js';
 
 export async function main() {
   const { client } = await import('../../bot.js');
@@ -65,7 +64,7 @@ export async function main() {
     logAction('Member Unbanned', [
       { name: 'Moderator', value: `${moderator}` },
       { name: 'Reason', value: `${reason}` }
-    ], userId);
+    ], { userId: userId });
     return client.users.resolve(user);
   }
 }
