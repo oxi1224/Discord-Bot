@@ -4,14 +4,14 @@ export function main() {
   process.on('unhandledRejection', 
     async (err) => await logAction(
       'Error', 
-      [{ name: 'Error:', value: `\`\`\`md ${err} \`\`\` ` }], 
+      [{ name: 'Error:', value: `\`\`\` ${err} \`\`\` ` }], 
       { channelId: '980478015412772884' }
     ));
 
   process.on('uncaughtException', 
     async (err) => await logAction(
       'Error', 
-      [{ name: 'Error:', value: `\`\`\`md ${err} \`\`\` ` }], 
+      [{ name: 'Error:', value: `\`\`\` ${err} \`\`\` ` }], 
       { channelId: '980478015412772884' }
     ));
 }

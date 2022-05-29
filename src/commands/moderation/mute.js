@@ -4,72 +4,73 @@ import { logPunishment, dmUser, logAction } from '../../lib/util/util.js';
 
 export async function main() {
   const { client } = await import('../../bot.js');
-
-  // Listen for ban commands
+  
+  // Listen for mute commands
   client.on('messageCreate', async message => {
     if (!message.content.startsWith('!') || message.author.bot) return;
     const args = message.content.slice(1).trim().split(' ').filter(str => str !== '');
     const command = args.shift().toLowerCase();
-    if (!(command == 'ban')) return;
-    if (!(message.member.permissions.has('BAN_MEMBERS'))) return message.react('<:error:978329348924899378>');
-    
+    if (!(command == 'mute')) return;
+    if (!(message.member.permissions.has('MUTE_MEMBERS'))) return message.react('<:error:978329348924899378>');
+  
     const userId = message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; 
     const duration = (!(args[1] == args.at(-1)) && /^\d+(min|h|d|w|m)/.test(args[1])) ? args[1] : null;
     const reason = args.slice(duration == null ? 1 : 1 + args.indexOf(duration)).join(' ') || null;
     const moderator = message.author;
     const guild = message.guild;
 
-    await performBan(message, userId, reason, duration, guild, moderator);
+    await mute(message, userId, reason, duration, guild, moderator);
   });
-  // Create ban slash command
-  const banData = new SlashCommandBuilder()
-    .setName('ban')
-    .setDescription('Bans given user')
+
+  // Create mute slash commmand
+  const muteData = new SlashCommandBuilder()
+    .setName('mute')
+    .setDescription('mutes given user')
     .addUserOption(option => option.setName('user')
-      .setDescription('Enter user to ban')
+      .setDescription('Enter a user to mute')
       .setRequired(true))
     .addStringOption(option => option.setName('duration')
-      .setDescription('Enter the ban duration')
+      .setDescription('Enter the mute duration')
       .setRequired(false))
     .addStringOption(option => option.setName('reason')
-      .setDescription('Enter the ban reason')
+      .setDescription('Enter the mute reason')
       .setRequired(false));
-  
-  // Listen for ban interactions
+
+  // Listen for mute interactions
   client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
-    if (!(interaction.commandName === 'ban')) return;
-    if (!(interaction.member.permissions.has('BAN_MEMBERS'))) return interaction.reply({ content: 'Insufficient Permissions', ephemeral: true });
+    if (!(interaction.commandName === 'mute')) return;
+    if (!(interaction.member.permissions.has('MUTE_MEMBERS'))) return interaction.reply({ content: 'Insufficient Permissions', ephemeral: true });
     
     const userId = interaction.options.get('user').value;
     const reason = interaction.options.get('reason') == null ? null : interaction.options.get('reason').value;
     const duration = interaction.options.get('duration') == null ? null : interaction.options.get('duration').value;
     const moderator = interaction.member.user;
     const guild = interaction.guild;
-
-    await performBan(interaction, userId, reason, duration, guild, moderator);
+    await mute(interaction, userId, reason, duration, guild, moderator);
   });
 
-  updateSlashCommands(banData, 'ban');
+  updateSlashCommands(muteData, 'mute');
 
-  async function performBan(action, userId, reason, duration, guild, moderator) {
-    const banList = await guild.bans.fetch();
-    const user = await client.users.fetch(userId, false);
-    if (!(banList.find(x => x.user.id === userId) === undefined)) return action.reply(`${user} is **already** banned`);
+  // Mutes given user
+  async function mute(action, userId, reason, duration, guild, moderator) {
+    const member = await guild.members.fetch(userId, false);
+    const user = member.user;
+    const mutedRole = '980484262652416080';
+    if (!(member)) return action.reply(`${user} is not in the server`);
+    if (member.roles.cache.some(role => role.id === mutedRole)) return action.reply(`${user} is **already** muted`);
     try {
-      await dmUser(user, (`You've been **banned** ${duration == null ? '**permanently**' : `**for ${duration}**`} in **${guild}**. 
+      await dmUser(user, (`You've been **muted** ${duration == null ? '**permanently**' : `**for ${duration}**`} in **${guild}**. 
 **Reason**: \`\`${reason}\`\``));
-      await action.reply(`${user} has been **banned**`);
+      await action.reply(`${user} has been **muted**`);
     } catch {
-      await action.reply(`Failed to dm ${user}, action still performed`);
+      await action.reply(`Failed to dm ${user} action still performed`);
     }
-
-    logPunishment(userId, reason, moderator, 'bans', duration);
-    logAction('Member Banned', [
+    logPunishment(userId, reason, moderator, 'mutes');
+    await logAction('Member Muted', [
       { name: 'Moderator', value: `${moderator}` },
-      { name: 'Reason', value: `${reason}` },
-      { name: 'Duration', value: `${duration}` }
+      { name: 'Reason', value: `${reason}` }
     ], { userId: userId });
-    await guild.members.ban(userId, { reason: reason });
+    await member.roles.add(mutedRole);
   }
 }
