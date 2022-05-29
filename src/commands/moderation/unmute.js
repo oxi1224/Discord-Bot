@@ -5,73 +5,68 @@ import { logPunishment, dmUser, logAction } from '../../lib/util/util.js';
 export async function main() {
   const { client } = await import('../../bot.js');
   
-  // Listen for mute commands
+  // Listen for unmute commands
   client.on('messageCreate', async message => {
     if (!message.content.startsWith('!') || message.author.bot) return;
     const args = message.content.slice(1).trim().split(' ').filter(str => str !== '');
     const command = args.shift().toLowerCase();
-    if (!(command == 'mute')) return;
+    if (!(command == 'unmute')) return;
     if (!(message.member.permissions.has('MUTE_MEMBERS'))) return message.react('<:error:978329348924899378>');
   
     const userId = message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; 
-    const duration = (!(args[1] == args.at(-1)) && /^\d+(min|h|d|w|m)/.test(args[1])) ? args[1] : null;
-    const reason = args.slice(duration == null ? 1 : 1 + args.indexOf(duration)).join(' ') || null;
+    const reason = args.slice(1).join(' ') || null;
     const moderator = message.author;
     const guild = message.guild;
 
-    await mute(message, userId, reason, duration, guild, moderator);
+    await unmute(message, userId, reason, guild, moderator);
   });
 
-  // Create mute slash commmand
-  const muteData = new SlashCommandBuilder()
+  // Create unmute slash commmand
+  const unmuteData = new SlashCommandBuilder()
     .setName('mute')
     .setDescription('mutes given user')
     .addUserOption(option => option.setName('user')
       .setDescription('Enter a user to mute')
       .setRequired(true))
-    .addStringOption(option => option.setName('duration')
-      .setDescription('Enter the mute duration')
-      .setRequired(false))
     .addStringOption(option => option.setName('reason')
       .setDescription('Enter the mute reason')
       .setRequired(false));
 
-  // Listen for mute interactions
+  // Listen for unmute interactions
   client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
-    if (!(interaction.commandName === 'mute')) return;
+    if (!(interaction.commandName === 'unmute')) return;
     if (!(interaction.member.permissions.has('MUTE_MEMBERS'))) return interaction.reply({ content: 'Insufficient Permissions', ephemeral: true });
     
     const userId = interaction.options.get('user').value;
     const reason = interaction.options.get('reason') == null ? null : interaction.options.get('reason').value;
-    const duration = interaction.options.get('duration') == null ? null : interaction.options.get('duration').value;
     const moderator = interaction.member.user;
     const guild = interaction.guild;
     
-    await mute(interaction, userId, reason, duration, guild, moderator);
+    await unmute(interaction, userId, reason, guild, moderator);
   });
 
-  updateSlashCommands(muteData, 'mute');
+  updateSlashCommands(unmuteData, 'unmute');
 
-  // Mutes given user
-  async function mute(action, userId, reason, duration, guild, moderator) {
+  // Unmutes given user
+  async function unmute(action, userId, reason, guild, moderator) {
     const member = await guild.members.fetch(userId, false);
     const user = member.user;
     const mutedRole = '980484262652416080';
     if (!(member)) return action.reply(`${user} is not in the server`);
-    if (member.roles.cache.some(role => role.id === mutedRole)) return action.reply(`${user} is **already** muted`);
+    if (!(member.roles.cache.some(role => role.id === mutedRole))) return action.reply(`${user} is **not** muted`);
     try {
-      await dmUser(user, (`You've been **muted** ${duration == null ? '**permanently**' : `**for ${duration}**`} in **${guild}**. 
+      await dmUser(user, (`You've been **unmuted** in **${guild}**. 
 **Reason**: \`\`${reason}\`\``));
-      await action.reply(`${user} has been **muted**`);
+      await action.reply(`${user} has been **unmuted**`);
     } catch {
       await action.reply(`Failed to dm ${user} action still performed`);
     }
-    logPunishment(userId, reason, moderator, 'mutes');
-    await logAction('Member Muted', [
+    logPunishment(userId, reason, moderator, 'unmutes');
+    await logAction('Member Unmuted', [
       { name: 'Moderator', value: `${moderator}` },
       { name: 'Reason', value: `${reason}` }
     ], { userId: userId });
-    await member.roles.add(mutedRole);
+    await member.roles.remove(mutedRole);
   }
 }

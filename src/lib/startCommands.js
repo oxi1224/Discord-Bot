@@ -8,6 +8,7 @@ import { main as expiringPunishments } from '../commands/moderation/expiringPuni
 import { main as modlogs } from '../commands/moderation/modlogs.js';
 import { main as errorListeners } from '../listeners/errorListeners.js';
 import { main as mute } from '../commands/moderation/mute.js';
+import { main as unmute } from '../commands/moderation/unmute.js';
 
 // Executes the main function from each command's file
 export async function startCommands() {
@@ -16,8 +17,9 @@ export async function startCommands() {
   unban();
   warn();
   kick();
-  modlogs();
   mute();
+  unmute();
+  modlogs();
   setInterval(expiringPunishments, 10000);
 
   // Listeners
