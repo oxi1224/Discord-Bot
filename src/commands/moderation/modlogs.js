@@ -68,8 +68,8 @@ export async function main() {
 
     usersPunishments.forEach(el => modlogEmbed.addField(`Type: ${el.punishmentType}`, `Reason: ${el.reason}
 Moderator: <@${el.moderator.id}>
-Punnishment time: ${new Date(el.punishmentTime).toLocaleDateString()}
-Expires: ${el.punishmentExpires === null ? 'false' : new Date(el.punishmentExpires).toLocaleDateString()}
+Punnishment time: <t:${Math.floor(el.punishmentTime / 1000)}>
+Expires: ${el.punishmentExpires === null ? 'false' : `<t:${Math.floor(el.punishmentExpires / 1000)}>`}
 Modlog ID: ${el.punishmentId}`));
     await action.reply({ embeds: [modlogEmbed], components: [buttonsRow] });
   }
