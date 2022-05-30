@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
 import { logPunishment, dmUser, logAction } from '../../lib/util/util.js';
+import * as embed from '../../lib/util/embeds.js';
 
 export async function main() {
   const { client } = await import('../../bot.js');
@@ -17,7 +18,7 @@ export async function main() {
       try { message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; } 
       catch { return null; }
     })();
-    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return message.reply('Invalid user');
+    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return message.reply(await embed.punishmentFail('Invalid user.'));
 
     const reason = args.slice(1).join(' ') || null;
     const moderator = message.author;
@@ -56,13 +57,12 @@ export async function main() {
   // Custom kick function
   async function performKick(userId, reason, action, guild, moderator) {
     const user = await client.users.fetch(userId, false);
-    if (!(await guild.members.fetch(userId))) return action.reply(`${user} is not in the server`);
+    if (!(await guild.members.fetch(userId))) return action.reply(await embed.notInServer(user));
     try {
-      await dmUser(user, (`You've been **kicked** from **${guild}**.
-**Reason**: \`\`${reason}\`\``));
-      await action.reply(`${user} has been **kicked**`);
+      await dmUser(user, await embed.dm('kicked', guild, reason));
+      await action.reply(await embed.punishmentReply('kicked', user));
     } catch {
-      await action.reply(`Failed to dm ${user} action still performed`);
+      await action.reply(await embed.dmFail(user));
     }
     logPunishment(userId, reason, moderator, 'kicks');
     logAction('Member Kicked', [

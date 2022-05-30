@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
 import { logPunishment, dmUser, logAction } from '../../lib/util/util.js';
+import * as embed from '../../lib/util/embeds.js';
 
 export async function main() {
   const { client } = await import('../../bot.js');
@@ -17,7 +18,7 @@ export async function main() {
       try { message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; } 
       catch { return null; }
     })();
-    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return message.reply('Invalid user');
+    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return message.reply(await embed.punishmentFail('Invalid user.'));
 
     const reason = args.slice(1).join(' ') || null;
     const moderator = message.author;
@@ -55,16 +56,15 @@ export async function main() {
     const user = await client.users.fetch(userId, false);
     const banList = await action.guild.bans.fetch();
 
-    if (banList.find(x => x.user.id === userId) === undefined) return action.reply(`${user} is **not** banned`);
+    if (banList.find(x => x.user.id === userId) === undefined) return action.reply(await embed.punishmentFail(`${user} is not banned.`));
     if (!userId) throw new Error('BAN_RESOLVE_ID');
 
     await guild.bans.remove(userId);
     try {
-      await dmUser(user, (`You've been **unbanned** in **${guild}**. 
-**Reason**: \`\`${reason}\`\``));
-      await action.reply(`${user} has been **unbanned**`);
+      await dmUser(user, await embed.dm('unbanned', guild, reason));
+      await action.reply(await embed.punishmentReply('unbanned', user));
     } catch {
-      await action.reply(`Failed to dm ${user} action still performed`);
+      await action.reply(await embed.dmFail(user));
     }
     logPunishment(userId, reason, moderator, 'unbans');
     logAction('Member Unbanned', [

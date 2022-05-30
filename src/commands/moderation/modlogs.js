@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
 import { readFromDb } from '../../lib/common/db.js';
 import { MessageActionRow, MessageButton, MessageEmbed } from 'discord.js';
+import * as embed from '../../lib/util/embeds.js';
 
 export async function main() {
   const { client } = await import('../../bot.js');
@@ -15,10 +16,10 @@ export async function main() {
     if (!(message.member.permissions.has('BAN_MEMBERS'))) return message.react('<:error:978329348924899378>');
 
     const userId = await (async () => {
-      try { message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; } 
+      try { return message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; } 
       catch { return null; }
     })();
-    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return message.reply('Invalid user');
+    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return message.channel.send(await embed.punishmentFail('Invalid User.'));
 
     await showModlogs(userId, message);
   });
@@ -52,7 +53,7 @@ export async function main() {
     );
     usersPunishments.sort((a, b) => parseFloat(b.punishmentTime) - parseFloat(a.punishmentTime));
     
-    const embed = new MessageEmbed()
+    const modlogEmbed = new MessageEmbed()
       .setColor('#0099ff')
       .setTitle(`${userId}'s modlogs`)
       .setTimestamp();
@@ -65,12 +66,12 @@ export async function main() {
           .setStyle('DANGER')
       );
 
-    usersPunishments.forEach(el => embed.addField(`Type: ${el.punishmentType}`, `Reason: ${el.reason}
+    usersPunishments.forEach(el => modlogEmbed.addField(`Type: ${el.punishmentType}`, `Reason: ${el.reason}
 Moderator: <@${el.moderator.id}>
 Punnishment time: ${new Date(el.punishmentTime).toLocaleDateString()}
 Expires: ${el.punishmentExpires === null ? 'false' : new Date(el.punishmentExpires).toLocaleDateString()}
 Modlog ID: ${el.punishmentId}`));
-    await action.reply({ embeds: [embed], components: [buttonsRow] });
+    await action.reply({ embeds: [modlogEmbed], components: [buttonsRow] });
   }
   client.on('interactionCreate', async interaction => {
     if (!interaction.isButton()) return;

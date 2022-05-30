@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
 import { logPunishment, dmUser, logAction } from '../../lib/util/util.js';
+import * as embed from '../../lib/util/embeds.js';
 
 export async function main() {
   const { client } = await import('../../bot.js');
@@ -17,7 +18,7 @@ export async function main() {
       try { message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; } 
       catch { return null; }
     })();
-    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return message.reply('Invalid user');
+    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return message.reply(await embed.punishmentFail('Invalid User.'));
     
     const duration = (!(args[1] == args.at(-1)) && /^\d+(min|h|d|w|m)/.test(args[1])) ? args[1] : null;
     const reason = args.slice(duration == null ? 1 : 1 + args.indexOf(duration)).join(' ') || null;
@@ -60,13 +61,12 @@ export async function main() {
   async function performBan(action, userId, reason, duration, guild, moderator) {
     const banList = await guild.bans.fetch();
     const user = await client.users.fetch(userId, false);
-    if (!(banList.find(x => x.user.id === userId) === undefined)) return action.reply(`${user} is **already** banned`);
+    if (!(banList.find(x => x.user.id === userId) === undefined)) return action.reply(await embed.punishmentFail('User already banned'));
     try {
-      await dmUser(user, (`You've been **banned** ${duration == null ? '**permanently**' : `**for ${duration}**`} in **${guild}**. 
-**Reason**: \`\`${reason}\`\``));
-      await action.reply(`${user} has been **banned**`);
+      await dmUser(user, await embed.dmDuration('banned', guild, reason, duration));
+      await action.reply(await embed.punishmentReply('banned', user));
     } catch {
-      await action.reply(`Failed to dm ${user}, action still performed`);
+      await action.reply(await embed.dmFail(user));
     }
 
     logPunishment(userId, reason, moderator, 'bans', duration);

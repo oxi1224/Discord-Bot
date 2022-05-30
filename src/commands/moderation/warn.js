@@ -1,10 +1,10 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
 import { logPunishment, dmUser, logAction } from '../../lib/util/util.js';
+import * as embed from '../../lib/util/embeds.js';
 
 export async function main() {
   const { client } = await import('../../bot.js');
-  
   // Listen for warn commands
   client.on('messageCreate', async message => {
     if (!message.content.startsWith('!') || message.author.bot) return;
@@ -17,7 +17,7 @@ export async function main() {
       try { return message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; } 
       catch { return null; }
     })();
-    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return message.reply('Invalid user');
+    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return message.channel.send(await embed.punishmentFail('Invalid User.'));
 
     const reason = args.slice(1).join(' ') || null;
     const moderator = message.author;
@@ -55,15 +55,14 @@ export async function main() {
 
   // Warns given user
   async function warn(userId, reason, action, guild, moderator) {
-    if (reason === null) return action.reply('**Reason** cannot be **empty**');
+    if (reason === null) return action.reply(await embed.punishmentFail('Reason cannot be empty'));
     const user = await client.users.fetch(userId, false);
-    if (!(await guild.members.fetch(userId))) return action.reply(`${user} is not in the server`);
+    if (!(await guild.members.fetch(userId))) return action.reply(await embed.notInServer(user));
     try {
-      await dmUser(user, (`You've been **warned** in **${guild}**.
-**Reason**: \`\`${reason}\`\``));
-      await action.reply(`${user} has been **warned**`);
+      await dmUser(user, await embed.dm('warned', guild, reason));
+      await action.reply(await embed.punishmentReply('warned', user));
     } catch {
-      await action.reply(`Failed to dm ${user} action still performed`);
+      await action.reply(await embed.dmFail(user));
     }
     logPunishment(userId, reason, moderator, 'warns');
     await logAction('Member Warned', [

@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
 import { logPunishment, dmUser, logAction } from '../../lib/util/util.js';
+import * as embed from '../../lib/util/embeds.js';
 
 export async function main() {
   const { client } = await import('../../bot.js');
@@ -17,7 +18,7 @@ export async function main() {
       try { message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; } 
       catch { return null; }
     })();
-    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return message.reply('Invalid user');
+    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return message.reply(embed.punishmentFail('Invalid user.'));
 
     const reason = args.slice(1).join(' ') || null;
     const moderator = message.author;
@@ -59,13 +60,12 @@ export async function main() {
     const user = member.user;
     const mutedRole = '980484262652416080';
     if (!(member)) return action.reply(`${user} is not in the server`);
-    if (!(member.roles.cache.some(role => role.id === mutedRole))) return action.reply(`${user} is **not** muted`);
+    if (!(member.roles.cache.some(role => role.id === mutedRole))) return action.reply(await embed.punishmentFail(`${user} is **not** muted.`));
     try {
-      await dmUser(user, (`You've been **unmuted** in **${guild}**. 
-**Reason**: \`\`${reason}\`\``));
-      await action.reply(`${user} has been **unmuted**`);
+      await dmUser(user, await embed.dm('unmuted', guild, reason));
+      await action.reply(await embed.punishmentReply('unmuted', user));
     } catch {
-      await action.reply(`Failed to dm ${user} action still performed`);
+      await action.reply(await embed.dmFail(user));
     }
     logPunishment(userId, reason, moderator, 'unmutes');
     await logAction('Member Unmuted', [

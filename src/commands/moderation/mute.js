@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
 import { logPunishment, dmUser, logAction } from '../../lib/util/util.js';
+import * as embed from '../../lib/util/embeds.js';
 
 export async function main() {
   const { client } = await import('../../bot.js');
@@ -17,7 +18,7 @@ export async function main() {
       try { message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; } 
       catch { return null; }
     })();
-    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return message.reply('Invalid user');
+    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return message.reply(await embed.punishmentFail('Invalid user.'));
 
     const duration = (!(args[1] == args.at(-1)) && /^\d+(min|h|d|w|m)/.test(args[1])) ? args[1] : null;
     const reason = args.slice(duration == null ? 1 : 1 + args.indexOf(duration)).join(' ') || null;
@@ -63,14 +64,13 @@ export async function main() {
     const member = await guild.members.fetch(userId, false);
     const user = member.user;
     const mutedRole = '980484262652416080';
-    if (!(member)) return action.reply(`${user} is not in the server`);
-    if (member.roles.cache.some(role => role.id === mutedRole)) return action.reply(`${user} is **already** muted`);
+    if (!(member)) return action.reply(await embed.notInServer(user));
+    if (member.roles.cache.some(role => role.id === mutedRole)) return action.reply(await embed.punishmentFail(`${user} is already muted.`));
     try {
-      await dmUser(user, (`You've been **muted** ${duration == null ? '**permanently**' : `**for ${duration}**`} in **${guild}**. 
-**Reason**: \`\`${reason}\`\``));
-      await action.reply(`${user} has been **muted**`);
+      await dmUser(user, await embed.dmDuration('muted', guild, reason, duration));
+      await action.reply(await embed.punishmentReply('muted', user));
     } catch {
-      await action.reply(`Failed to dm ${user} action still performed`);
+      await action.reply(await embed.dmFail(user));
     }
     logPunishment(userId, reason, moderator, 'mutes');
     await logAction('Member Muted', [
