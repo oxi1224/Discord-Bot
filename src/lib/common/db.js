@@ -1,15 +1,13 @@
 import { createRequire } from 'module';
-import { PG_USER, PG_HOST, PG_PASSWORD, PG_DATABASE, PG_PORT } from './auth.js'; 
+import { CONNECTION_STRING } from './auth.js'; 
 const require = createRequire(import.meta.url);
 const { Client } = require('pg');
 
 const config = {
-  host: PG_HOST,
-  port: PG_PORT,
-  database: PG_DATABASE,
-  user: PG_USER,
-  password: PG_PASSWORD,
-  ssl: { rejectUnauthorized: false }
+  connectionString: CONNECTION_STRING,
+  ssl: {
+    rejectUnauthorized: false
+  }
 };
 
 export const client = new Client(config);
