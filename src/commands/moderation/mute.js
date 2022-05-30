@@ -13,7 +13,12 @@ export async function main() {
     if (!(command == 'mute')) return;
     if (!(message.member.permissions.has('MUTE_MEMBERS'))) return message.react('<:error:978329348924899378>');
   
-    const userId = message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; 
+    const userId = await (async () => {
+      try { message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; } 
+      catch { return null; }
+    })();
+    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return message.reply('Invalid user');
+
     const duration = (!(args[1] == args.at(-1)) && /^\d+(min|h|d|w|m)/.test(args[1])) ? args[1] : null;
     const reason = args.slice(duration == null ? 1 : 1 + args.indexOf(duration)).join(' ') || null;
     const moderator = message.author;

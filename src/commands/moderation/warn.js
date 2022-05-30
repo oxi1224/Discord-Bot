@@ -12,8 +12,13 @@ export async function main() {
     const command = args.shift().toLowerCase();
     if (!(command == 'warn')) return;
     if (!(message.member.permissions.has('MANAGE_NICKNAMES'))) return message.react('<:error:978329348924899378>');
-  
-    const userId = message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; 
+
+    const userId = await (async () => {
+      try { return message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; } 
+      catch { return null; }
+    })();
+    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return message.reply('Invalid user');
+
     const reason = args.slice(1).join(' ') || null;
     const moderator = message.author;
     const guild = message.guild;

@@ -1,8 +1,8 @@
-import { dmUser, logPunishment, logAction } from '../../lib/util/util.js';
-import { updateExpiringPunishments, fetchExpiringPunishments } from '../../lib/common/db.js';
+import { dmUser, logPunishment, logAction } from '../lib/util/util.js';
+import { updateExpiringPunishments, fetchExpiringPunishments } from '../lib/common/db.js';
 
 export async function main() {
-  const { client } = await import('../../bot.js');
+  const { client } = await import('../bot.js');
   let expiringPunishments = await fetchExpiringPunishments();
   // Check if the expiration date from the punishment closest to expiring is greater than current date
   if (expiringPunishments.length === 0 || !(expiringPunishments.at(-1).punishmentExpires <= new Date().getTime())) return;

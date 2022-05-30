@@ -13,7 +13,12 @@ export async function main() {
     if (!(command == 'unmute')) return;
     if (!(message.member.permissions.has('MUTE_MEMBERS'))) return message.react('<:error:978329348924899378>');
   
-    const userId = message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; 
+    const userId = await (async () => {
+      try { message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; } 
+      catch { return null; }
+    })();
+    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return message.reply('Invalid user');
+
     const reason = args.slice(1).join(' ') || null;
     const moderator = message.author;
     const guild = message.guild;
@@ -23,13 +28,13 @@ export async function main() {
 
   // Create unmute slash commmand
   const unmuteData = new SlashCommandBuilder()
-    .setName('mute')
-    .setDescription('mutes given user')
+    .setName('unmute')
+    .setDescription('unmutes given user')
     .addUserOption(option => option.setName('user')
-      .setDescription('Enter a user to mute')
+      .setDescription('Enter a user to unmute')
       .setRequired(true))
     .addStringOption(option => option.setName('reason')
-      .setDescription('Enter the mute reason')
+      .setDescription('Enter the unmute reason')
       .setRequired(false));
 
   // Listen for unmute interactions
