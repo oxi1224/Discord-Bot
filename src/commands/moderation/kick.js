@@ -15,7 +15,7 @@ export async function main() {
     if (!(message.member.permissions.has('KICK_MEMBERS'))) return message.react('<:error:980866363461599292>');
   
     const userId = await (async () => {
-      try { message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; } 
+      try { return message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; } 
       catch { return null; }
     })();
     if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return message.reply(await embed.punishmentFail('Invalid user.'));
