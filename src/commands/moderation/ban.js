@@ -12,7 +12,7 @@ export async function main() {
     const args = message.content.slice(1).trim().split(' ').filter(str => str !== '');
     const command = args.shift().toLowerCase();
     if (!(command == 'ban')) return;
-    if (!(message.member.permissions.has('BAN_MEMBERS'))) return message.react('<:error:978329348924899378>');
+    if (!(message.member.permissions.has('BAN_MEMBERS'))) return message.react('<:error:980866363461599292>');
     
     const userId = await (async () => {
       try { message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; } 
