@@ -1,5 +1,5 @@
 import { logAction } from '../lib/util/util.js';
-import { errorsChannel } from '../../lib/config/config.js';
+import { errorsChannel } from '../lib/config/config.js';
 
 export function main() {
   process.on('unhandledRejection', 
