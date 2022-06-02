@@ -3,3 +3,4 @@
 .pnpm-debug.log
 src/lib/config/configDev.js
 src/lib/config/configWHS.js
+src/lib/config/config.js
