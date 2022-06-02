@@ -18,6 +18,10 @@ export async function main() {
   // Listen for ping commands
   client.on('messageCreate', async message => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
+    const args = message.content.slice(1).trim().split(' ').filter(str => str !== '');
+    const command = args.shift().toLowerCase();
+    if (!(command === 'ping')) return;
+
     await message.reply(`${new Date() - message.createdTimestamp} ms`);
   });
 }
