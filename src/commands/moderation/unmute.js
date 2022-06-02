@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
 import { logPunishment, dmUser, logAction } from '../../lib/util/util.js';
-import { errorEmote } from '../../lib/config/config.js';
+import { errorEmote, prefix, mutedRole } from '../../lib/config/config.js';
 import * as embed from '../../lib/util/embeds.js';
 
 export async function main() {
@@ -9,7 +9,7 @@ export async function main() {
   
   // Listen for unmute commands
   client.on('messageCreate', async message => {
-    if (!message.content.startsWith('!') || message.author.bot) return;
+    if (!message.content.startsWith(prefix) || message.author.bot) return;
     const args = message.content.slice(1).trim().split(' ').filter(str => str !== '');
     const command = args.shift().toLowerCase();
     if (!(command == 'unmute')) return;
@@ -59,7 +59,6 @@ export async function main() {
   async function unmute(action, userId, reason, guild, moderator) {
     const member = await guild.members.fetch(userId, false);
     const user = member.user;
-    const mutedRole = '980484262652416080';
     if (!(member)) return action.reply(`${user} is not in the server`);
     if (!(member.roles.cache.some(role => role.id === mutedRole))) return action.reply(await embed.punishmentFail(`${user} is **not** muted.`));
     try {

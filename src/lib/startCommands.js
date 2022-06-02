@@ -1,4 +1,4 @@
-// import { main as ping } from '../commands/ping.js';
+import { main as ping } from '../commands/ping.js';
 import { main as ban } from '../commands/moderation/ban.js';
 import { main as unban } from '../commands/moderation/unban.js';
 import { main as actionLogging } from '../listeners/actionListeners.js';
@@ -25,4 +25,7 @@ export async function startCommands() {
   actionLogging();
   errorListeners();
   setInterval(expiringPunishments, 10000);
+
+  // Misc
+  ping();
 }

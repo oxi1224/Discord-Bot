@@ -11,7 +11,7 @@ export async function updateSlashCommands(data, name) {
   try {
     console.log(`Updating ${name} (/) command`);
     await rest.put(
-      Routes.applicationGuildCommands(CLIENT_ID, guildId),
+      Routes.applicationGuildCommands(CLIENT_ID, '508779434929815554'),
       { body: commands },
     );
     console.log(`Successfully reloaded ${name} (/) command.`);
