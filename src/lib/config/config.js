@@ -1,9 +1,9 @@
 
 const config = {
-  "guild": "613024666079985702",
-  "loggingChannel": "977566053062303764",
-  "errorsChannel": "980478015412772884",
-  "mutedRole": "980484262652416080",
+  "guild": "508779434929815554",
+  "loggingChannel": "510442164400947218",
+  "errorsChannel": "981918816739131443",
+  "mutedRole": "510866226130714624",
  "emotes": {
     "error": "<:error:980866363461599292>",
     "success": "<:success:980866382323396723>",
