@@ -1,4 +1,3 @@
-/* eslint-disable */
 import config from './config.json' assert {type: 'json'};
 
 export const guildId = config.guild;
