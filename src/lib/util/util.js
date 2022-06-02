@@ -1,5 +1,7 @@
 import * as db from '../common/db.js';
 import { MessageEmbed } from 'discord.js';
+import { loggingChannel } from '../config/config.js';
+
 // generates modlog id
 export function generateModLogID() {
   const chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890'.slice('');
@@ -73,7 +75,7 @@ export async function dmUser(user, content) {
 }
 
 // Logs the action to the logging channel
-export async function logAction(title, fieldsToAdd, { userId = undefined, channelId = '977566053062303764' }) {
+export async function logAction(title, fieldsToAdd, { userId = undefined, channelId = loggingChannel }) {
   const { client } = await import('../../bot.js');
   const fields = fieldsToAdd;
   const embed = new MessageEmbed()
