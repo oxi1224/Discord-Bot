@@ -1,5 +1,6 @@
 import { logAction } from '../lib/util/util.js';
 import { readFromDb } from '../lib/common/db.js';
+import { mutedRole } from '../lib/config/config.js';
 
 export async function main() {
   const { client } = await import('../bot.js');
@@ -86,7 +87,6 @@ export async function main() {
   client.on('guildMemberAdd', async (member) => {
     const mutes = (await readFromDb(member.user.id))[0].mutes;
     console.log(mutes);
-    const mutedRole = '980484262652416080';
     if (mutes.at(-1).punishmentExpires <= new Date().getTime() || mutes.at(-1).punishmentExpires === null) {
       member.roles.add(mutedRole);
     }

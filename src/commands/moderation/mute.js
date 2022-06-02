@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
 import { logPunishment, dmUser, logAction } from '../../lib/util/util.js';
+import { mutedRole, errorEmote } from '../../lib/config/config.js';
 import * as embed from '../../lib/util/embeds.js';
 
 export async function main() {
@@ -12,7 +13,7 @@ export async function main() {
     const args = message.content.slice(1).trim().split(' ').filter(str => str !== '');
     const command = args.shift().toLowerCase();
     if (!(command == 'mute')) return;
-    if (!(message.member.permissions.has('MUTE_MEMBERS'))) return message.react('<:error:980866363461599292>');
+    if (!(message.member.permissions.has('MUTE_MEMBERS'))) return message.react(errorEmote);
   
     const userId = await (async () => {
       try { return message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; } 
@@ -63,7 +64,6 @@ export async function main() {
   async function mute(action, userId, reason, duration, guild, moderator) {
     const member = await guild.members.fetch(userId, false);
     const user = member.user;
-    const mutedRole = '980484262652416080';
     if (!(member)) return action.reply(await embed.notInServer(user));
     if (member.roles.cache.some(role => role.id === mutedRole)) return action.reply(await embed.punishmentFail(`${user} is already muted.`));
     try {

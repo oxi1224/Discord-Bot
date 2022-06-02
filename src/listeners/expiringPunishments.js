@@ -1,5 +1,6 @@
 import { dmUser, logPunishment, logAction } from '../lib/util/util.js';
 import { updateExpiringPunishments, fetchExpiringPunishments } from '../lib/common/db.js';
+import { mutedRole, guildId } from '../lib/config/config.js';
 
 export async function main() {
   const { client } = await import('../bot.js');
@@ -7,11 +8,10 @@ export async function main() {
   // Check if the expiration date from the punishment closest to expiring is greater than current date
   if (expiringPunishments.length === 0 || !(expiringPunishments.at(-1).punishmentExpires <= new Date().getTime())) return;
 
-  const guild = await client.guilds.fetch('613024666079985702');
+  const guild = await client.guilds.fetch(guildId);
   const userId = expiringPunishments.at(-1).user;
   const member = await guild.members.fetch(userId, false);
   const user = member.user;
-  const mutedRole = '980484262652416080';
 
   switch (expiringPunishments.at(-1).punishmentType) {
   case 'ban':

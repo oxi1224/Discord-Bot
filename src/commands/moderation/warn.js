@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
 import { logPunishment, dmUser, logAction } from '../../lib/util/util.js';
+import { errorEmote } from '../../lib/config/config.js';
 import * as embed from '../../lib/util/embeds.js';
 
 export async function main() {
@@ -11,7 +12,7 @@ export async function main() {
     const args = message.content.slice(1).trim().split(' ').filter(str => str !== '');
     const command = args.shift().toLowerCase();
     if (!(command == 'warn')) return;
-    if (!(message.member.permissions.has('MANAGE_NICKNAMES'))) return message.react('<:error:980866363461599292>');
+    if (!(message.member.permissions.has('MANAGE_NICKNAMES'))) return message.react(errorEmote);
 
     const userId = await (async () => {
       try { return message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; } 
