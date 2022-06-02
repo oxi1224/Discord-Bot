@@ -10,6 +10,7 @@
   "author": "oxi",
   "license": "ISC",
   "dependencies": {
+    "@babel/core": ">=7.11.0",
     "@discordjs/builders": "^0.13.0",
     "@discordjs/rest": "^0.4.1",
     "discord-api-types": "^0.32.1",
@@ -19,8 +20,6 @@
     "pg": "^8.7.3"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.18.2",
-    "@babel/plugin-syntax-import-assertions": "^7.17.12",
     "eslint": "^8.16.0"
   },
   "engines": {

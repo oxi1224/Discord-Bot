@@ -75,15 +75,15 @@ export async function dmUser(user, content) {
 }
 
 // Logs the action to the logging channel
-export async function logAction(title, fieldsToAdd, { userId = undefined, channelId = loggingChannel }) {
+export async function logAction(title, fieldsToAdd, { userId = null, channelId = loggingChannel }) {
   const { client } = await import('../../bot.js');
   const fields = fieldsToAdd;
   const embed = new MessageEmbed()
     .setColor('#0099ff')
     .setTitle(title)
     .setTimestamp();
-    
-  if (!(userId === undefined)) {
+
+  if (userId !== null) {
     const user = await client.users.fetch(userId, false);
     fields.unshift({ name: 'User', value: `${user}` });
     embed.setAuthor({ name: `${user.username}#${user.discriminator}`, iconURL: `https://cdn.discordapp.com/avatars/${userId}/${user.avatar}.webp` });

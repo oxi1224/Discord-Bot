@@ -1,3 +1,5 @@
 /node_modules/
 .env
 .pnpm-debug.log
+src/lib/config/configDev.js
+src/lib/config/configWHS.js

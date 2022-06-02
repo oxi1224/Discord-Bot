@@ -10,13 +10,13 @@ export async function main() {
     client.on(type, async channel => {
       switch (type) {
       case ('channelCreate'):
-        return await logAction('Channel created', [{ name: 'Channel', value: `${channel}` }]);
+        return await logAction('Channel created', [{ name: 'Channel', value: `${channel}` }], { userId: null });
       case ('channelDelete'):
-        return await logAction('Channel Deleted', [{ name: 'Channel', value: `${channel}` }]);
+        return await logAction('Channel Deleted', [{ name: 'Channel', value: `${channel}` }], { userId: null });
       case ('channelPinsUpdate'):
-        return await logAction('Pins Updated', [{ name: 'Channel', value: `${channel}` }]);
+        return await logAction('Pins Updated', [{ name: 'Channel', value: `${channel}` }], { userId: null });
       case ('channelUpdate'):
-        await logAction('Channel Updated', [{ name: 'Channel', value: `${channel}` }]);
+        await logAction('Channel Updated', [{ name: 'Channel', value: `${channel}` }], { userId: null });
       }
     });
   }
@@ -26,17 +26,17 @@ export async function main() {
     client.on(type, async message => {
       switch (type) {
       case ('messageDelete'):
-        if (message.embeds) return;
+        if (message.embeds.length > 0) return;
         return await logAction('Message Deleted', [
           { name: 'Channel', value: `${message.channel}` },
           { name: 'Author', value: `${message.author}` },
           { name: 'Content', value: `${message.content}` }
-        ]);
+        ], { userId: null });    
       case ('messageReactionRemoveAll'):
         return await logAction('Reactions Removed From Message', [
           { name: 'Content', value: `${message.content}` },
           { name: 'Message link', value: `[Jump](${message.url})` }
-        ]);
+        ], { userId: null });
       }
     });
   }
@@ -47,7 +47,7 @@ export async function main() {
       { name: 'Old message', value: `${oldMessage.content}` },
       { name: 'New message', value: `${newMessage.content}` },
       { name: 'Message link', value: `[Jump](${newMessage.url})` }
-    ]);
+    ], { userId: null });
   });
 
   // Listens for role updates
@@ -55,11 +55,11 @@ export async function main() {
     client.on(type, async role => {
       switch (type) {
       case ('roleCreate'):
-        return await logAction('Role Created', [{ name: 'Role', value: `${role}` }]);
+        return await logAction('Role Created', [{ name: 'Role', value: `${role}` }], { userId: null });
       case ('roleDelete'):
-        return await logAction('Role Deleted', [{ name: 'Role', value: `${role}` }]);
+        return await logAction('Role Deleted', [{ name: 'Role', value: `${role}` }], { userId: null });
       case ('roleUpdate'):
-        return await logAction('Role Updated', [{ name: 'Role', value: `${role}` }]);
+        return await logAction('Role Updated', [{ name: 'Role', value: `${role}` }], { userId: null });
       }
     });
   }
@@ -82,7 +82,6 @@ export async function main() {
       });
     }
   });
-
   // Listens for new members
   client.on('guildMemberAdd', async (member) => {
     const mutes = (await readFromDb(member.user.id))[0].mutes;
