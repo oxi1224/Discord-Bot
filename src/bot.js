@@ -10,7 +10,7 @@ client.on('ready', async () => {
 });
 
 (async function start() {
-  await client.login(TOKEN)
+  client.isReady ? await client.login(TOKEN)
     .then(await createLogsTable())
-    .then(startCommands());
+    .then(startCommands()) : null;
 })();
