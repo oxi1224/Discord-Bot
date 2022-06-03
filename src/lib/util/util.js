@@ -37,7 +37,7 @@ export function getExpirationDate(duration, startTime) {
 export async function logPunishment(userId, reason, moderator, column, duration) {
   if (!(await db.existsRow(userId))) await db.createUserRow(userId);
   // get the previous punishments
-  const userPunishmentsList = (await db.readFromDb(userId, 'PunishmentLogs'))[0][column] || [];
+  const userPunishmentsList = await db.readFromDb(userId, 'PunishmentLogs') == undefined ? [] : (await db.readFromDb(userId, 'PunishmentLogs'))[0][column];
   const punishmentType = column.split('').slice(0, -1).join('');
   // update the punishment list
   userPunishmentsList.push({
