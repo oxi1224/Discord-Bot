@@ -1,0 +1,18 @@
+{
+  "guild": "508779434929815554",
+  "loggingChannel": "510442164400947218",
+  "errorsChannel": "981918816739131443",
+  "mutedRole": "510866226130714624",
+  "prefix": "*",
+  "emotes": {
+    "error": "<:error:980866363461599292>",
+    "success": "<:success:980866382323396723>",
+    "info":  "<:info:980866381283201025>"
+  },
+  "colors": {
+    "base": "#0099ff",
+    "error": "#ef4047",
+    "success": "#3fa45d",
+    "info": "#cb8715"
+  }
+}

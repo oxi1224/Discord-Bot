@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
 import { readFromDb } from '../../lib/common/db.js';
 import { MessageActionRow, MessageButton, MessageEmbed } from 'discord.js';
-import { errorEmote, prefix } from '../../lib/config/config.js';
+import { emotes, prefix } from '../../lib/config/config.js';
 import * as embed from '../../lib/util/embeds.js';
 
 export async function main() {
@@ -14,7 +14,7 @@ export async function main() {
     const args = message.content.slice(1).trim().split(' ').filter(str => str !== '');
     const command = args.shift().toLowerCase();
     if (!(command == 'modlogs')) return;
-    if (!(message.member.permissions.has('BAN_MEMBERS'))) return message.react(errorEmote);
+    if (!(message.member.permissions.has('BAN_MEMBERS'))) return message.react(emotes.error);
 
     const userId = await (async () => {
       try { return message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; } 

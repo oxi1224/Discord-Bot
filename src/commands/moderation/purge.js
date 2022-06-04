@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
 import { logAction } from '../../lib/util/util.js';
-import { errorEmote, successEmote, prefix } from '../../lib/config/config.js';
+import { emotes, colors, prefix } from '../../lib/config/config.js';
 import * as embed from '../../lib/util/embeds.js';
 
 export async function main() {
@@ -13,7 +13,7 @@ export async function main() {
     const args = message.content.slice(1).trim().split(' ').filter(str => str !== '');
     const command = args.shift().toLowerCase();
     if (!(command == 'purge')) return;
-    if (!(message.member.permissions.has('MANAGE_MESSAGES'))) return message.react(errorEmote);
+    if (!(message.member.permissions.has('MANAGE_MESSAGES'))) return message.react(emotes.error);
 
     const messageCount = args[0];
 
@@ -55,8 +55,8 @@ export async function main() {
 
     action.reply(await embed.otherResponses(
       `Successfully purged ${messageCount} messages`, 
-      successEmote,
-      '#3fa45d'));
+      emotes.success,
+      colors.success));
     
     logAction('Messages Purged', [
       { name: 'Amount', value: messageCount },
