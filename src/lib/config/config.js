@@ -7,4 +7,4 @@ export const errorsChannel = config.errorsChannel;
 export const mutedRole = config.mutedRole;
 export const prefix = config.prefix;
 export const emotes = config.emotes;
-export const embedColor = config.colors;
+export const embedColors = config.colors;
