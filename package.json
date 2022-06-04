@@ -5,7 +5,8 @@
   "type": "module",
   "main": "bot.js",
   "scripts": {
-    "start": "node ./src/bot.js"
+    "start": "node ./src/bot.js",
+    "heroku": "git push heroku main"
   },
   "author": "oxi",
   "license": "ISC",
