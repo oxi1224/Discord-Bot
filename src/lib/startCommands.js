@@ -9,6 +9,7 @@ import { main as modlogs } from '../commands/moderation/modlogs.js';
 import { main as errorListeners } from '../listeners/errorListeners.js';
 import { main as mute } from '../commands/moderation/mute.js';
 import { main as unmute } from '../commands/moderation/unmute.js';
+import { main as purge } from '../commands/moderation/purge.js';
 
 // Executes the main function from each command's file
 export async function startCommands() {
@@ -20,6 +21,7 @@ export async function startCommands() {
   mute();
   unmute();
   modlogs();
+  purge();
   
   // Listeners
   actionLogging();
