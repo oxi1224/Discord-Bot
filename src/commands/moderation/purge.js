@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
 import { logAction } from '../../lib/util/util.js';
-import { emotes, colors, prefix } from '../../lib/config/config.js';
+import { emotes, embedColors, prefix } from '../../lib/config/config.js';
 import * as embed from '../../lib/util/embeds.js';
 
 export async function main() {
@@ -56,7 +56,7 @@ export async function main() {
     action.reply(await embed.otherResponses(
       `Successfully purged ${messageCount} messages`, 
       emotes.success,
-      colors.success));
+      embedColors.success));
     
     logAction('Messages Purged', [
       { name: 'Amount', value: messageCount },
