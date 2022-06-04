@@ -1,11 +1,16 @@
 import { MessageEmbed } from 'discord.js';
 import { errorEmote, successEmote, infoEmote } from '../config/config.js';
 
-export async function createReplyEmbed(description, { color = '#0099ff', title = '' }) {
+export async function createReplyEmbed(description, ...args) {
+  // Get values from args
+  const color = args.color || '#0099ff';
+  const title = args.title || '';
+  const emote = args.emote || '';
+
   const embed = new MessageEmbed()
     .setColor(color)
     .setTitle(title)
-    .setDescription(description);
+    .setDescription(emote + description);
   
   return { embeds: [embed] };
 }
@@ -15,10 +20,10 @@ export const dmFail = (user) => createReplyEmbed(
   , { color: '#cb8715' });
 
 export const dm = (action, guild, reason) => createReplyEmbed(`Reason: \`\`${reason}\`\``, 
-  { color: '#0099ff', title: `You've been ${action} in ${guild}.` });
+  { title: `You've been ${action} in ${guild}.` });
 
 export const dmDuration = (action, guild, reason, duration) => createReplyEmbed(`Reason: \`\`${reason}\`\``, 
-  { color: '#0099ff', title: `You've been ${action} ${duration == null ? 'permanently' : `for ${duration}`} in ${guild}.` });
+  { title: `You've been ${action} ${duration == null ? 'permanently' : `for ${duration}`} in ${guild}.` });
 
 export const punishmentReply = (action, user) => createReplyEmbed(
   `${successEmote} ${user} has been ${action}.`
@@ -30,3 +35,6 @@ export const notInServer = (user) => createReplyEmbed(
 
 export const punishmentFail = (text) => createReplyEmbed(
   `${errorEmote} ${text}`, { color: '#ef4047' });
+
+export const otherResponses = (text, emote, color, title = '') => createReplyEmbed(text, 
+  { color: color, title: title, emote: emote });
