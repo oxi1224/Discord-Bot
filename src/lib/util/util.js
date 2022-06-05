@@ -75,12 +75,12 @@ export async function dmUser(user, content) {
 }
 
 // Logs the action to the logging channel
-export async function logAction(title, fieldsToAdd, ...args) {
+export async function logAction(title, fieldsToAdd, args) {
   const { client } = await import('../../bot.js');
   
   // Get values from args
-  const userId = args.userId || null;
-  const channelId = args.channelId || loggingChannel;
+  const userId = args === undefined ? null : args.userId || null;
+  const channelId = args === undefined ? loggingChannel : args.userId || loggingChannel;
 
   const fields = fieldsToAdd;
   const embed = new MessageEmbed()

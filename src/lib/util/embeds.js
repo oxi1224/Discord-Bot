@@ -1,7 +1,7 @@
 import { MessageEmbed } from 'discord.js';
 import * as config from '../config/config.js';
 
-export async function createReplyEmbed(description, ...args) {
+export async function createReplyEmbed(description, args) {
   // Get values from args
   const color = args.color || config.embedColors.base;
   const title = args.title || '';
@@ -10,7 +10,7 @@ export async function createReplyEmbed(description, ...args) {
   const embed = new MessageEmbed()
     .setColor(color)
     .setTitle(title)
-    .setDescription(emote + description);
+    .setDescription(`${emote} ${description}`);
   
   return { embeds: [embed] };
 }
