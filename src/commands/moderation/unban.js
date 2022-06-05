@@ -69,9 +69,9 @@ export async function main() {
     }
     logPunishment(userId, reason, moderator, 'unbans');
     logAction('Member Unbanned', [
-      { name: 'Moderator', value: `${moderator}` },
+      { name: 'User', value: `${user}` },
       { name: 'Reason', value: `${reason}` }
-    ], { userId: userId });
+    ], { mod: moderator });
     return client.users.resolve(user);
   }
 }

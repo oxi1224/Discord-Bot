@@ -69,9 +69,9 @@ export async function main() {
     }
     logPunishment(userId, reason, moderator, 'unmutes');
     await logAction('Member Unmuted', [
-      { name: 'Moderator', value: `${moderator}` },
+      { name: 'User', value: `${user}` },
       { name: 'Reason', value: `${reason}` }
-    ], { userId: userId });
+    ], { mod: moderator });
     await member.roles.remove(mutedRole);
   }
 }

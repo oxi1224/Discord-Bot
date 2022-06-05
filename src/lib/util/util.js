@@ -79,19 +79,21 @@ export async function logAction(title, fieldsToAdd, args) {
   const { client } = await import('../../bot.js');
   
   // Get values from args
-  const userId = args === undefined ? null : args.userId || null;
-  const channelId = args === undefined ? loggingChannel : args.userId || loggingChannel;
-
+  const mod = args === undefined ? null : args.mod || null;
+  const channelId = args === undefined ? loggingChannel : args.channelId || loggingChannel;
+  
   const fields = fieldsToAdd;
   const embed = new MessageEmbed()
     .setColor('#0099ff')
     .setTitle(title)
     .setTimestamp();
 
-  if (userId !== null) {
-    const user = await client.users.fetch(userId, false);
-    fields.unshift({ name: 'User', value: `${user}` });
-    embed.setAuthor({ name: `${user.username}#${user.discriminator}`, iconURL: `https://cdn.discordapp.com/avatars/${userId}/${user.avatar}.webp` });
+  if (mod !== null) {
+    fields.unshift({ name: 'Moderator', value: `${mod}` });
+    embed.setAuthor(mod.avatar ? 
+      { name: `${mod.username}#${mod.discriminator}`, 
+        iconURL: `https://cdn.discordapp.com/avatars/${mod.id}/${mod.avatar}.webp` } :
+      { name: `${mod.username}#${mod.discriminator}` });
   }
   // Add fields from fieldsToAdd to the embed
   fields.forEach(obj => embed.addField(obj.name, obj.value));

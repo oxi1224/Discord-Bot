@@ -74,9 +74,10 @@ export async function main() {
     }
     logPunishment(userId, reason, moderator, 'mutes');
     await logAction('Member Muted', [
-      { name: 'Moderator', value: `${moderator}` },
-      { name: 'Reason', value: `${reason}` }
-    ], { userId: userId });
+      { name: 'User', value: `${user}` },
+      { name: 'Reason', value: `${reason}` },
+      { name: 'Duration', value: duration === null ? 'Permanent' : duration }
+    ], { mod: moderator });
     await member.roles.add(mutedRole);
   }
 }

@@ -73,7 +73,6 @@ export async function main() {
     logAction('Messages Purged', [
       { name: 'Amount', value: messages.size.toString() },
       { name: 'Channel', value: `${channel}` },
-      { name: 'Moderator', value: `${moderator}` }
-    ]);
+    ], { mod: moderator });
   }
 }

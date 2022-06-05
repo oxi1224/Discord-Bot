@@ -28,8 +28,8 @@ export async function main() {
       case ('messageDelete'):
         if (message.embeds.length > 0) return;
         return await logAction('Message Deleted', [
-          { name: 'Channel', value: `${message.channel}` },
           { name: 'Author', value: `${message.author}` },
+          { name: 'Channel', value: `${message.channel}` },
           { name: 'Content', value: `${message.content}` }
         ]);    
       case ('messageReactionRemoveAll'):
@@ -68,20 +68,28 @@ export async function main() {
   client.on('guildMemberUpdate', async (oldUser, newUser) => {
     if (oldUser.nickname !== newUser.nickname) {
       logAction('Nickname Changed', [
-        { name: 'Old nickname', value: `${oldUser.content}` },
-        { name: 'New nickname', value: `${newUser.content}` }
-      ], { userId: newUser.user.id });
+        { name: 'User', value: `${newUser.user}` },
+        { name: 'Old nickname', value: `${oldUser.nickname}` },
+        { name: 'New nickname', value: `${newUser.nickname}` }
+      ]);
     } else {
       oldUser.roles.cache.forEach(role => {
         if (newUser.roles.cache.has(role.id)) return;
-        logAction('Role Removed', [{ name: 'Role', value: `${role}` }], { userId: newUser.user.id });
+        logAction('Role Removed', [
+          { name: 'User', value: `${newUser.user}` },
+          { name: 'Role', value: `${role}` }
+        ]);
       });
       newUser.roles.cache.forEach(role => {
         if (oldUser.roles.cache.has(role.id)) return;
-        logAction('Role Added', [{ name: 'Role', value: `${role}` }], { userId: newUser.user.id });
+        logAction('Role Added', [
+          { name: 'User', value: `${newUser.user}` },
+          { name: 'Role', value: `${role}` }
+        ]);
       });
     }
   });
+  
   // Listens for new members
   client.on('guildMemberAdd', async (member) => {
     const mutes = (await readFromDb(member.user.id))[0].mutes;

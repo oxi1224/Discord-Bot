@@ -72,10 +72,10 @@ export async function main() {
 
     logPunishment(userId, reason, moderator, 'bans', duration);
     logAction('Member Banned', [
-      { name: 'Moderator', value: `${moderator}` },
+      { name: 'User', value: `${user}` },
       { name: 'Reason', value: `${reason}` },
-      { name: 'Duration', value: `${duration}` }
-    ], { userId: userId });
+      { name: 'Duration', value: duration === null ? 'Permanent' : duration }
+    ], { mod: moderator });
     await guild.members.ban(userId, { reason: reason });
   }
 }

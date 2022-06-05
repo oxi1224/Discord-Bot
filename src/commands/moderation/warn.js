@@ -67,8 +67,8 @@ export async function main() {
     }
     logPunishment(userId, reason, moderator, 'warns');
     await logAction('Member Warned', [
-      { name: 'Moderator', value: `${moderator}` },
+      { name: 'User', value: `${user}` },
       { name: 'Reason', value: `${reason}` }
-    ], { userId: userId });
+    ], { mod: moderator });
   }
 }

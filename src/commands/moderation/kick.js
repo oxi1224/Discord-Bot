@@ -67,9 +67,9 @@ export async function main() {
     }
     logPunishment(userId, reason, moderator, 'kicks');
     logAction('Member Kicked', [
-      { name: 'Moderator', value: `${moderator}` },
+      { name: 'User', value: `${user}` },
       { name: 'Reason', value: `${reason}` }
-    ], { userId: userId });
+    ], { mod: moderator });
     await (await guild.members.fetch(userId)).kick({ reason: reason });
   }
 }

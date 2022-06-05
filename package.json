@@ -6,7 +6,8 @@
   "main": "bot.js",
   "scripts": {
     "start": "node ./src/bot.js",
-    "heroku": "git push heroku main"
+    "pushHeroku": "git push heroku main",
+    "removeConfig": "git reset ./src/lib/config/config.json"
   },
   "author": "oxi",
   "license": "ISC",
