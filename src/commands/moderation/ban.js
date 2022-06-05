@@ -25,7 +25,6 @@ export async function main() {
     const reason = args.slice(duration == null ? 1 : 1 + args.indexOf(duration)).join(' ') || null;
     const moderator = message.author;
     const guild = message.guild;
-
     await performBan(message, userId, reason, duration, guild, moderator);
   });
   // Create ban slash command
@@ -62,6 +61,8 @@ export async function main() {
   async function performBan(action, userId, reason, duration, guild, moderator) {
     const banList = await guild.bans.fetch();
     const user = await client.users.fetch(userId, false);
+    // Check if user is staff (has manage nicknames perms)
+    if (user.permissions.has('MANAGE_NICKNAMES')) return action.reply(await embed.punishmentFail('Cannot ban staff.'));
     if (!(banList.find(x => x.user.id === userId) === undefined)) return action.reply(await embed.punishmentFail('User already banned'));
     try {
       await dmUser(user, await embed.dmDuration('banned', guild, reason, duration));

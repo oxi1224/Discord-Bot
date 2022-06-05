@@ -44,7 +44,7 @@ export async function main() {
     if (!interaction.isCommand()) return;
     if (!(interaction.commandName === 'kick')) return;
     if (!(interaction.member.permissions.has('KICK_MEMBERS'))) return interaction.reply({ content: 'Insufficient Permissions', ephemeral: true });
-    
+
     const userId = interaction.options.get('user').value;
     const reason = interaction.options.get('reason') == null ? null : interaction.options.get('reason').value;
     const moderator = interaction.member.user;
@@ -58,6 +58,8 @@ export async function main() {
   // Custom kick function
   async function performKick(userId, reason, action, guild, moderator) {
     const user = await client.users.fetch(userId, false);
+    // Check if user is staff (has manage nicknames perms)
+    if (user.permissions.has('MANAGE_NICKNAMES')) return action.reply(await embed.punishmentFail('Cannot kick staff.'));
     if (!(await guild.members.fetch(userId))) return action.reply(await embed.notInServer(user));
     try {
       await dmUser(user, await embed.dm('kicked', guild, reason));
