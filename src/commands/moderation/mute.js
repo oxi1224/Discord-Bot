@@ -21,7 +21,7 @@ export async function main() {
     })();
     if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return message.reply(await embed.punishmentFail('Invalid user.'));
 
-    const duration = (!(args[1] == args.at(-1)) && /^\d+(min|h|d|w|m)/.test(args[1])) ? args[1] : null; 
+    const duration = (args[1] == args.at(-1) || /^\d+(min|h|d|w|m)/.test(args[1])) ? args[1] : null;
     const reason = args.slice(duration == null ? 1 : 1 + args.indexOf(duration)).join(' ') || null;
     const moderator = message.author;
     const guild = message.guild;
