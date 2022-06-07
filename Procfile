@@ -1,1 +1,1 @@
-worker: pnpm start
+worker: yarn start
