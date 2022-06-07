@@ -65,10 +65,10 @@ export async function main() {
       });
     await channel.bulkDelete(messages);
 
-    action.reply(await embed.otherResponses(
+    action.reply(await embed.createReplyEmbed(
       `Successfully purged ${messages.size} messages ${userId === null ? '' : `from <@${userId}>`}`, 
-      emotes.success,
-      embedColors.success));
+      { emote: emotes.success,
+        color: embedColors.success }));
     
     logAction('Messages Purged', [
       { name: 'Amount', value: messages.size.toString() },

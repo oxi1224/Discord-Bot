@@ -38,7 +38,3 @@ export const notInServer = (user) => createReplyEmbed(
 export const punishmentFail = (text) => createReplyEmbed(
   text,
   { color: config.embedColors.error, emote: config.emotes.error });
-
-export const otherResponses = (text, emote, color, title = '') => createReplyEmbed(
-  text,
-  { color: color, title: title, emote: emote });
