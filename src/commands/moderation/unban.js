@@ -56,6 +56,7 @@ export async function main() {
   async function unBan(userId, reason, action, guild, moderator) {
     const user = await client.users.fetch(userId, false);
     const banList = await action.guild.bans.fetch();
+    reason = reason === null ? 'None' : reason;
 
     if (banList.find(x => x.user.id === userId) === undefined) return action.reply(await embed.punishmentFail(`${user} is not banned.`));
     if (!userId) throw new Error('BAN_RESOLVE_ID');
@@ -70,7 +71,7 @@ export async function main() {
     logPunishment(userId, reason, moderator, 'unbans');
     logAction('Member Unbanned', [
       { name: 'User', value: `${user}` },
-      { name: 'Reason', value: `${reason}` }
+      { name: 'Reason', value: `\`\`${reason}\`\`` }
     ], { mod: moderator });
     return client.users.resolve(user);
   }

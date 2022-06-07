@@ -20,11 +20,11 @@ export const dmFail = (user) => createReplyEmbed(
   { color: config.embedColors.info, emote: config.infoEmote });
 
 export const dm = (action, guild, reason) => createReplyEmbed(
-  `Reason: \`\`${reason}\`\``,
+  `Reason: \`\`${reason}\`\`.`,
   { title: `You've been ${action} in ${guild}.` });
 
 export const dmDuration = (action, guild, reason, duration) => createReplyEmbed(
-  `Reason: \`\`${reason}\`\``,
+  `Reason: \`\`${reason}\`\`.`,
   { title: `You've been ${action} ${duration == null ? 'permanently' : `for ${duration}`} in ${guild}.` });
 
 export const punishmentReply = (action, user) => createReplyEmbed(

@@ -56,8 +56,9 @@ export async function main() {
 
   // Warns given user
   async function warn(userId, reason, action, guild, moderator) {
-    if (reason === null) return action.reply(await embed.punishmentFail('Reason cannot be empty'));
+    if (reason === null) return action.reply(await embed.punishmentFail('Reason cannot be empty.'));
     const user = await client.users.fetch(userId, false);
+    reason = reason === null ? 'None' : reason;
     if (!(await guild.members.fetch(userId))) return action.reply(await embed.notInServer(user));
     try {
       await dmUser(user, await embed.dm('warned', guild, reason));
@@ -68,7 +69,7 @@ export async function main() {
     logPunishment(userId, reason, moderator, 'warns');
     await logAction('Member Warned', [
       { name: 'User', value: `${user}` },
-      { name: 'Reason', value: `${reason}` }
+      { name: 'Reason', value: `\`\`${reason}\`\`` }
     ], { mod: moderator });
   }
 }

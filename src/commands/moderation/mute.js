@@ -64,6 +64,8 @@ export async function main() {
   async function mute(action, userId, reason, duration, guild, moderator) {
     const member = await guild.members.fetch(userId, false);
     const user = member.user;
+    reason = reason === null ? 'None' : reason;
+
     if (!(member)) return action.reply(await embed.notInServer(user));
     if (member.roles.cache.some(role => role.id === mutedRole)) return action.reply(await embed.punishmentFail(`${user} is already muted.`));
     try {
@@ -75,7 +77,7 @@ export async function main() {
     logPunishment(userId, reason, moderator, 'mutes');
     await logAction('Member Muted', [
       { name: 'User', value: `${user}` },
-      { name: 'Reason', value: `${reason}` },
+      { name: 'Reason', value: `\`\`${reason}\`\`` },
       { name: 'Duration', value: duration === null ? 'Permanent' : duration }
     ], { mod: moderator });
     await member.roles.add(mutedRole);

@@ -58,6 +58,8 @@ export async function main() {
   // Custom kick function
   async function performKick(userId, reason, action, guild, moderator) {
     const user = await client.users.fetch(userId, false);
+    reason = reason === null ? 'None' : reason;
+
     // Check if user is staff (has manage nicknames perms)
     if (user.permissions.has('MANAGE_NICKNAMES')) return action.reply(await embed.punishmentFail('Cannot kick staff.'));
     if (!(await guild.members.fetch(userId))) return action.reply(await embed.notInServer(user));
@@ -70,7 +72,7 @@ export async function main() {
     logPunishment(userId, reason, moderator, 'kicks');
     logAction('Member Kicked', [
       { name: 'User', value: `${user}` },
-      { name: 'Reason', value: `${reason}` }
+      { name: 'Reason', value: `\`\`${reason}\`\`` }
     ], { mod: moderator });
     await (await guild.members.fetch(userId)).kick({ reason: reason });
   }

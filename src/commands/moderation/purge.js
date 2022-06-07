@@ -54,7 +54,7 @@ export async function main() {
   updateSlashCommands(purgeData, 'purge');
 
   async function purge(action, messageCount, userId, moderator) {
-    if (messageCount > 100 || messageCount < 1 || messageCount === undefined) return action.reply(await embed.punishmentFail('Message count must be between 1 and 100'));
+    if (messageCount > 100 || messageCount < 1 || messageCount === undefined) return action.reply(await embed.punishmentFail('Message count must be between 1 and 100.'));
     
     const channel = action.channel;
     const messages = (await channel.messages
@@ -66,7 +66,7 @@ export async function main() {
     await channel.bulkDelete(messages);
 
     action.reply(await embed.createReplyEmbed(
-      `Successfully purged ${messages.size} messages ${userId === null ? '' : `from <@${userId}>`}`, 
+      `Successfully purged ${messages.size} messages ${userId === null ? '' : `from <@${userId}>`}.`, 
       { emote: emotes.success,
         color: embedColors.success }));
     

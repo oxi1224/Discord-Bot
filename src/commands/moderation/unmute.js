@@ -59,8 +59,10 @@ export async function main() {
   async function unmute(action, userId, reason, guild, moderator) {
     const member = await guild.members.fetch(userId, false);
     const user = member.user;
+    reason = reason === null ? 'None' : reason;
+    
     if (!(member)) return action.reply(`${user} is not in the server`);
-    if (!(member.roles.cache.some(role => role.id === mutedRole))) return action.reply(await embed.punishmentFail(`${user} is **not** muted.`));
+    if (!(member.roles.cache.some(role => role.id === mutedRole))) return action.reply(await embed.punishmentFail(`${user} is not muted.`));
     try {
       await dmUser(user, await embed.dm('unmuted', guild, reason));
       await action.reply(await embed.punishmentReply('unmuted', user));
@@ -70,7 +72,7 @@ export async function main() {
     logPunishment(userId, reason, moderator, 'unmutes');
     await logAction('Member Unmuted', [
       { name: 'User', value: `${user}` },
-      { name: 'Reason', value: `${reason}` }
+      { name: 'Reason', value: `\`\`${reason}\`\`` }
     ], { mod: moderator });
     await member.roles.remove(mutedRole);
   }

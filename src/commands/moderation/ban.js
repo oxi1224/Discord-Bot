@@ -61,9 +61,11 @@ export async function main() {
   async function performBan(action, userId, reason, duration, guild, moderator) {
     const banList = await guild.bans.fetch();
     const user = await client.users.fetch(userId, false);
+    reason = reason === null ? 'None' : reason;
+
     // Check if user is staff (has manage nicknames perms)
     if (user.permissions.has('MANAGE_NICKNAMES')) return action.reply(await embed.punishmentFail('Cannot ban staff.'));
-    if (!(banList.find(x => x.user.id === userId) === undefined)) return action.reply(await embed.punishmentFail('User already banned'));
+    if (!(banList.find(x => x.user.id === userId) === undefined)) return action.reply(await embed.punishmentFail('User already banned.'));
     try {
       await dmUser(user, await embed.dmDuration('banned', guild, reason, duration));
       await action.reply(await embed.punishmentReply('banned', user));
@@ -74,7 +76,7 @@ export async function main() {
     logPunishment(userId, reason, moderator, 'bans', duration);
     logAction('Member Banned', [
       { name: 'User', value: `${user}` },
-      { name: 'Reason', value: `${reason}` },
+      { name: 'Reason', value: `\`\`${reason}\`\`` },
       { name: 'Duration', value: duration === null ? 'Permanent' : duration }
     ], { mod: moderator });
     await guild.members.ban(userId, { reason: reason });
