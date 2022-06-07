@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node ./src/bot.js",
     "pushHeroku": "git push heroku main",
-    "removeConfig": "git reset ./src/lib/config/config.json"
+    "rmconf": "git reset ./src/lib/config/config.json"
   },
   "author": "oxi",
   "license": "ISC",
