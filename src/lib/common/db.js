@@ -47,14 +47,14 @@ export async function readFromDb(id) {
   const row = await client.query(
     `SELECT * 
     FROM punishmentLogs
-    WHERE id = ${id}::text`);
+    WHERE id=$1::text`, [id]);
   return row.rows;
 }
 
 // Change one or many column values in a row
 export async function changeColumnValues(id, column, data) {
   client
-    .query(`UPDATE punishmentLogs SET ${column}=$2 WHERE id = $1::text`, [id, data])
+    .query('UPDATE punishmentLogs SET $3=$2 WHERE id = $1::text', [id, data, column])
     .then(res => console.log(res.rows[0]))
     .catch(e => console.error(e.stack));
 }
