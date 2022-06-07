@@ -13,28 +13,30 @@ export function generateModLogID() {
 }
 
 // get punishment expiration date
-export function getExpirationDate(duration, startTime) {
+export function getExpirationDate(duration, currentTime) {
+
   if (duration == null) return null;
-  const numberInDuration = duration.match(/\d+/);
+  const numberInDuration = duration.match(/\d+/)[0];
   const sliceIndex = (() => { return numberInDuration.length > 2 ? numberInDuration[0].length - 1 : numberInDuration[0].length; })();
+
   switch (duration.split('').slice(sliceIndex, duration.length).join('')) {
   case 'min':
-    return (parseInt(numberInDuration[0]) * 60000) + startTime;
+    return (parseInt(numberInDuration[0]) * 60000) + currentTime;
   case 'h':
-    return (parseInt(numberInDuration[0]) * 3600000) + startTime;
+    return (parseInt(numberInDuration[0]) * 3600000) + currentTime;
   case 'd':
-    return (parseInt(numberInDuration[0]) * 86400000) + startTime;
+    return (parseInt(numberInDuration[0]) * 86400000) + currentTime;
   case 'w':
-    return (parseInt(numberInDuration[0]) * 604800000) + startTime;
+    return (parseInt(numberInDuration[0]) * 604800000) + currentTime;
   case 'm':
-    return (parseInt(numberInDuration[0]) * 2678400000) + startTime;
+    return (parseInt(numberInDuration[0]) * 2678400000) + currentTime;
   default:
     return null;
   }
 }
 
 // Log punishment to punishmentLogs database and to expiringPunishments if it expires
-export async function logPunishment(userId, reason, moderator, column, duration) {
+export async function logToDb(userId, reason, moderator, column, duration) {
   if (!(await db.existsRow(userId))) await db.createUserRow(userId);
   // get the previous punishments
   const userPunishmentsList = await db.readFromDb(userId) === [] ? [] : (await db.readFromDb(userId))[0][column];

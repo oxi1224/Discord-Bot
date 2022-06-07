@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
-import { logPunishment, dmUser, logAction } from '../../lib/util/util.js';
+import { logToDb, dmUser, logAction } from '../../lib/util/util.js';
 import { emotes, prefix } from '../../lib/config/config.js';
 import * as embed from '../../lib/util/embeds.js';
 
@@ -60,7 +60,6 @@ export async function main() {
 
     if (banList.find(x => x.user.id === userId) === undefined) return action.reply(await embed.punishmentFail(`${user} is not banned.`));
     if (!userId) throw new Error('BAN_RESOLVE_ID');
-
     await guild.bans.remove(userId);
     try {
       await dmUser(user, await embed.dm('unbanned', guild, reason));
@@ -68,7 +67,8 @@ export async function main() {
     } catch {
       await action.reply(await embed.dmFail(user));
     }
-    logPunishment(userId, reason, moderator, 'unbans');
+    
+    logToDb(userId, reason, moderator, 'unbans');
     logAction('Member Unbanned', [
       { name: 'User', value: `${user}` },
       { name: 'Reason', value: `\`\`${reason}\`\`` }

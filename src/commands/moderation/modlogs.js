@@ -53,7 +53,7 @@ export async function main() {
       punishmentsJson.bans, punishmentsJson.unbans, 
       punishmentsJson.kicks
     );
-    usersPunishments.sort((a, b) => parseFloat(b.punishmentTime) - parseFloat(a.punishmentTime));
+    usersPunishments.sort((a, b) => parseFloat(a.punishmentTime) - parseFloat(b.punishmentTime));
     
     const modlogEmbed = new MessageEmbed()
       .setColor('#0099ff')
@@ -71,7 +71,7 @@ export async function main() {
     usersPunishments.forEach(el => modlogEmbed.addField(`Type: ${el.punishmentType}`, `Reason: \`\`${el.reason}\`\`
 Moderator: <@${el.moderator.id}>
 Punnishment time: <t:${Math.floor(el.punishmentTime / 1000)}>
-Expires: \`\`${el.punishmentExpires === null ? 'false' : `<t:${Math.floor(el.punishmentExpires / 1000)}>`}\`\`
+Expires: ${el.punishmentExpires === null ? '``false``' : `<t:${Math.floor(el.punishmentExpires / 1000)}>`}
 Modlog ID: \`\`${el.punishmentId}\`\``));
     await action.reply({ embeds: [modlogEmbed], components: [buttonsRow] });
   }

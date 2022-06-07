@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
-import { logPunishment, dmUser, logAction } from '../../lib/util/util.js';
+import { logToDb, dmUser, logAction } from '../../lib/util/util.js';
 import { emotes, prefix } from '../../lib/config/config.js';
 import * as embed from '../../lib/util/embeds.js';
 
@@ -59,6 +59,7 @@ export async function main() {
     if (reason === null) return action.reply(await embed.punishmentFail('Reason cannot be empty.'));
     const user = await client.users.fetch(userId, false);
     reason = reason === null ? 'None' : reason;
+
     if (!(await guild.members.fetch(userId))) return action.reply(await embed.notInServer(user));
     try {
       await dmUser(user, await embed.dm('warned', guild, reason));
@@ -66,8 +67,9 @@ export async function main() {
     } catch {
       await action.reply(await embed.dmFail(user));
     }
-    logPunishment(userId, reason, moderator, 'warns');
-    await logAction('Member Warned', [
+
+    logToDb(userId, reason, moderator, 'warns');
+    logAction('Member Warned', [
       { name: 'User', value: `${user}` },
       { name: 'Reason', value: `\`\`${reason}\`\`` }
     ], { mod: moderator });

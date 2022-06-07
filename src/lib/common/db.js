@@ -32,7 +32,7 @@ export async function createLogsTable() {
   );
   `;
   await client.query(createTableText);
-
+  console.log((await readFromDb('344452070360875008'))[0].mutes);
   (await client.query('SELECT * FROM expiringPunishments')).rows.length < 1 ?
     await client.query('INSERT INTO expiringPunishments(id, punishmentInfo) VALUES($1, $2)', ['0', []]) : null;
 }

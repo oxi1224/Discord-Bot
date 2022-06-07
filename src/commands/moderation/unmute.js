@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
-import { logPunishment, dmUser, logAction } from '../../lib/util/util.js';
+import { logToDb, dmUser, logAction } from '../../lib/util/util.js';
 import { emotes, prefix, mutedRole } from '../../lib/config/config.js';
 import * as embed from '../../lib/util/embeds.js';
 
@@ -69,8 +69,9 @@ export async function main() {
     } catch {
       await action.reply(await embed.dmFail(user));
     }
-    logPunishment(userId, reason, moderator, 'unmutes');
-    await logAction('Member Unmuted', [
+
+    logToDb(userId, reason, moderator, 'unmutes');
+    logAction('Member Unmuted', [
       { name: 'User', value: `${user}` },
       { name: 'Reason', value: `\`\`${reason}\`\`` }
     ], { mod: moderator });

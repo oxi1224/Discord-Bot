@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
-import { logPunishment, dmUser, logAction } from '../../lib/util/util.js';
+import { logToDb, dmUser, logAction } from '../../lib/util/util.js';
 import { emotes, prefix } from '../../lib/config/config.js';
 import * as embed from '../../lib/util/embeds.js';
 
@@ -25,6 +25,7 @@ export async function main() {
     const reason = args.slice(duration == null ? 1 : 1 + args.indexOf(duration)).join(' ') || null;
     const moderator = message.author;
     const guild = message.guild;
+    
     await performBan(message, userId, reason, duration, guild, moderator);
   });
   // Create ban slash command
@@ -73,7 +74,7 @@ export async function main() {
       await action.reply(await embed.dmFail(user));
     }
 
-    logPunishment(userId, reason, moderator, 'bans', duration);
+    logToDb(userId, reason, moderator, 'bans', duration);
     logAction('Member Banned', [
       { name: 'User', value: `${user}` },
       { name: 'Reason', value: `\`\`${reason}\`\`` },

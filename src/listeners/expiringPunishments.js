@@ -1,4 +1,4 @@
-import { dmUser, logPunishment, logAction } from '../lib/util/util.js';
+import { dmUser, logToDb, logAction } from '../lib/util/util.js';
 import { updateExpiringPunishments, fetchExpiringPunishments } from '../lib/common/db.js';
 import { mutedRole, guildId } from '../lib/config/config.js';
 
@@ -23,7 +23,7 @@ export async function main() {
       catch {null;}
       // Filter out all bans in the array that have the same user
       expiringPunishments = expiringPunishments.filter(json => { return !(json.user == userId && json.punishmentType == 'ban'); });
-      await logPunishment(userId, 'Punishment expired.', client.user, 'unbans');
+      await logToDb(userId, 'Punishment expired.', client.user, 'unbans');
     } catch {null;}
     break;
     
@@ -35,7 +35,7 @@ export async function main() {
       catch {null;}
       // Filter out all mutes in the array that have the same user
       expiringPunishments = expiringPunishments.filter(json => { return !(json.user == userId && json.punishmentType == 'mute'); });
-      await logPunishment(userId, 'Punishment expired.', client.user, 'unmutes');
+      await logToDb(userId, 'Punishment expired.', client.user, 'unmutes');
     } catch {null;}
     break;  
   }
