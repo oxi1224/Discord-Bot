@@ -93,7 +93,6 @@ export async function main() {
   // Listens for new members
   client.on('guildMemberAdd', async (member) => {
     const mutes = (await readFromDb(member.user.id))[0].mutes;
-    console.log(mutes);
     if (mutes.at(-1).punishmentExpires <= new Date().getTime() || mutes.at(-1).punishmentExpires === null) {
       member.roles.add(mutedRole);
     }

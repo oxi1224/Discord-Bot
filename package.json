@@ -8,8 +8,8 @@
     "start": "node ./src/bot.js",
     "rmconf": "git reset ./src/lib/config/config.json"
   },
-  "author": "oxi",
-  "license": "ISC",
+  "author": "@oxi#6219",
+  "license": "CC0-1.0",
   "dependencies": {
     "@babel/core": ">=7.11.0",
     "@discordjs/builders": "^0.13.0",
