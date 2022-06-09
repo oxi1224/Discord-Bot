@@ -1,51 +1,20 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
 import { readFromDb } from '../../lib/common/db.js';
 import { MessageActionRow, MessageButton, MessageEmbed } from 'discord.js';
-import { emotes, prefix } from '../../lib/config/config.js';
+import { handle } from '../../lib/commandHandler.js';
 import * as embed from '../../lib/util/embeds.js';
 
-export async function main() {
-  const { client } = await import('../../bot.js');
-
-  // Listen for ban commands
-  client.on('messageCreate', async message => {
-    if (!message.content.startsWith(prefix) || message.author.bot) return;
-    const args = message.content.slice(1).trim().split(' ').filter(str => str !== '');
-    const command = args.shift().toLowerCase();
-    if (!(command == 'modlogs')) return;
-    if (!(message.member.permissions.has('BAN_MEMBERS'))) return message.react(emotes.error);
-
-    const userId = await (async () => {
-      try { return message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; } 
-      catch { return null; }
-    })();
-    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return message.channel.send(await embed.punishmentFail('Invalid User.'));
-
-    await showModlogs(userId, message);
-  });
-
+export async function main(client) {
   // Create ban slash command
-  const modlogs = new SlashCommandBuilder()
+  const modlogsData = new SlashCommandBuilder()
     .setName('modlogs')
     .setDescription('Shows the modlogs of given user')
     .addUserOption(option => option.setName('user')
       .setDescription('Enter whose modlogs to show')
       .setRequired(true));
-  
-  // Listen for ban interactions
-  client.on('interactionCreate', async interaction => {
-    if (!interaction.isCommand()) return;
-    if (!(interaction.commandName === 'modlogs')) return;
-    if (!(interaction.member.permissions.has('BAN_MEMBERS'))) return interaction.reply({ content: 'Insufficient Permissions', ephemeral: true });
-    
-    const userId = interaction.options.get('user').value;
-    await showModlogs(userId, interaction);
-  });
 
-  updateSlashCommands(modlogs, 'modlogs');
-
-  async function showModlogs(userId, action) {
+  async function showModlogs({ action, userId }) {
+    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.punishmentFail('Invalid User.'));
     const punishmentsJson = (await readFromDb(userId))[0];
     if (!punishmentsJson) return await action.reply(await embed.punishmentFail('User has no modlogs'));
     const usersPunishments = (punishmentsJson.warns).concat(
@@ -80,5 +49,12 @@ Modlog ID: \`\`${el.punishmentId}\`\``));
     if (!interaction.customId == 'modlog-delete') return;
     if (!interaction.member.permissions.has('MANAGE_MESSAGES')) return;
     await interaction.message.delete();
+  });
+
+  handle(client, {
+    aliases: ['modlogs'],
+    requiredPerms: 'BAN_MEMBERS',
+    slashData: modlogsData,
+    callback: showModlogs
   });
 }

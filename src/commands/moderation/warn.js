@@ -1,32 +1,9 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
 import { logToDb, dmUser, logAction } from '../../lib/util/util.js';
-import { emotes, prefix } from '../../lib/config/config.js';
+import { handle } from '../../lib/commandHandler.js';
 import * as embed from '../../lib/util/embeds.js';
 
-export async function main() {
-  const { client } = await import('../../bot.js');
-  // Listen for warn commands
-  client.on('messageCreate', async message => {
-    if (!message.content.startsWith(prefix) || message.author.bot) return;
-    const args = message.content.slice(1).trim().split(' ').filter(str => str !== '');
-    const command = args.shift().toLowerCase();
-    if (!(command == 'warn')) return;
-    if (!(message.member.permissions.has('MANAGE_NICKNAMES'))) return message.react(emotes.error);
-
-    const userId = await (async () => {
-      try { return message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; } 
-      catch { return null; }
-    })();
-    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return message.channel.send(await embed.punishmentFail('Invalid User.'));
-
-    const reason = args.slice(1).join(' ') || null;
-    const moderator = message.author;
-    const guild = message.guild;
-
-    await warn(userId, reason, message, guild, moderator);
-  });
-
+export async function main(client) {
   // Create warn slash commmand
   const warnData = new SlashCommandBuilder()
     .setName('warn')
@@ -38,24 +15,9 @@ export async function main() {
       .setDescription('Enter the warn reason')
       .setRequired(true));
 
-  // Listen for warn interactions
-  client.on('interactionCreate', async interaction => {
-    if (!interaction.isCommand()) return;
-    if (!(interaction.commandName === 'warn')) return;
-    if (!(interaction.member.permissions.has('MANAGE_NICKNAMES'))) return interaction.reply({ content: 'Insufficient Permissions', ephemeral: true });
-    
-    const userId = interaction.options.get('user').value;
-    const reason = interaction.options.get('reason') == null ? null : interaction.options.get('reason').value;
-    const moderator = interaction.member.user;
-    const guild = interaction.guild;
-
-    await warn(userId, reason, interaction, guild, moderator);
-  });
-
-  updateSlashCommands(warnData, 'warn');
-
   // Warns given user
-  async function warn(userId, reason, action, guild, moderator) {
+  async function warn({ action, userId, reason, moderator, guild }) {
+    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.punishmentFail('Invalid User.'));
     if (reason === null) return action.reply(await embed.punishmentFail('Reason cannot be empty.'));
     const user = await client.users.fetch(userId, false);
     reason = reason === null ? 'None' : reason;
@@ -74,4 +36,11 @@ export async function main() {
       { name: 'Reason', value: `\`\`${reason}\`\`` }
     ], { mod: moderator });
   }
+
+  handle(client, {
+    aliases: ['warn'],
+    requiredPerms: 'MANAGE_NICKNAMES',
+    prefixedData: warnData,
+    callback: warn
+  });
 }

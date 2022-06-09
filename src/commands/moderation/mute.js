@@ -1,34 +1,10 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { updateSlashCommands } from '../../lib/updateSlashCommands.js';
 import { logToDb, dmUser, logAction } from '../../lib/util/util.js';
-import { mutedRole, emotes, prefix } from '../../lib/config/config.js';
+import { mutedRole } from '../../lib/config/config.js';
+import { handle } from '../../lib/commandHandler.js';
 import * as embed from '../../lib/util/embeds.js';
 
-export async function main() {
-  const { client } = await import('../../bot.js');
-  
-  // Listen for mute commands
-  client.on('messageCreate', async message => {
-    if (!message.content.startsWith(prefix) || message.author.bot) return;
-    const args = message.content.slice(1).trim().split(' ').filter(str => str !== '');
-    const command = args.shift().toLowerCase();
-    if (!(command == 'mute')) return;
-    if (!(message.member.permissions.has('MUTE_MEMBERS'))) return message.react(emotes.error);
-  
-    const userId = await (async () => {
-      try { return message.mentions.users.first() === undefined ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id; } 
-      catch { return null; }
-    })();
-    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return message.reply(await embed.punishmentFail('Invalid user.'));
-
-    const duration = (args[1] == args.at(-1) || /^\d+(min|h|d|w|m)/.test(args[1])) ? args[1] : null;
-    const reason = args.slice(duration == null ? 1 : 1 + args.indexOf(duration)).join(' ') || null;
-    const moderator = message.author;
-    const guild = message.guild;
-
-    await mute(message, userId, reason, duration, guild, moderator);
-  });
-
+export async function main(client) {
   // Create mute slash commmand
   const muteData = new SlashCommandBuilder()
     .setName('mute')
@@ -43,26 +19,10 @@ export async function main() {
       .setDescription('Enter the mute reason')
       .setRequired(false));
 
-  // Listen for mute interactions
-  client.on('interactionCreate', async interaction => {
-    if (!interaction.isCommand()) return;
-    if (!(interaction.commandName === 'mute')) return;
-    if (!(interaction.member.permissions.has('MUTE_MEMBERS'))) return interaction.reply({ content: 'Insufficient Permissions', ephemeral: true });
-    
-    const userId = interaction.options.get('user').value;
-    const reason = interaction.options.get('reason') == null ? null : interaction.options.get('reason').value;
-    const duration = interaction.options.get('duration') == null ? null : interaction.options.get('duration').value;
-    const moderator = interaction.member.user;
-    const guild = interaction.guild;
-    
-    await mute(interaction, userId, reason, duration, guild, moderator);
-  });
-
-  updateSlashCommands(muteData, 'mute');
-
   // Mutes given user
-  async function mute(action, userId, reason, duration, guild, moderator) {
-    const member = await guild.members.fetch(userId, false);
+  async function mute({ action, userId, reason, duration, guild, moderator }) {
+    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.punishmentFail('Invalid User.'));
+    const member = await guild.members.fetch(userId);
     const user = member.user;
     reason = reason === null ? 'None' : reason;
 
@@ -83,4 +43,11 @@ export async function main() {
     ], { mod: moderator });
     await member.roles.add(mutedRole);
   }
+
+  handle(client, {
+    aliases: ['mute'],
+    requiredPerms: 'MUTE_MEMBERS',
+    slashData: muteData,
+    callback: mute
+  });
 }

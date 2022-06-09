@@ -12,22 +12,22 @@ import { main as unmute } from '../commands/moderation/unmute.js';
 import { main as purge } from '../commands/moderation/purge.js';
 
 // Executes the main function from each command's file
-export async function startCommands() {
+export async function startCommands(client) {
   // Moderation
-  ban();
-  unban();
-  warn();
-  kick();
-  mute();
-  unmute();
-  modlogs();
-  purge();
-  
+  ban(client);
+  unban(client);
+  warn(client);
+  kick(client);
+  mute(client);
+  unmute(client);
+  modlogs(client);
+  purge(client);
+
   // Listeners
-  actionLogging();
-  errorListeners();
-  setInterval(expiringPunishments, 10000);
+  actionLogging(client);
+  errorListeners(client);
+  setInterval(expiringPunishments(client), 10000);
 
   // Info
-  ping();
+  ping(client);
 }

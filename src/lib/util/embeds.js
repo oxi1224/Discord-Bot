@@ -3,9 +3,9 @@ import * as config from '../config/config.js';
 
 export async function createReplyEmbed(description, args) {
   // Get values from args
-  const color = args.color || config.embedColors.base;
-  const title = args.title || '';
-  const emote = args.emote || '';
+  const color = args === undefined ? config.embedColors.base : args.color;
+  const title = args === undefined ? '' : args.title;
+  const emote = args === undefined ? '' : args.emote;
 
   const embed = new MessageEmbed()
     .setColor(color)
