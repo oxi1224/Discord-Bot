@@ -1,10 +1,10 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { logAction } from '../../lib/util/util.js';
 import { emotes, embedColors } from '../../lib/config/config.js';
-import { handle } from '../../lib/commandHandler.js';
+import { appendToCommandArray } from '../../lib/commandHandler.js';
 import * as embed from '../../lib/util/embeds.js';
 
-export async function main(client) {
+export async function main() {
   // Create purge slash command
   const purgeData = new SlashCommandBuilder()
     .setName('purge')
@@ -41,10 +41,10 @@ export async function main(client) {
     ], { mod: moderator });
   }
 
-  handle(client, {
+  appendToCommandArray({
     aliases: ['purge'],
     requiredPerms: 'MANAGE_MESSAGES',
-    prefixedData: purgeData,
+    slashData: purgeData,
     callback: purge
   });
 }

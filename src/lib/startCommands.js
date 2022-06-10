@@ -10,6 +10,7 @@ import { main as errorListeners } from '../listeners/errorListeners.js';
 import { main as mute } from '../commands/moderation/mute.js';
 import { main as unmute } from '../commands/moderation/unmute.js';
 import { main as purge } from '../commands/moderation/purge.js';
+import { initializeCommands, appendToCommandArray } from './commandHandler.js';
 
 // Executes the main function from each command's file
 export async function startCommands(client) {
@@ -18,16 +19,18 @@ export async function startCommands(client) {
   unban(client);
   warn(client);
   kick(client);
-  mute(client);
-  unmute(client);
-  modlogs(client);
-  purge(client);
+  mute();
+  unmute();
+  modlogs();
+  purge();
 
   // Listeners
   actionLogging(client);
   errorListeners(client);
-  setInterval(expiringPunishments(client), 10000);
+  setInterval(() => expiringPunishments(client), 10000);
 
   // Info
   ping(client);
+
+  initializeCommands(client, appendToCommandArray({ finalize: true }));
 }

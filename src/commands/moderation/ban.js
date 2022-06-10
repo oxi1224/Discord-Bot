@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { logToDb, dmUser, logAction } from '../../lib/util/util.js';
-import { handle } from '../../lib/commandHandler.js';
+import { appendToCommandArray } from '../../lib/commandHandler.js';
 import * as embed from '../../lib/util/embeds.js';
 
 export async function main(client) {
@@ -45,7 +45,7 @@ export async function main(client) {
     await guild.members.ban(userId, { reason: reason });
   }
 
-  handle(client, {
+  appendToCommandArray({
     aliases: ['ban'],
     requiredPerms: 'BAN_MEMBERS',
     slashData: banData,

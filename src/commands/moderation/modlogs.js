@@ -1,10 +1,10 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { readFromDb } from '../../lib/common/db.js';
 import { MessageActionRow, MessageButton, MessageEmbed } from 'discord.js';
-import { handle } from '../../lib/commandHandler.js';
+import { appendToCommandArray } from '../../lib/commandHandler.js';
 import * as embed from '../../lib/util/embeds.js';
 
-export async function main(client) {
+export async function main() {
   // Create ban slash command
   const modlogsData = new SlashCommandBuilder()
     .setName('modlogs')
@@ -44,14 +44,8 @@ Expires: ${el.punishmentExpires === null ? '``false``' : `<t:${Math.floor(el.pun
 Modlog ID: \`\`${el.punishmentId}\`\``));
     await action.reply({ embeds: [modlogEmbed], components: [buttonsRow] });
   }
-  client.on('interactionCreate', async interaction => {
-    if (!interaction.isButton()) return;
-    if (!interaction.customId == 'modlog-delete') return;
-    if (!interaction.member.permissions.has('MANAGE_MESSAGES')) return;
-    await interaction.message.delete();
-  });
 
-  handle(client, {
+  appendToCommandArray({
     aliases: ['modlogs'],
     requiredPerms: 'BAN_MEMBERS',
     slashData: modlogsData,

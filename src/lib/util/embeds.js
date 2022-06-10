@@ -3,15 +3,15 @@ import * as config from '../config/config.js';
 
 export async function createReplyEmbed(description, args) {
   // Get values from args
-  const color = args === undefined ? config.embedColors.base : args.color;
-  const title = args === undefined ? '' : args.title;
-  const emote = args === undefined ? '' : args.emote;
+  const color = args === undefined || args.color === undefined ? config.embedColors.base : args.color;
+  const title = args === undefined || args.title === undefined ? null : args.title;
+  const emote = args === undefined || args.emote === undefined ? null : args.emote;
 
   const embed = new MessageEmbed()
     .setColor(color)
-    .setTitle(title)
     .setDescription(`${emote} ${description}`);
-  
+
+  title === null ? null : embed.setTitle(title); 
   return { embeds: [embed] };
 }
 

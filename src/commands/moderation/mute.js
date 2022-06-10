@@ -1,10 +1,10 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { logToDb, dmUser, logAction } from '../../lib/util/util.js';
 import { mutedRole } from '../../lib/config/config.js';
-import { handle } from '../../lib/commandHandler.js';
+import { appendToCommandArray } from '../../lib/commandHandler.js';
 import * as embed from '../../lib/util/embeds.js';
 
-export async function main(client) {
+export async function main() {
   // Create mute slash commmand
   const muteData = new SlashCommandBuilder()
     .setName('mute')
@@ -44,7 +44,7 @@ export async function main(client) {
     await member.roles.add(mutedRole);
   }
 
-  handle(client, {
+  appendToCommandArray({
     aliases: ['mute'],
     requiredPerms: 'MUTE_MEMBERS',
     slashData: muteData,

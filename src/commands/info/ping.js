@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { createReplyEmbed } from '../../lib/util/embeds.js';
-import { handle } from '../../lib/commandHandler.js';
+import { appendToCommandArray } from '../../lib/commandHandler.js';
 
 export async function main(client) {
   // create ping slash commmand
@@ -15,7 +15,7 @@ export async function main(client) {
     ));
   }
 
-  handle(client, {
+  appendToCommandArray({
     aliases: ['ping'], 
     slashData: pingData,
     callback: getPing

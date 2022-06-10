@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { logToDb, dmUser, logAction } from '../../lib/util/util.js';
-import { handle } from '../../lib/commandHandler.js';
+import { appendToCommandArray } from '../../lib/commandHandler.js';
 import * as embed from '../../lib/util/embeds.js';
 
 export async function main(client) {
@@ -40,7 +40,7 @@ export async function main(client) {
     await (await guild.members.fetch(userId)).kick({ reason: reason });
   }
 
-  handle(client, {
+  appendToCommandArray({
     aliases: ['kick'],
     requiredPerms: 'KICK_MEMBERS',
     slashData: kickData,

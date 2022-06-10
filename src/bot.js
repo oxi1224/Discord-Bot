@@ -10,5 +10,5 @@ client.login(TOKEN);
 client.on('ready', async () => {
   console.log(`Logged in as ${client.user.tag}!`);
   await createLogsTable();
-  startCommands();
+  startCommands(client);
 });
