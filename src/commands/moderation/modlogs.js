@@ -1,10 +1,8 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { readFromDb } from '../../lib/common/db.js';
 import { MessageActionRow, MessageButton, MessageEmbed } from 'discord.js';
-import { appendToCommandArray } from '../../lib/commandHandler.js';
-import * as embed from '../../lib/util/embeds.js';
+import { readFromDb, appendToCommandArray, embed } from '#lib';
 
-export async function main() {
+export default async function main() {
   // Create ban slash command
   const modlogsData = new SlashCommandBuilder()
     .setName('modlogs')

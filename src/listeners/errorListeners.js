@@ -1,7 +1,7 @@
 import { logAction } from '../lib/util/util.js';
 import { errorsChannel } from '../lib/config/config.js';
 
-export function main() {
+export default function main() {
   process.on('unhandledRejection', 
     async (err) => await logAction(
       'Error', 

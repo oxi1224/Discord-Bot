@@ -1,10 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { logAction } from '../../lib/util/util.js';
-import { emotes, embedColors } from '../../lib/config/config.js';
-import { appendToCommandArray } from '../../lib/commandHandler.js';
-import * as embed from '../../lib/util/embeds.js';
+import { logAction, emotes, embedColors, appendToCommandArray, embed } from '#lib';
 
-export async function main() {
+export default async function main() {
   // Create purge slash command
   const purgeData = new SlashCommandBuilder()
     .setName('purge')

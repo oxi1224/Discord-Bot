@@ -2,8 +2,7 @@ import { logAction } from '../lib/util/util.js';
 import { readFromDb } from '../lib/common/db.js';
 import { mutedRole } from '../lib/config/config.js';
 
-export async function main() {
-  const { client } = await import('../bot.js');
+export default async function main(client) {
 
   // Listens for channel related changes
   for (const type of ['channelCreate', 'channelDelete', 'channelPinsUpdate', 'channelUpdate']) {

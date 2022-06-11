@@ -1,15 +1,14 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { createReplyEmbed } from '../../lib/util/embeds.js';
-import { appendToCommandArray } from '../../lib/commandHandler.js';
+import { embed, appendToCommandArray } from '#lib';
 
-export async function main(client) {
+export default async function main(client) {
   // create ping slash commmand
   const pingData = new SlashCommandBuilder()
     .setName('ping')
     .setDescription('get information about ping');
 
   async function getPing({ action }) {
-    await action.reply(await createReplyEmbed(
+    await action.reply(await embed.createReplyEmbed(
       `Bot latency: \`\`${Date.now() - action.createdTimestamp}ms\`\`
       API latency: \`\`${Math.round(client.ws.ping)}ms\`\``
     ));
