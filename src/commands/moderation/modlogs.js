@@ -15,7 +15,7 @@ export async function main() {
 
   async function showModlogs({ action, userId }) {
     if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.punishmentFail('Invalid User.'));
-    const punishmentsJson = (await readFromDb(userId))[0];
+    const punishmentsJson = await readFromDb(userId);
     if (!punishmentsJson) return await action.reply(await embed.punishmentFail('User has no modlogs'));
     const usersPunishments = (punishmentsJson.warns).concat(
       punishmentsJson.mutes, punishmentsJson.unmutes, 

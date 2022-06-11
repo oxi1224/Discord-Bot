@@ -39,7 +39,7 @@ export function getExpirationDate(duration, currentTime) {
 export async function logToDb(userId, reason, moderator, column, duration) {
   if (!(await db.existsRow(userId))) await db.createUserRow(userId);
   // get the previous punishments
-  const userPunishmentsList = await db.readFromDb(userId).length == 0 ? [] : (await db.readFromDb(userId))[0][column];
+  const userPunishmentsList = await db.readFromDb(userId) === null ? [] : (await db.readFromDb(userId))[column];
   const punishmentType = column.split('').slice(0, -1).join('');
   // update the punishment list
   userPunishmentsList.push({
@@ -56,7 +56,7 @@ export async function logToDb(userId, reason, moderator, column, duration) {
   
   if (!(['bans', 'mutes', 'unbans', 'unmutes'].includes(column))) return;
   // write to expiringPunishments db if there is a duration
-  let expiringPunishments = await db.fetchExpiringPunishments() || [];
+  let expiringPunishments = await db.fetchExpiringPunishments();
   if (column === 'unbans' || column === 'unmutes') {
     expiringPunishments = expiringPunishments.filter(json => { return !(json.user == userId && json.punishmentType == punishmentType); });
   }

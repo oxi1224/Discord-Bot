@@ -1,77 +1,128 @@
-import { createRequire } from 'module';
 import { CONNECTION_STRING } from './auth.js'; 
-const require = createRequire(import.meta.url);
-const { Client } = require('pg');
+import { Sequelize, DataTypes } from 'sequelize';
 
-const config = {
-  connectionString: CONNECTION_STRING,
-  ssl: {
-    rejectUnauthorized: false
-  }
-};
-
-export const client = new Client(config);
+export const sequelize = new Sequelize(CONNECTION_STRING, {
+  dialect: 'postgres',
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false
+    }
+  },
+  define: {
+    timestamps: false
+  },
+  logging: false
+});
+const queryInterface = sequelize.getQueryInterface();
+let User, ExpiringPunishmentsRow;
 
 // Create main table if it doesnt exist
 export async function createLogsTable() {
-  client.connect();
-  const createTableText = `
-  CREATE TABLE IF NOT EXISTS punishmentLogs (
-    id text,
-    warns JSONB [],
-    mutes JSONB [],
-    unmutes JSONB [],
-    bans JSONB [],
-    unbans JSONB [],
-    kicks JSONB []
-  );
+  await queryInterface.createTable('punishmentLogs', {
+    id: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      primaryKey: true
+    },
+    warns: DataTypes.ARRAY(DataTypes.JSONB),
+    mutes: DataTypes.ARRAY(DataTypes.JSONB),
+    unmutes: DataTypes.ARRAY(DataTypes.JSONB),
+    bans: DataTypes.ARRAY(DataTypes.JSONB),
+    unbans: DataTypes.ARRAY(DataTypes.JSONB),
+    kicks: DataTypes.ARRAY(DataTypes.JSONB)
+  });
 
-  CREATE TABLE IF NOT EXISTS expiringPunishments (
-    id text,
-    punishmentInfo JSONB []
-  );
-  `;
-  await client.query(createTableText);
+  await queryInterface.createTable('expiringPunishments', {
+    id: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    punishmentInfo: DataTypes.ARRAY(DataTypes.JSONB)
+  });
 
-  (await client.query('SELECT * FROM expiringPunishments')).rows.length < 1 ?
-    await client.query('INSERT INTO expiringPunishments(id, punishmentInfo) VALUES($1, $2)', ['0', []]) : null;
+  await initRowTemplates();
+  if (await fetchExpiringPunishments() === null) await ExpiringPunishmentsRow.create({ id: '0', punishmentInfo: [] });
 }
 
 // Create row from user id
 export async function createUserRow(id) {
-  await client.query('INSERT INTO punishmentLogs(id, warns, mutes, unmutes, bans, unbans, kicks) VALUES($1, $2, $3, $4, $5, $6, $7)', [id, [], [], [], [], [], []]);
+  const user = await User.create({
+    id: id,
+    warns: [],
+    mutes: [],
+    unmutes: [],
+    bans: [],
+    unbans: [],
+    kicks: []
+  });
+  user.save();
 }
 
 // Read row from the database
 export async function readFromDb(id) {
-  const row = await client.query(
-    `SELECT * 
-    FROM punishmentLogs
-    WHERE id=$1::text`, [id]);
-  return row.rows;
+  const row = await User.findOne({
+    where: {
+      id: id
+    }
+  });
+  return row === null ? null : row.dataValues;
 }
 
 // Change one or many column values in a row
 export async function changeColumnValues(id, column, data) {
-  client
-    .query(`UPDATE punishmentLogs SET ${column}=$2 WHERE id = $1::text`, [id, data])
-    .then(res => console.log(res.rows[0]))
-    .catch(e => console.error(e.stack));
+  const user = await User.findOne({ where: { id: id } });
+  user[column] = data;
+  await user.save();
 }
 
 // Check if row exists
 export async function existsRow(id) {
-  const response = await client.query(`select 1 from punishmentLogs where id=${id}::text`);
-  return response.rows.length < 1 ? false : true;
+  const response = await readFromDb(id);
+  return response === null ? false : true;
 }
 
 // Update the expiringPunishments database with updated punishment list
 export async function updateExpiringPunishments(expiringPunishments) {
-  await client.query('UPDATE expiringPunishments SET punishmentInfo=$1 WHERE id=0::text', [expiringPunishments])
-    .then(res => console.log(res.rows[0]))
-    .catch(e => console.error(e.stack));
+  const row = await ExpiringPunishmentsRow.findOne({ where: { id: '0' } });
+  row.punishmentInfo = expiringPunishments;
+  await row.save();
 }
 
 export async function fetchExpiringPunishments() {
-  return await (await client.query('SELECT punishmentInfo FROM expiringPunishments WHERE id=0::text')).rows[0].punishmentinfo;
+  const response = await ExpiringPunishmentsRow.findOne({
+    where: {
+      id: '0'
+    }
+  });
+  return response === null ? null : response.dataValues.punishmentInfo;
+}
+
+async function initRowTemplates() {
+  User = sequelize.define('User', {
+    id: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      primaryKey: true
+    },
+    warns: DataTypes.ARRAY(DataTypes.JSONB),
+    mutes: DataTypes.ARRAY(DataTypes.JSONB),
+    unmutes: DataTypes.ARRAY(DataTypes.JSONB),
+    bans: DataTypes.ARRAY(DataTypes.JSONB),
+    unbans: DataTypes.ARRAY(DataTypes.JSONB),
+    kicks: DataTypes.ARRAY(DataTypes.JSONB)
+  }, {
+    tableName: 'punishmentLogs'
+  });
+
+  ExpiringPunishmentsRow = sequelize.define('ExpiringPunishmentsRow', {
+    id: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      primaryKey: true
+    },
+    punishmentInfo: DataTypes.ARRAY(DataTypes.JSONB)
+  }, {
+    tableName: 'expiringPunishments'
+  });
 }
