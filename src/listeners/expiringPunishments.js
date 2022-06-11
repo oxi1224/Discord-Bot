@@ -3,7 +3,7 @@ import { dmUser, logToDb, logAction, updateExpiringPunishments, fetchExpiringPun
 export default async function main(client) {
   let expiringPunishments = await fetchExpiringPunishments();
   // Check if the expiration date from the punishment closest to expiring is greater than current date
-  if (expiringPunishments === null || !(expiringPunishments.at(-1).punishmentExpires <= new Date().getTime())) return;
+  if (expiringPunishments === null || !(expiringPunishments.at(-1) <= new Date().getTime())) return;
 
   const guild = await client.guilds.fetch(guildId);
   const userId = expiringPunishments.at(-1).user;
