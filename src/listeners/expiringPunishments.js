@@ -1,4 +1,4 @@
-import { dmUser, logToDb, logAction, updateExpiringPunishments, fetchExpiringPunishments, mutedRole, guildId } from '#lib';
+import { dmUser, logToDb, logAction, updateExpiringPunishments, fetchExpiringPunishments, mutedRole, guildId, embed } from '#lib';
 
 export default async function main(client) {
   let expiringPunishments = await fetchExpiringPunishments();
@@ -16,7 +16,7 @@ export default async function main(client) {
       // Unban the user
       await guild.bans.remove(userId);
       await logAction('Member Unbanned', [{ name: 'Reason', value: 'Punishment Expired' }], userId);
-      try { await dmUser(user, `You've been unbanned in **${guild}** \n Reason: \`\`Punishment Expired\`\` `); } 
+      try { await dmUser(user, await embed.dm('unbanned', 'guild', 'Punishment expired')); } 
       catch {null;}
       // Filter out all bans in the array that have the same user
       expiringPunishments = expiringPunishments.filter(json => { return !(json.user == userId && json.punishmentType == 'ban'); });
@@ -28,7 +28,7 @@ export default async function main(client) {
     try {
       await member.roles.remove(mutedRole);
       await logAction('Member Unmuted', [{ name: 'Reason', value: 'Punishment Expired' }], userId);
-      try { await dmUser(user, `You've been unmuted in **${guild}** \n Reason: \`\`Punishment Expired\`\` `); } 
+      try { await dmUser(user, await embed.dm('unmuted', 'guild', 'Punishment expired')); } 
       catch {null;}
       // Filter out all mutes in the array that have the same user
       expiringPunishments = expiringPunishments.filter(json => { return !(json.user == userId && json.punishmentType == 'mute'); });

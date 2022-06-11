@@ -5,7 +5,7 @@ export async function createReplyEmbed(description, args) {
   // Get values from args
   const color = args === undefined || args.color === undefined ? config.embedColors.base : args.color;
   const title = args === undefined || args.title === undefined ? null : args.title;
-  const emote = args === undefined || args.emote === undefined ? null : args.emote;
+  const emote = args === undefined || args.emote === undefined ? '' : args.emote;
 
   const embed = new MessageEmbed()
     .setColor(color)
