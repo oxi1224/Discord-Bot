@@ -42,7 +42,6 @@ export async function createLogsTable() {
   });
 
   await initRowTemplates();
-  console.log(await fetchExpiringPunishments())
   if (await fetchExpiringPunishments() === null) await ExpiringPunishmentsRow.create({ id: '0', punishmentInfo: [] });
 }
 
