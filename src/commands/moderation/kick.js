@@ -15,13 +15,13 @@ export default async function main(client) {
 
   // Kicks given user
   async function performKick({ action, userId, reason, guild, moderator }) {
-    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
     const user = await client.users.fetch(userId, false);
     const member = await guild.members.fetch(userId).catch(() => {return null;});
-    reason = reason === null ? 'None' : reason;
+    reason = !reason ? 'None' : reason;
 
     // Check if user is staff (has manage nicknames perms)
-    if (!member === null && member.permissions.has('MANAGE_NICKNAMES')) return action.reply(await embed.commandFail('Cannot kick staff.'));
+    if (member && member.permissions.has('MANAGE_NICKNAMES')) return action.reply(await embed.commandFail('Cannot kick staff.'));
     if (!(await guild.members.fetch(userId))) return action.reply(await embed.notInServer(user));
     try {
       await dmUser(user, await embed.dm('kicked', guild, reason));

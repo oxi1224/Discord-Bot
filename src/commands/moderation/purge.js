@@ -15,12 +15,12 @@ export default async function main() {
     
   async function purge({ action, messageCount, userId, moderator }) {
     if (messageCount > 100 || messageCount < 1 || messageCount === undefined) return action.reply(await embed.commandFail('Message count must be between 1 and 100.'));
-    if (userId !== null && !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
+    if (userId && !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
     const channel = action.channel;
     const messages = (await channel.messages
       .fetch({ limit: messageCount, before: action.id }))
       .filter(msg => { 
-        if (userId === null) return msg; 
+        if (!userId) return msg; 
         return msg.author.id === userId;
       });
 
@@ -28,7 +28,7 @@ export default async function main() {
     await channel.bulkDelete(messages);
 
     action.reply(await embed.createReplyEmbed(
-      `Successfully purged ${messages.size} messages ${userId === null ? '' : `from <@${userId}>`}.`, 
+      `Successfully purged ${messages.size} messages ${!userId ? '' : `from <@${userId}>`}.`, 
       { emote: emotes.success,
         color: embedColors.success }));
     

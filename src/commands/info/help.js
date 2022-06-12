@@ -12,7 +12,7 @@ export default async function main() {
 
   async function help({ action, command }) {
     const commands = (await appendToCommandArray({ finalize: true })).map(obj => obj.helpInfo);
-    if (command !== null && !commands.map(obj => obj.aliases).flat().includes(command)) return action.reply(await embed.commandFail('This command doesnt exist.'));
+    if (command && !commands.map(obj => obj.aliases).flat().includes(command)) return action.reply(await embed.commandFail('This command doesnt exist.'));
     if (!command) {
       const fields = [];
       const categories = [...new Set(commands.map(obj => obj.category))];
@@ -49,6 +49,7 @@ export default async function main() {
         { name: 'Aliases', value: `\`\`${matchingCommand.aliases.join(' ')}\`\`` }
       );
       if (commandArgs.length !== 0) fields.push({ name: 'Arguments', value: commandArgs.join('\n') });
+      
       await action.reply(await embed.createReplyEmbed({
         title: matchingCommand.title,
         description: matchingCommand.description,

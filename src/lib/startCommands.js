@@ -9,9 +9,9 @@ export async function startCommands(client) {
   command.unban(client);
   command.warn(client);
   command.kick(client);
+  command.modlogs(client);
   command.mute();
   command.unmute();
-  command.modlogs();
   command.purge();
 
   // Listeners

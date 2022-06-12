@@ -3,12 +3,12 @@ import * as config from '../config/config.js';
 
 export async function createReplyEmbed(args) {
   // Get values from args
-  const color = args === undefined || args.color === undefined ? config.embedColors.base : args.color;
-  const title = args === undefined || args.title === undefined ? null : args.title;
-  const emote = args === undefined || args.emote === undefined ? '' : args.emote;
-  const fields = args === undefined || args.fields === undefined ? null : args.fields;
-  const description = args === undefined || args.description === undefined ? null : args.description;
-  const footer = args === undefined || args.footer === undefined ? null : args.footer;
+  const color = !args || !args.color ? config.embedColors.base : args.color;
+  const title = !args || !args.title ? null : args.title;
+  const emote = !args || !args.emote ? '' : args.emote;
+  const fields = !args || !args.fields ? null : args.fields;
+  const description = !args || !args.description ? null : args.description;
+  const footer = !args || !args.footer ? null : args.footer;
   
   const embed = new MessageEmbed()
     .setColor(color);

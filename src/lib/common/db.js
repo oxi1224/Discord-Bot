@@ -42,7 +42,7 @@ export async function createLogsTable() {
   });
 
   await initRowTemplates();
-  if (await fetchExpiringPunishments() === null) await ExpiringPunishmentsRow.create({ id: '0', punishmentInfo: [] });
+  if (!(await fetchExpiringPunishments())) await ExpiringPunishmentsRow.create({ id: '0', punishmentInfo: [] });
 }
 
 // Create row from user id
@@ -66,7 +66,7 @@ export async function readFromDb(id) {
       id: id
     }
   });
-  return row === null ? null : row.dataValues;
+  return !row ? null : row.dataValues;
 }
 
 // Change one or many column values in a row
@@ -79,7 +79,7 @@ export async function changeColumnValues(id, column, data) {
 // Check if row exists
 export async function existsRow(id) {
   const response = await readFromDb(id);
-  return response === null ? false : true;
+  return !response ? false : true;
 }
 
 // Update the expiringPunishments database with updated punishment list
@@ -95,7 +95,7 @@ export async function fetchExpiringPunishments() {
       id: '0'
     }
   });
-  return response === null ? null : response.dataValues.punishmentInfo;
+  return !response ? null : response.dataValues.punishmentInfo;
 }
 
 async function initRowTemplates() {

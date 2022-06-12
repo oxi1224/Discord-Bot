@@ -15,7 +15,7 @@ export function generateModLogID() {
 // get punishment expiration date
 export function getExpirationDate(duration, currentTime) {
 
-  if (duration == null) return null;
+  if (!duration) return null;
   const numberInDuration = duration.match(/\d+/)[0];
   const sliceIndex = (() => { return numberInDuration.length > 2 ? numberInDuration[0].length - 1 : numberInDuration[0].length; })();
 
@@ -39,7 +39,7 @@ export function getExpirationDate(duration, currentTime) {
 export async function logToDb(userId, reason, moderator, column, duration) {
   if (!(await db.existsRow(userId))) await db.createUserRow(userId);
   // get the previous punishments
-  const userPunishmentsList = await db.readFromDb(userId) === null ? [] : (await db.readFromDb(userId))[column];
+  const userPunishmentsList = !(await db.readFromDb(userId)) ? [] : (await db.readFromDb(userId))[column];
   const punishmentType = column.split('').slice(0, -1).join('');
   // update the punishment list
   userPunishmentsList.push({
@@ -60,7 +60,7 @@ export async function logToDb(userId, reason, moderator, column, duration) {
   if (column === 'unbans' || column === 'unmutes') {
     expiringPunishments = expiringPunishments.filter(json => { return !(json.user == userId && json.punishmentType == punishmentType); });
   }
-  if (!(duration === null || duration === undefined)) {
+  if (duration) {
     expiringPunishments.push({
       user: userId,
       punishmentType: punishmentType,
@@ -81,8 +81,8 @@ export async function logAction(title, fieldsToAdd, args) {
   const { client } = await import('../../bot.js');
   
   // Get values from args
-  const mod = args === undefined ? null : args.mod || null;
-  const channelId = args === undefined ? loggingChannel : args.channelId || loggingChannel;
+  const mod = !args || !args.mod ? null : args.mod;
+  const channelId = !args || !args.channelId ? loggingChannel : args.channelId;
   
   const fields = fieldsToAdd;
   const embed = new MessageEmbed()
@@ -90,7 +90,7 @@ export async function logAction(title, fieldsToAdd, args) {
     .setTitle(title)
     .setTimestamp();
 
-  if (mod !== null) {
+  if (mod) {
     fields.unshift({ name: 'Moderator', value: `${mod}` });
     embed.setAuthor(mod.avatar ? 
       { name: `${mod.username}#${mod.discriminator}`, 

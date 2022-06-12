@@ -18,14 +18,14 @@ export default async function main(client) {
 
   // Bans given user
   async function performBan({ action, userId, reason, duration, guild, moderator }) {
-    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
     const banList = await guild.bans.fetch();
     const user = await client.users.fetch(userId, false);
     const member = await guild.members.fetch(userId).catch(() => {return null;});
-    reason = reason === null ? 'None' : reason;
+    reason = !reason ? 'None' : reason;
 
     // Check if user is staff (has manage nicknames perms)
-    if (!member === null && member.permissions.has('MANAGE_NICKNAMES')) return action.reply(await embed.commandFail('Cannot kick staff.'));
+    if (member && member.permissions.has('MANAGE_NICKNAMES')) return action.reply(await embed.commandFail('Cannot ban staff.'));
     if (!(banList.find(x => x.user.id === userId) === undefined)) return action.reply(await embed.commandFail('User already banned.'));
     try {
       await dmUser(user, await embed.dmDuration('banned', guild, reason, duration));
@@ -38,7 +38,7 @@ export default async function main(client) {
     logAction('Member Banned', [
       { name: 'User', value: `${user}` },
       { name: 'Reason', value: `\`\`${reason}\`\`` },
-      { name: 'Duration', value: duration === null ? 'Permanent' : duration }
+      { name: 'Duration', value: !duration ? 'Permanent' : duration }
     ], { mod: moderator });
     await guild.members.ban(userId, { reason: reason });
   }

@@ -18,12 +18,12 @@ export default async function main() {
 
   // Mutes given user
   async function mute({ action, userId, reason, duration, guild, moderator }) {
-    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
     const member = await guild.members.fetch(userId);
     const user = member.user;
-    reason = reason === null ? 'None' : reason;
+    reason = !reason ? 'None' : reason;
 
-    if (!(member)) return action.reply(await embed.notInServer(user));
+    if (!member) return action.reply(await embed.notInServer(user));
     if (member.roles.cache.some(role => role.id === mutedRole)) return action.reply(await embed.commandFail(`${user} is already muted.`));
     try {
       await dmUser(user, await embed.dmDuration('muted', guild, reason, duration));
@@ -36,7 +36,7 @@ export default async function main() {
     logAction('Member Muted', [
       { name: 'User', value: `${user}` },
       { name: 'Reason', value: `\`\`${reason}\`\`` },
-      { name: 'Duration', value: duration === null ? 'Permanent' : duration }
+      { name: 'Duration', value: !duration ? 'Permanent' : duration }
     ], { mod: moderator });
     await member.roles.add(mutedRole);
   }

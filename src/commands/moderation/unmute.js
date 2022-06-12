@@ -15,10 +15,10 @@ export default async function main() {
 
   // Unmutes given user
   async function unmute({ action, userId, reason, guild, moderator }) {
-    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
     const member = await guild.members.fetch(userId, false);
     const user = member.user;
-    reason = reason === null ? 'None' : reason;
+    reason = !reason ? 'None' : reason;
     
     if (!(member)) return action.reply(`${user} is not in the server`);
     if (!(member.roles.cache.some(role => role.id === mutedRole))) return action.reply(await embed.commandFail(`${user} is not muted.`));

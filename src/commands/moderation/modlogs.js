@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { MessageActionRow, MessageButton, MessageEmbed } from 'discord.js';
 import { readFromDb, appendToCommandArray, embed } from '#lib';
 
-export default async function main() {
+export default async function main(client) {
   // Create ban slash command
   const modlogsData = new SlashCommandBuilder()
     .setName('modlogs')
@@ -12,7 +12,7 @@ export default async function main() {
       .setRequired(true));
 
   async function showModlogs({ action, userId }) {
-    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
     const punishmentsJson = await readFromDb(userId);
     if (!punishmentsJson) return await action.reply(await embed.commandFail('User has no modlogs'));
     const usersPunishments = (punishmentsJson.warns).concat(
@@ -38,10 +38,17 @@ export default async function main() {
     usersPunishments.forEach(el => modlogEmbed.addField(`Type: ${el.punishmentType}`, `Reason: \`\`${el.reason}\`\`
 Moderator: <@${el.moderator.id}>
 Punnishment time: <t:${Math.floor(el.punishmentTime / 1000)}>
-Expires: ${el.punishmentExpires === null ? '``false``' : `<t:${Math.floor(el.punishmentExpires / 1000)}>`}
+Expires: ${!el.punishmentExpires ? '``false``' : `<t:${Math.floor(el.punishmentExpires / 1000)}>`}
 Modlog ID: \`\`${el.punishmentId}\`\``));
     await action.reply({ embeds: [modlogEmbed], components: [buttonsRow] });
   }
+
+  client.on('interactionCreate', async interaction => {
+    if (!interaction.isButton()) return;
+    if (!interaction.customId == 'modlog-delete') return;
+    if (!interaction.member.permissions.has('MANAGE_MESSAGES')) return;
+    await interaction.message.delete();
+  });
 
   appendToCommandArray({
     aliases: ['modlogs'],
