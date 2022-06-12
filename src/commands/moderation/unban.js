@@ -12,12 +12,12 @@ export default async function main(client) {
 
   // Unbans given user
   async function unBan({ action, userId, reason, guild, moderator }) {
-    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.punishmentFail('Invalid User.'));
+    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
     const user = await client.users.fetch(userId, false);
     const banList = await action.guild.bans.fetch();
     reason = reason === null ? 'None' : reason;
 
-    if (banList.find(x => x.user.id === userId) === undefined) return action.reply(await embed.punishmentFail(`${user} is not banned.`));
+    if (banList.find(x => x.user.id === userId) === undefined) return action.reply(await embed.commandFail(`${user} is not banned.`));
     if (!userId) throw new Error('BAN_RESOLVE_ID');
     await guild.bans.remove(userId);
     try {
@@ -39,6 +39,26 @@ export default async function main(client) {
     aliases: ['unban'],
     requiredPerms: 'BAN_MEMBERS',
     slashData: unBanData,
-    callback: unBan
+    callback: unBan,
+    helpInfo: {
+      title: 'Unban Command',
+      category: 'Moderation',
+      description: 'Unbans a user.',
+      usage: ['unban <user> [reason]'],
+      examples: ['unban @oxi#6219 fixing the bot'],
+      aliases: ['unban'],
+      arguments: [
+        {
+          argument: '<user>',
+          description: 'The user to unban.',
+          type: 'user or snowflake'
+        },
+        {
+          argument: '[reason]',
+          description: 'The reason of the unban.',
+          type: 'string'
+        }
+      ]
+    }
   });
 }

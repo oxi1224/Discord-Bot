@@ -15,8 +15,8 @@ export default async function main(client) {
 
   // Warns given user
   async function warn({ action, userId, reason, moderator, guild }) {
-    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.punishmentFail('Invalid User.'));
-    if (reason === null) return action.reply(await embed.punishmentFail('Reason cannot be empty.'));
+    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
+    if (reason === null) return action.reply(await embed.commandFail('Reason cannot be empty.'));
     const user = await client.users.fetch(userId, false);
     reason = reason === null ? 'None' : reason;
 
@@ -39,6 +39,26 @@ export default async function main(client) {
     aliases: ['warn'],
     requiredPerms: 'MANAGE_NICKNAMES',
     slashData: warnData,
-    callback: warn
+    callback: warn,
+    helpInfo: {
+      title: 'Warn Command',
+      category: 'Moderation',
+      description: 'Warns a member of the server.',
+      usage: ['warn <member> <reason>'],
+      examples: ['warn @oxi#6219 almost crashing the bot'],
+      aliases: ['warn'],
+      arguments: [
+        {
+          argument: '<member>',
+          description: 'The member to warn.',
+          type: 'user or snowflake'
+        },
+        {
+          argument: '<reason>',
+          description: 'The reason of the warn.',
+          type: 'string'
+        }
+      ]
+    }
   });
 }

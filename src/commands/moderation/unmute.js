@@ -15,13 +15,13 @@ export default async function main() {
 
   // Unmutes given user
   async function unmute({ action, userId, reason, guild, moderator }) {
-    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.punishmentFail('Invalid User.'));
+    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
     const member = await guild.members.fetch(userId, false);
     const user = member.user;
     reason = reason === null ? 'None' : reason;
     
     if (!(member)) return action.reply(`${user} is not in the server`);
-    if (!(member.roles.cache.some(role => role.id === mutedRole))) return action.reply(await embed.punishmentFail(`${user} is not muted.`));
+    if (!(member.roles.cache.some(role => role.id === mutedRole))) return action.reply(await embed.commandFail(`${user} is not muted.`));
     try {
       await dmUser(user, await embed.dm('unmuted', guild, reason));
       await action.reply(await embed.punishmentReply('unmuted', user));
@@ -41,6 +41,26 @@ export default async function main() {
     aliases: ['unmute'],
     requiredPerms: 'MUTE_MEMBERS',
     slashData: unmuteData,
-    callback: unmute
+    callback: unmute,
+    helpInfo: {
+      title: 'Unmute Command',
+      category: 'Moderation',
+      description: 'Unmutes a member of the server.',
+      usage: ['unbmute <member> [reason]'],
+      examples: ['unmute @oxi#6219 fixing the bot'],
+      aliases: ['unmute'],
+      arguments: [
+        {
+          argument: '<member>',
+          description: 'The member to unmute.',
+          type: 'user or snowflake'
+        },
+        {
+          argument: '[reason]',
+          description: 'The reason of the unmute.',
+          type: 'string'
+        }
+      ]
+    }
   });
 }

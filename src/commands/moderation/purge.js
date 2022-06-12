@@ -14,8 +14,8 @@ export default async function main() {
       .setRequired(false));
     
   async function purge({ action, messageCount, userId, moderator }) {
-    if (messageCount > 100 || messageCount < 1 || messageCount === undefined) return action.reply(await embed.punishmentFail('Message count must be between 1 and 100.'));
-    if (userId !== null && !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.punishmentFail('Invalid User.'));
+    if (messageCount > 100 || messageCount < 1 || messageCount === undefined) return action.reply(await embed.commandFail('Message count must be between 1 and 100.'));
+    if (userId !== null && !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
     const channel = action.channel;
     const messages = (await channel.messages
       .fetch({ limit: messageCount, before: action.id }))
@@ -24,7 +24,7 @@ export default async function main() {
         return msg.author.id === userId;
       });
 
-    if (messages.size === 0) return action.reply(await embed.punishmentFail(`No messages found from <@${userId}> in specified range.`));
+    if (messages.size === 0) return action.reply(await embed.commandFail(`No messages found from <@${userId}> in specified range.`));
     await channel.bulkDelete(messages);
 
     action.reply(await embed.createReplyEmbed(
@@ -42,6 +42,29 @@ export default async function main() {
     aliases: ['purge'],
     requiredPerms: 'MANAGE_MESSAGES',
     slashData: purgeData,
-    callback: purge
+    callback: purge,
+    helpInfo: {
+      title: 'Purge Command',
+      category: 'Moderation',
+      description: 'Purges messages from a user within a specified range or delete messages in a channel.',
+      usage: ['purge [user] <messageCount>'],
+      examples: [
+        'purge @oxi#6219 30',
+        'purge 30'
+      ],
+      aliases: ['purge'],
+      arguments: [
+        {
+          argument: '[user]',
+          description: 'The user whose messages to delete.',
+          type: 'user or snowflake'
+        },
+        {
+          argument: '<messageCount>',
+          description: 'The range of messages to search or delete.',
+          type: 'integer'
+        }
+      ]
+    }
   });
 }

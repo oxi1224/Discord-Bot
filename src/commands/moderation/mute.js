@@ -18,13 +18,13 @@ export default async function main() {
 
   // Mutes given user
   async function mute({ action, userId, reason, duration, guild, moderator }) {
-    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.punishmentFail('Invalid User.'));
+    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
     const member = await guild.members.fetch(userId);
     const user = member.user;
     reason = reason === null ? 'None' : reason;
 
     if (!(member)) return action.reply(await embed.notInServer(user));
-    if (member.roles.cache.some(role => role.id === mutedRole)) return action.reply(await embed.punishmentFail(`${user} is already muted.`));
+    if (member.roles.cache.some(role => role.id === mutedRole)) return action.reply(await embed.commandFail(`${user} is already muted.`));
     try {
       await dmUser(user, await embed.dmDuration('muted', guild, reason, duration));
       await action.reply(await embed.punishmentReply('muted', user));
@@ -45,6 +45,32 @@ export default async function main() {
     aliases: ['mute'],
     requiredPerms: 'MUTE_MEMBERS',
     slashData: muteData,
-    callback: mute
+    callback: mute,
+    helpInfo: {
+      title: 'Mute Command',
+      category: 'Moderation',
+      description: 'Mute a member of the server.',
+      usage: ['mute <member> [duration] [reason]'],
+      examples: ['mute @oxi#6219 1d crashing the bot'],
+      aliases: ['mute'],
+      arguments: [
+        {
+          argument: '<member>',
+          description: 'The member to mute.',
+          type: 'user or snowflake'
+        },
+        {
+          argument: '[duration]',
+          description: 'The duration of the mute.',
+          type: 'integer followed by time suffix.',
+          timeSuffixes: ['min', 'h', 'd', 'w', 'm']
+        },
+        {
+          argument: '[reason]',
+          description: 'The reason of the mute.',
+          type: 'string'
+        }
+      ]
+    }
   });
 }

@@ -9,7 +9,8 @@ export async function appendToCommandArray({
   prefixed = true,
   slashData,
   callback,
-  finalize = false
+  finalize = false,
+  helpInfo = {}
 }) {
   if (!finalize) {
     commands.push({
@@ -17,7 +18,8 @@ export async function appendToCommandArray({
       requiredPerms,
       prefixed,
       slashData,
-      callback
+      callback,
+      helpInfo
     });
     slash === true ? await updateSlashCommands(slashData, aliases[0]) : null;
   }
@@ -46,6 +48,7 @@ export async function initializeCommands(client, commandArray) {
     callbackParams.moderator = message.author;
     callbackParams.guild = message.guild;
     callbackParams.messageCount = callbackParams.userId == null ? args[0] : args[1];
+    callbackParams.command = args.length === 0 ? null : args[0];
 
     commandArray.forEach(async cmd => {
       if (!cmd.prefixed) return;
@@ -65,7 +68,8 @@ export async function initializeCommands(client, commandArray) {
     callbackParams.moderator = interaction.member.user;
     callbackParams.guild = interaction.guild;
     callbackParams.messageCount = interaction.options.get('message_count') == null ? null : interaction.options.get('message_count').value; 
-    
+    callbackParams.command = interaction.options.get('command') == null ? null : interaction.options.get('command').value; 
+
     commandArray.forEach(async cmd => {
       if (!cmd.prefixed) return;
       if (!cmd.aliases.includes(interaction.commandName)) return;

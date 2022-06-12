@@ -21,6 +21,7 @@ export async function startCommands(client) {
 
   // Info
   command.ping(client);
+  command.help();
 
   initializeCommands(client, appendToCommandArray({ finalize: true }));
 }

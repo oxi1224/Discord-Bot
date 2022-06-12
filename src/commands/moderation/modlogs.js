@@ -12,9 +12,9 @@ export default async function main() {
       .setRequired(true));
 
   async function showModlogs({ action, userId }) {
-    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.punishmentFail('Invalid User.'));
+    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
     const punishmentsJson = await readFromDb(userId);
-    if (!punishmentsJson) return await action.reply(await embed.punishmentFail('User has no modlogs'));
+    if (!punishmentsJson) return await action.reply(await embed.commandFail('User has no modlogs'));
     const usersPunishments = (punishmentsJson.warns).concat(
       punishmentsJson.mutes, punishmentsJson.unmutes, 
       punishmentsJson.bans, punishmentsJson.unbans, 
@@ -47,6 +47,21 @@ Modlog ID: \`\`${el.punishmentId}\`\``));
     aliases: ['modlogs'],
     requiredPerms: 'BAN_MEMBERS',
     slashData: modlogsData,
-    callback: showModlogs
+    callback: showModlogs,
+    helpInfo: {
+      title: 'Modlogs Command',
+      category: 'Moderation',
+      description: 'Checks the modlogs of a user.',
+      usage: ['modlogs <user>'],
+      examples: ['modlogs @oxi#6219'],
+      aliases: ['modlogs'],
+      arguments: [
+        {
+          argument: '<user>',
+          description: 'The user whose modlogs to check.',
+          type: 'user or snowflake'
+        },
+      ]
+    }
   });
 }

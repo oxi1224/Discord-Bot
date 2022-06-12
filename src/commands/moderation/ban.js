@@ -18,15 +18,15 @@ export default async function main(client) {
 
   // Bans given user
   async function performBan({ action, userId, reason, duration, guild, moderator }) {
-    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.punishmentFail('Invalid User.'));
+    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
     const banList = await guild.bans.fetch();
     const user = await client.users.fetch(userId, false);
     const member = await guild.members.fetch(userId).catch(() => {return null;});
     reason = reason === null ? 'None' : reason;
 
     // Check if user is staff (has manage nicknames perms)
-    if (!member === null && member.permissions.has('MANAGE_NICKNAMES')) return action.reply(await embed.punishmentFail('Cannot kick staff.'));
-    if (!(banList.find(x => x.user.id === userId) === undefined)) return action.reply(await embed.punishmentFail('User already banned.'));
+    if (!member === null && member.permissions.has('MANAGE_NICKNAMES')) return action.reply(await embed.commandFail('Cannot kick staff.'));
+    if (!(banList.find(x => x.user.id === userId) === undefined)) return action.reply(await embed.commandFail('User already banned.'));
     try {
       await dmUser(user, await embed.dmDuration('banned', guild, reason, duration));
       await action.reply(await embed.punishmentReply('banned', user));
@@ -47,6 +47,32 @@ export default async function main(client) {
     aliases: ['ban'],
     requiredPerms: 'BAN_MEMBERS',
     slashData: banData,
-    callback: performBan
+    callback: performBan,
+    helpInfo: {
+      title: 'Ban Command',
+      category: 'Moderation',
+      description: 'Bans a user.',
+      usage: ['ban <user> [duration] [reason]'],
+      examples: ['ban @oxi#6219 1d crashing the bot'],
+      aliases: ['ban'],
+      arguments: [
+        {
+          argument: '<user>',
+          description: 'The user to ban.',
+          type: 'user or snowflake'
+        },
+        {
+          argument: '[duration]',
+          description: 'The duration of the ban.',
+          type: 'integer followed by time suffix.',
+          timeSuffixes: ['min', 'h', 'd', 'w', 'm']
+        },
+        {
+          argument: '[reason]',
+          description: 'The reason of the ban.',
+          type: 'string'
+        }
+      ]
+    }
   });
 }

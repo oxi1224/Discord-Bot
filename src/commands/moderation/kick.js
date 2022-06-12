@@ -15,13 +15,13 @@ export default async function main(client) {
 
   // Kicks given user
   async function performKick({ action, userId, reason, guild, moderator }) {
-    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.punishmentFail('Invalid User.'));
+    if (userId === null || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
     const user = await client.users.fetch(userId, false);
     const member = await guild.members.fetch(userId).catch(() => {return null;});
     reason = reason === null ? 'None' : reason;
 
     // Check if user is staff (has manage nicknames perms)
-    if (!member === null && member.permissions.has('MANAGE_NICKNAMES')) return action.reply(await embed.punishmentFail('Cannot kick staff.'));
+    if (!member === null && member.permissions.has('MANAGE_NICKNAMES')) return action.reply(await embed.commandFail('Cannot kick staff.'));
     if (!(await guild.members.fetch(userId))) return action.reply(await embed.notInServer(user));
     try {
       await dmUser(user, await embed.dm('kicked', guild, reason));
@@ -42,6 +42,26 @@ export default async function main(client) {
     aliases: ['kick'],
     requiredPerms: 'KICK_MEMBERS',
     slashData: kickData,
-    callback: performKick
+    callback: performKick,
+    helpInfo: {
+      title: 'Kick Command',
+      category: 'Moderation',
+      description: 'Kicks a member of the server.',
+      usage: ['kick <member> [reason]'],
+      examples: ['kick @oxi#6219 crashing the bot'],
+      aliases: ['kick'],
+      arguments: [
+        {
+          argument: '<member>',
+          description: 'The member to kick.',
+          type: 'user or snowflake'
+        },
+        {
+          argument: '<reason>',
+          description: 'The reason of the kick.',
+          type: 'string'
+        }
+      ]
+    }
   });
 }

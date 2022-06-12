@@ -17,6 +17,15 @@ export default async function main(client) {
   appendToCommandArray({
     aliases: ['ping'], 
     slashData: pingData,
-    callback: getPing
+    callback: getPing,
+    helpInfo: {
+      title: 'Ping Command',
+      category: 'Info',
+      description: 'Gets the latency of the bot.',
+      usage: ['ping'],
+      examples: ['ping'],
+      aliases: ['ping'],
+      arguments: []
+    }
   });
 }
