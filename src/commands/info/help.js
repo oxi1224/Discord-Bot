@@ -32,7 +32,7 @@ export default async function main() {
     }
     if (command) {
       const fields = [];
-      const matchingCommand = commands.filter(obj => obj.aliases[0] === command)[0];
+      const matchingCommand = commands.filter(obj => obj.aliases.includes(command))[0];
       const commandArgs = [];
 
       matchingCommand.arguments.forEach(arg => {

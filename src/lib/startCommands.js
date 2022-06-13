@@ -10,6 +10,7 @@ export async function startCommands(client) {
   command.warn(client);
   command.kick(client);
   command.modlogs(client);
+  command.hidePunishment(client);
   command.mute();
   command.unmute();
   command.purge();

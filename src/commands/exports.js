@@ -11,3 +11,4 @@ export { default as kick } from './moderation/kick.js';
 export { default as warn } from './moderation/warn.js';
 export { default as modlogs } from './moderation/modlogs.js';
 export { default as purge } from './moderation/purge.js';
+export { default as hidePunishment } from './moderation/hidePunishment.js';

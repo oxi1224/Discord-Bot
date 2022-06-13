@@ -49,6 +49,7 @@ export async function initializeCommands(client, commandArray) {
     callbackParams.guild = message.guild;
     callbackParams.messageCount = !callbackParams.userId ? args[0] : args[1];
     callbackParams.command = args.length === 0 ? null : args[0];
+    callbackParams.punishmentId = args.length === 0 ? null : args[1];
 
     commandArray.forEach(async cmd => {
       if (!cmd.prefixed) return;
@@ -67,8 +68,9 @@ export async function initializeCommands(client, commandArray) {
     callbackParams.reason = !interaction.options.get('reason') ? null : interaction.options.get('reason').value;
     callbackParams.moderator = interaction.member.user;
     callbackParams.guild = interaction.guild;
-    callbackParams.messageCount = !interaction.options.get('message_count') ? null : interaction.options.get('message_count').value; 
-    callbackParams.command = !interaction.options.get('command') ? null : interaction.options.get('command').value; 
+    callbackParams.messageCount = !interaction.options.get('message_count') ? null : interaction.options.get('message_count').value;
+    callbackParams.command = !interaction.options.get('command') ? null : interaction.options.get('command').value;
+    callbackParams.command = !interaction.options.get('punishment_id') ? null : interaction.options.get('punishment_id').value; 
 
     commandArray.forEach(async cmd => {
       if (!cmd.slash) return;
