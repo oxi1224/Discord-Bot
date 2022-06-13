@@ -27,10 +27,11 @@ export default async function main() {
     if (messages.size === 0) return action.reply(await embed.commandFail(`No messages found from <@${userId}> in specified range.`));
     await channel.bulkDelete(messages);
 
-    action.reply(await embed.createReplyEmbed(
-      `Successfully purged ${messages.size} messages ${!userId ? '' : `from <@${userId}>`}.`, 
-      { emote: emotes.success,
-        color: embedColors.success }));
+    action.reply(await embed.createReplyEmbed({
+      emote: emotes.success,
+      description: `Successfully purged ${messages.size} messages ${!userId ? '.' : `from <@${userId}>.`}`,
+      color: embedColors.success
+    }));
     
     logAction('Messages Purged', [
       { name: 'Amount', value: messages.size.toString() },

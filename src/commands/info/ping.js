@@ -8,10 +8,10 @@ export default async function main(client) {
     .setDescription('get information about ping');
 
   async function getPing({ action }) {
-    await action.reply(await embed.createReplyEmbed(
-      `Bot latency: \`\`${Date.now() - action.createdTimestamp}ms\`\`
+    await action.reply(await embed.createReplyEmbed({
+      description: `Bot latency: \`\`${Date.now() - action.createdTimestamp}ms\`\`
       API latency: \`\`${Math.round(client.ws.ping)}ms\`\``
-    ));
+    }));
   }
 
   appendToCommandArray({
