@@ -28,7 +28,7 @@ export default async function main() {
 
       await action.reply(await embed.createReplyEmbed({
         fields: fields,
-        footer: 'For more information on a command do help [command].'
+        footer: { text: 'For more information on a command do help [command].' }
       }));
     }
     if (command) {

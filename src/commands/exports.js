@@ -2,6 +2,7 @@
 export { default as ping } from './info/ping.js';
 export { default as help } from './info/help.js';
 export { default as avatar } from './info/avatar.js';
+export { default as userInfo } from './info/userInfo.js';
 
 // Moderation
 export { default as ban } from './moderation/ban.js';

@@ -10,15 +10,21 @@ export async function createReplyEmbed(args) {
   const description = !args || !args.description ? null : args.description;
   const footer = !args || !args.footer ? null : args.footer;
   const image = !args || !args.image ? null : args.image;
+  const timestamp = !args || !args.timestamp ? false : args.timestamp;
+  const author = !args || !args.author ? null : args.author;
+  const thumbnail = !args || !args.thumbnail ? null : args.thumbnail;
   
   const embed = new MessageEmbed()
     .setColor(color);
 
   if (title) embed.setTitle(title);
-  if (fields) fields.forEach(obj => embed.addField(obj.name, obj.value));
+  if (fields) fields.forEach(obj => embed.addField(obj.name, obj.value, obj.inline ? obj.inline : false));
   if (description) embed.setDescription(`${emote} ${description}`);
-  if (footer) embed.setFooter({ text: footer });
+  if (footer) embed.setFooter(footer);
   if (image) embed.setImage(image);
+  if (timestamp) embed.setTimestamp();
+  if (author) embed.setAuthor(author);
+  if (thumbnail) embed.setThumbnail(thumbnail);
 
   return { embeds: [embed] };
 }

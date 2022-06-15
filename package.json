@@ -1,6 +1,6 @@
 {
   "name": "discord-bot",
-  "version": "2.7.7",
+  "version": "2.8.7",
   "description": "A simple bot for the chatting app discord.",
   "type": "module",
   "main": "bot.js",
@@ -28,6 +28,7 @@
     "discord-api-types": "^0.32.1",
     "discord.js": "13.6.0",
     "dotenv": "^16.0.1",
+    "humanize-duration": "^3.27.2",
     "iterall": "^1.3.0",
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",

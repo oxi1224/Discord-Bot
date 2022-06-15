@@ -15,7 +15,8 @@ export default async function main(client) {
     const user = userId ? await client.users.fetch(userId) : action.author || action.member.user;
     await action.reply(await embed.createReplyEmbed({
       title: `${user.username}#${user.discriminator}'s Avatar`,
-      image: user.displayAvatarURL()
+      image: user.displayAvatarURL(),
+      timestamp: true
     }));
   }
 
