@@ -8,3 +8,4 @@ export const mutedRole = config.mutedRole;
 export const prefix = config.prefix;
 export const emotes = config.emotes;
 export const embedColors = config.colors;
+export const blacklistedRoles = config.blacklistedRoles

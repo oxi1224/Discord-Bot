@@ -37,11 +37,12 @@ export default async function main() {
       const commandArgs = [];
 
       matchingCommand.arguments.forEach(arg => {
-        commandArgs.push(
-          `\`\`${arg.argument}\`\`
-          » **Desc**: ${arg.description}
-          » **Type**: ${arg.type}
-          ${arg.timeSuffixes ? `» **Time Suffixes**: ${arg.timeSuffixes.map(str => `\`\`${str}\`\``).join(' ')}` : ''}`.trim());
+        commandArgs.push(`
+\`\`${arg.argument}\`\`
+» **Desc**: ${arg.description}
+» **Type**: ${arg.type}
+${arg.timeSuffixes ? `» **Time Suffixes**: ${arg.timeSuffixes.map(str => `\`\`${str}\`\``).join(' ')}` : ''}
+          `.trim());
       });
 
       fields.push(

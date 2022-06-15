@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { appendToCommandArray, embed } from '#lib';
+import { appendToCommandArray, embed, blacklistedRoles } from '#lib';
 
 export default async function main() {
   // Create role slash command
@@ -30,23 +30,28 @@ export default async function main() {
 
     // Check if roleInfo is the name or ID of a role then get role object
     const role = await (async () => {
-      if (roleInfo.match(/^\d+/)) return await guild.roles.cache.find(Role => Role.id === roleInfo);
-      return await guild.roles.cache.find(Role => Role.name === roleInfo);
+      if (roleInfo.match(/^\d+/)) return blacklistedRoles.ids.includes(roleInfo) ? 'blacklisted role' : await guild.roles.cache.find(Role => Role.id === roleInfo);
+      return blacklistedRoles.names.includes(roleInfo.toLowerCase()) ? 'blacklisted role' : await guild.roles.cache.find(Role => Role.name === roleInfo);
     })();
+    if (role === 'blacklisted role') return action.reply(await embed.commandFail('Cannot modify blacklisted roles.'));
     if (!role) return action.reply(await embed.commandFail('No such role found.'));
 
     switch (roleFunction.toLowerCase()) {
 
     case 'ra':
     case 'add':
-      await member.roles.add(role)
-        .then(action.reply(await embed.commandSuccess(`Successfully added ${role} to ${member}.`)));
+      try {
+        await member.roles.add(role);
+        action.reply(await embed.commandSuccess(`Successfully added ${role} to ${member}.`));
+      } catch { action.reply(await embed.commandFail(`${role} is higher in hierarchy than me.`)); }
       break;
 
     case 'rm':
     case 'remove':
-      await member.roles.remove(role)
-        .then(action.reply(await embed.commandSuccess(`Successfully removed ${role} from ${member}.`)));
+      try {
+        await member.roles.remove(role);
+        action.reply(await embed.commandSuccess(`Successfully removed ${role} from ${member}.`));
+      } catch { action.reply(await embed.commandFail(`${role} is higher in hierarchy than me.`)); }
       break;
 
     default:

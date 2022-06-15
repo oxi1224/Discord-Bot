@@ -9,8 +9,9 @@ export default async function main(client) {
 
   async function getPing({ action }) {
     await action.reply(await embed.createReplyEmbed({
-      description: `Bot latency: \`\`${Date.now() - action.createdTimestamp}ms\`\`
-      API latency: \`\`${Math.round(client.ws.ping)}ms\`\``
+      description: `
+Bot latency: \`\`${Date.now() - action.createdTimestamp}ms\`\`
+API latency: \`\`${Math.round(client.ws.ping)}ms\`\``
     }));
   }
 
