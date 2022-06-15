@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { logAction, emotes, embedColors, appendToCommandArray, embed } from '#lib';
+import { logAction, appendToCommandArray, embed } from '#lib';
 
 export default async function main() {
   // Create purge slash command
@@ -27,11 +27,7 @@ export default async function main() {
     if (messages.size === 0) return action.reply(await embed.commandFail(`No messages found from <@${userId}> in specified range.`));
     await channel.bulkDelete(messages);
 
-    action.reply(await embed.createReplyEmbed({
-      emote: emotes.success,
-      description: `Successfully purged ${messages.size} messages ${!userId ? '.' : `from <@${userId}>.`}`,
-      color: embedColors.success
-    }));
+    action.reply(await embed.commandSuccess(`Successfully purged ${messages.size} messages ${!userId ? '.' : `from <@${userId}>.`}`));
     
     logAction('Messages Purged', [
       { name: 'Amount', value: messages.size.toString() },

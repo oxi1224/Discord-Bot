@@ -9,6 +9,7 @@ export async function createReplyEmbed(args) {
   const fields = !args || !args.fields ? null : args.fields;
   const description = !args || !args.description ? null : args.description;
   const footer = !args || !args.footer ? null : args.footer;
+  const image = !args || !args.image ? null : args.image;
   
   const embed = new MessageEmbed()
     .setColor(color);
@@ -17,6 +18,7 @@ export async function createReplyEmbed(args) {
   if (fields) fields.forEach(obj => embed.addField(obj.name, obj.value));
   if (description) embed.setDescription(`${emote} ${description}`);
   if (footer) embed.setFooter({ text: footer });
+  if (image) embed.setImage(image);
 
   return { embeds: [embed] };
 }

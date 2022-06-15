@@ -58,7 +58,7 @@ export default async function main(client) {
       description: 'Hides punishment with specificed caseID of given user.',
       usage: ['hide-punishment <user> <punshment ID>'],
       examples: ['hide-punishment @oxi#6219 dQw4w9WgXcQ'],
-      aliases: ['hide-punishment', 'hide-modlog', 'hide'],
+      aliases: ['hide-punishment', 'hide-modlog', 'del-warn'],
       arguments: [
         {
           argument: '<user>',
