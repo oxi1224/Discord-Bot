@@ -50,7 +50,7 @@ export default async function main(client) {
   }
 
   appendToCommandArray({
-    aliases: ['hide-punishment', 'hide-modlog', 'hide'],
+    aliases: ['hide-punishment', 'hide-modlog', 'del-warn'],
     requiredPerms: 'BAN_MEMBERS',
     slashData: hidePunishmentData,
     callback: hidePunishment,

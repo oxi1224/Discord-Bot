@@ -36,9 +36,16 @@ export async function initializeCommands(client, commandArray) {
     const command = args.shift().toLowerCase();
 
     callbackParams.action = message;
+    callbackParams.roleFunction = (() => {
+      if (['ra', 'rm'].includes(command)) {
+        args.unshift(command);
+        return args[0];
+      }
+      return command === 'role' ? args[0] : null; 
+    })();
     callbackParams.userId = await (async () => {
       try {
-        const userId = !(message.mentions.users.first()) ? args[0].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id;
+        const userId = !(message.mentions.users.first()) ? args[1 + args.indexOf(callbackParams.roleFunction)].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id;
         if (!userId.match(/^[0-9]{15,18}/)) return null;
         return userId;
       } catch { return null; }
@@ -50,11 +57,13 @@ export async function initializeCommands(client, commandArray) {
     callbackParams.messageCount = !callbackParams.userId ? args[0] : args[1];
     callbackParams.command = args.length === 0 ? null : args[0];
     callbackParams.punishmentId = args.length === 0 ? null : args[1];
+    callbackParams.roleInfo = args.length === 0 ? null : args.slice(2);
 
     commandArray.forEach(async cmd => {
       if (!cmd.prefixed) return;
       if (!cmd.aliases.includes(command)) return;
       if (!message.member.permissions.has(cmd.requiredPerms)) return message.react(emotes.error);
+
       await cmd.callback(callbackParams);
     });
   });
@@ -70,12 +79,14 @@ export async function initializeCommands(client, commandArray) {
     callbackParams.guild = interaction.guild;
     callbackParams.messageCount = !interaction.options.get('message_count') ? null : interaction.options.get('message_count').value;
     callbackParams.command = !interaction.options.get('command') ? null : interaction.options.get('command').value;
-    callbackParams.command = !interaction.options.get('punishment_id') ? null : interaction.options.get('punishment_id').value; 
-
+    callbackParams.punishmentId = !interaction.options.get('punishment_id') ? null : interaction.options.get('punishment_id').value;
+    callbackParams.roleFunction = !interaction.options.get('function') ? null : interaction.options.get('function').value;
+    callbackParams.roleInfo = !interaction.options.get('role') ? null : interaction.options.get('role').role.name;
+    
     commandArray.forEach(async cmd => {
-      if (!cmd.slash) return;
       if (!cmd.aliases.includes(interaction.commandName)) return;
       if (!interaction.member.permissions.has(cmd.requiredPerms)) return interaction.reply({ content: 'Insufficient Permissions', ephemeral: true });
+      
       await cmd.callback(callbackParams);
     });
   });
