@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { appendToCommandArray, embed, embedColors, emotes } from '#lib';
+import { appendToCommandArray, embed } from '#lib';
 
 export default async function main() {
   // Create role slash command
@@ -36,25 +36,17 @@ export default async function main() {
     if (!role) return action.reply(await embed.commandFail('No such role found.'));
 
     switch (roleFunction.toLowerCase()) {
-      
+
     case 'ra':
     case 'add':
       await member.roles.add(role)
-        .then(action.reply(await embed.createReplyEmbed({
-          color: embedColors.success,
-          emote: emotes.success,
-          description: `Successfully added ${role} to ${member}.`
-        })));
+        .then(action.reply(await embed.commandSuccess(`Successfully added ${role} to ${member}.`)));
       break;
 
     case 'rm':
     case 'remove':
       await member.roles.remove(role)
-        .then(action.reply(await embed.createReplyEmbed({
-          color: embedColors.success,
-          emote: emotes.success,
-          description: `Successfully removed ${role} from ${member}.`
-        })));
+        .then(action.reply(await embed.commandSuccess(`Successfully removed ${role} from ${member}.`)));
       break;
 
     default:

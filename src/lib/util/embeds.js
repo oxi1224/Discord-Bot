@@ -54,3 +54,9 @@ export const commandFail = (text) => createReplyEmbed({
   color: config.embedColors.error,
   emote: config.emotes.error
 });
+
+export const commandSuccess = (text) => createReplyEmbed({
+  description: text,
+  color: config.embedColors.success,
+  emote: config.emotes.success
+});

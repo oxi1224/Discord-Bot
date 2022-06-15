@@ -15,6 +15,7 @@ export default async function main() {
     if (command && !commands.map(obj => obj.aliases).flat().includes(command)) return action.reply(await embed.commandFail('This command doesnt exist.'));
     if (!command) {
       const fields = [];
+      // Get all unique fields
       const categories = [...new Set(commands.map(obj => obj.category))];
       
       categories.forEach(category => {
@@ -45,8 +46,8 @@ export default async function main() {
 
       fields.push(
         { name: 'Usage', value: `\`\`${matchingCommand.usage.join('\n')}\`\`` },
-        { name: 'Example', value: `${matchingCommand.examples.map(str => `\`\`${str}\`\``).join('\n')}` },
-        { name: 'Aliases', value: `\`\`${matchingCommand.aliases.join(' ')}\`\`` }
+        { name: 'Example', value: matchingCommand.examples.map(str => `\`\`${str}\`\``).join('\n') },
+        { name: 'Aliases', value: matchingCommand.aliases.map(str => `\`\`${str}\`\``).join(' ') }
       );
       if (commandArgs.length !== 0) fields.push({ name: 'Arguments', value: commandArgs.join('\n') });
       

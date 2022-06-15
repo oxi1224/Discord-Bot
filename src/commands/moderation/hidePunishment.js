@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { logAction, appendToCommandArray, embed, readFromDb, changeColumnValues, emotes, embedColors } from '#lib';
+import { logAction, appendToCommandArray, embed, readFromDb, changeColumnValues } from '#lib';
 
 export default async function main(client) {
   // Create hidePunishmentData slash command
@@ -13,7 +13,7 @@ export default async function main(client) {
       .setDescription('Punishment ID of the punishment')
       .setRequired(true));
 
-  // Hides punishment with specificed caseID of given user
+  // Removes punishment with specificed caseID of given user from modlogs
   async function hidePunishment({ action, userId, moderator, punishmentId }) {
     if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
     
@@ -21,6 +21,7 @@ export default async function main(client) {
     if (!punishmentsJson) return action.reply(await embed.commandFail(`${user} has no punishment history.`));
 
     const user = await client.users.fetch(userId, false);
+    // Connect all punishment type arrays into one
     const usersPunishments = (punishmentsJson.warns).concat(
       punishmentsJson.mutes, punishmentsJson.unmutes, 
       punishmentsJson.bans, punishmentsJson.unbans, 
@@ -28,11 +29,12 @@ export default async function main(client) {
     const punishmentToRemove = usersPunishments.find(punishment => punishment.punishmentId === punishmentId);
     if (!punishmentToRemove) return action.reply(await embed.commandFail('No punishment with such ID found'));
 
+    // Punishment type array without specificed modlog 
     const finalPunishmentArray = punishmentsJson[`${punishmentToRemove.punishmentType}s`];
     finalPunishmentArray.splice(punishmentsJson[`${punishmentToRemove.punishmentType}s`].indexOf(punishmentToRemove), 1);
     
     await changeColumnValues(userId, `${punishmentToRemove.punishmentType}s`, finalPunishmentArray);
-    logAction('Punishment Hidden', [
+    logAction('Punishment Removed', [
       { name: 'User', value: `${user}` },
       { name: 'Punishment ID', value: `\`\`${punishmentId}\`\`` },
       { name: 'Punishment Info', value: `**Type**: ${punishmentToRemove.punishmentType} 
@@ -42,11 +44,7 @@ export default async function main(client) {
       **Expires**: ${!punishmentToRemove.punishmentExpires ? '``false``' : `<t:${Math.floor(punishmentToRemove.punishmentExpires / 1000)}>`}` }
     ], { mod: moderator });
 
-    action.reply(await embed.createReplyEmbed({
-      color: embedColors.success,
-      description: `Successfully hidden punishment with the ID \`\`${punishmentId}\`\``,
-      emote: emotes.success
-    }));
+    action.reply(await embed.commandSuccess(`Successfully hidden punishment with the ID \`\`${punishmentId}\`\``));
   }
 
   appendToCommandArray({
