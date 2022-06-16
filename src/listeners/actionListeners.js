@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import { logAction } from '../lib/util/util.js';
 import { readFromDb } from '../lib/common/db.js';
 import { mutedRole } from '../lib/config/config.js';
@@ -26,14 +27,20 @@ export default async function main(client) {
       switch (type) {
       case ('messageDelete'):
         if (message.embeds.length > 0) return;
-        return await logAction('Message Deleted', [
+        const content = [
           { name: 'Author', value: `${message.author}` },
           { name: 'Channel', value: `${message.channel}` },
-          { name: 'Content', value: `${message.content}` }
-        ]);    
+        ];
+        let fieldIndex = 1;
+        // Split the content into multilpe fields if it's over 1024 characters
+        for (let i = 0; i < message.content.length; i += 1024) {
+          const cont = message.content.substring(i, Math.min(message.content.length, i + 1024));
+          content.push({ name: `Content[${fieldIndex}]`, value: cont });
+          fieldIndex++;
+        }
+        return await logAction('Message Deleted', content);
       case ('messageReactionRemoveAll'):
         return await logAction('Reactions Removed From Message', [
-          { name: 'Content', value: `${message.content}` },
           { name: 'Message link', value: `[Jump](${message.url})` }
         ]);
       }
@@ -42,11 +49,24 @@ export default async function main(client) {
 
   // Listens for message edits
   client.on('messageUpdate', async (oldMessage, newMessage) => {
-    await logAction('Message Edited', [
-      { name: 'Old message', value: `${oldMessage.content}` },
-      { name: 'New message', value: `${newMessage.content}` },
-      { name: 'Message link', value: `[Jump](${newMessage.url})` }
-    ]);
+    const content = [
+      { name: 'Author', value: `${newMessage.author}` },
+      { name: 'Channel', value: `${newMessage.channel}` },
+    ];
+    let fieldIndex = 1;
+    // Split the content into multilpe fields if it's over 1024 characters
+    for (let i = 0; i < oldMessage.content.length; i += 1024) {
+      const cont = oldMessage.content.substring(i, Math.min(oldMessage.content.length, i + 1024));
+      content.push({ name: `Old Content[${fieldIndex}]`, value: cont });
+      fieldIndex++;
+    }
+    fieldIndex = 1;
+    for (let i = 0; i < newMessage.content.length; i += 1024) {
+      const cont = newMessage.content.substring(i, Math.min(newMessage.content.length, i + 1024));
+      content.push({ name: `New Content[${fieldIndex}]`, value: cont });
+      fieldIndex++;
+    }
+    await logAction('Message Edited', content);
   });
 
   // Listens for role updates
