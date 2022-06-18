@@ -24,11 +24,11 @@ export default async function main(client) {
     const member = await guild.members.fetch(userId).catch(() => {return null;});
     reason = !reason ? 'None' : reason;
 
-    // Check if user is staff (has manage nicknames perms)
-    if (member && member.permissions.has('MANAGE_NICKNAMES')) return action.reply(await embed.commandFail('Cannot ban staff.'));
     if (!(banList.find(x => x.user.id === userId) === undefined)) return action.reply(await embed.commandFail('User already banned.'));
+    if (!member.bannable) return action.reply(await embed.commandFail(`${member} is not bannable.`));
+    
     try {
-      await dmUser(user, await embed.dmDuration('banned', guild, reason, duration));
+      dmUser(user, await embed.dmDuration('banned', guild, reason, duration));
       await action.reply(await embed.punishmentReply('banned', user));
     } catch {
       await action.reply(await embed.dmFail(user));
@@ -40,6 +40,7 @@ export default async function main(client) {
       { name: 'Reason', value: `\`\`${reason}\`\`` },
       { name: 'Duration', value: !duration ? 'Permanent' : duration }
     ], { mod: moderator });
+
     await guild.members.ban(userId, { reason: reason });
   }
 

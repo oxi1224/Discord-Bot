@@ -5,3 +5,4 @@ src/lib/config/configDev.json
 src/lib/config/configWHS.json
 .yarn/cache
 .yarn/install-state.gz
+/sequelize/

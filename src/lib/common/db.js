@@ -1,7 +1,7 @@
-import { CONNECTION_STRING } from './auth.js'; 
+import { CONNECTION_URL } from './auth.js'; 
 import { Sequelize, DataTypes } from 'sequelize';
 
-export const sequelize = new Sequelize(CONNECTION_STRING, {
+export const sequelize = new Sequelize(CONNECTION_URL, {
   dialect: 'postgres',
   dialectOptions: {
     ssl: {
@@ -30,7 +30,11 @@ export async function createLogsTable() {
     unmutes: DataTypes.ARRAY(DataTypes.JSONB),
     bans: DataTypes.ARRAY(DataTypes.JSONB),
     unbans: DataTypes.ARRAY(DataTypes.JSONB),
-    kicks: DataTypes.ARRAY(DataTypes.JSONB)
+    kicks: DataTypes.ARRAY(DataTypes.JSONB),
+    blocks: DataTypes.ARRAY(DataTypes.JSONB),
+    unblocks: DataTypes.ARRAY(DataTypes.JSONB),
+    timeouts: DataTypes.ARRAY(DataTypes.JSONB),
+    untimeouts: DataTypes.ARRAY(DataTypes.JSONB),
   });
 
   await queryInterface.createTable('expiringPunishments', {
@@ -54,7 +58,11 @@ export async function createUserRow(id) {
     unmutes: [],
     bans: [],
     unbans: [],
-    kicks: []
+    kicks: [],
+    blocks: [],
+    unblocks: [],
+    timeouts: [],
+    untimeouts: [],
   });
   user.save();
 }
@@ -110,7 +118,11 @@ async function initRowTemplates() {
     unmutes: DataTypes.ARRAY(DataTypes.JSONB),
     bans: DataTypes.ARRAY(DataTypes.JSONB),
     unbans: DataTypes.ARRAY(DataTypes.JSONB),
-    kicks: DataTypes.ARRAY(DataTypes.JSONB)
+    kicks: DataTypes.ARRAY(DataTypes.JSONB),
+    blocks: DataTypes.ARRAY(DataTypes.JSONB),
+    unblocks: DataTypes.ARRAY(DataTypes.JSONB),
+    timeouts: DataTypes.ARRAY(DataTypes.JSONB),
+    untimeouts: DataTypes.ARRAY(DataTypes.JSONB),
   }, {
     tableName: 'punishmentLogs'
   });

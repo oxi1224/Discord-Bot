@@ -20,9 +20,9 @@ export default async function main(client) {
     const member = await guild.members.fetch(userId).catch(() => {return null;});
     reason = !reason ? 'None' : reason;
 
-    // Check if user is staff (has manage nicknames perms)
-    if (member && member.permissions.has('MANAGE_NICKNAMES')) return action.reply(await embed.commandFail('Cannot kick staff.'));
     if (!(await guild.members.fetch(userId))) return action.reply(await embed.notInServer(user));
+    if (!member.kickable) return action.reply(await embed.commandFail(`${member} is not kickable.`));
+
     try {
       await dmUser(user, await embed.dm('kicked', guild, reason));
       await action.reply(await embed.punishmentReply('kicked', user));
@@ -35,6 +35,7 @@ export default async function main(client) {
       { name: 'User', value: `${user}` },
       { name: 'Reason', value: `\`\`${reason}\`\`` }
     ], { mod: moderator });
+
     await (await guild.members.fetch(userId)).kick({ reason: reason });
   }
 
