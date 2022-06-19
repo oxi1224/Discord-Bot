@@ -58,7 +58,7 @@ export default async function main() {
     helpInfo: {
       title: 'Unblock Command',
       category: 'Moderation',
-      description: 'Unblocks given user from a channel.',
+      description: 'Unblocks given user from current channel.',
       usage: ['unblock <user> [duration] [reason]'],
       examples: ['unblock @oxi#6219 #general 1d being dumb'],
       aliases: ['unblock'],
@@ -67,11 +67,6 @@ export default async function main() {
           argument: '<user>',
           description: 'The user to unblock.',
           type: 'user or snowflake'
-        },
-        {
-          argument: '[channel]',
-          description: 'The channel to unblock the user from (defaults to the channel the command was executed in).',
-          type: 'channel or snowflake'
         },
         {
           argument: '[reason]',

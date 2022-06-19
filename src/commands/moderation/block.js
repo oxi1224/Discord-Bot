@@ -63,7 +63,7 @@ export default async function main() {
     helpInfo: {
       title: 'Block Command',
       category: 'Moderation',
-      description: 'Blocks given user from a channel.',
+      description: 'Blocks given user from current channel.',
       usage: ['block <user> [duration] [reason]'],
       examples: ['block @oxi#6219 #general 1d being dumb'],
       aliases: ['block'],
