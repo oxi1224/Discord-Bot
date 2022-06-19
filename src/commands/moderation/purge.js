@@ -27,7 +27,7 @@ export default async function main() {
     if (messages.size === 0) return action.reply(await embed.commandFail(`No messages found from <@${userId}> in specified range.`));
     await channel.bulkDelete(messages);
 
-    action.reply(await embed.commandSuccess(`Successfully purged ${messages.size} messages ${!userId ? '.' : `from <@${userId}>.`}`));
+    action.reply(await embed.commandSuccess(`Successfully purged ${messages.size} messages${!userId ? '.' : ` from <@${userId}>.`}`));
     
     logAction('Messages Purged', [
       { name: 'Amount', value: messages.size.toString() },
@@ -40,6 +40,7 @@ export default async function main() {
     requiredPerms: 'MANAGE_MESSAGES',
     slashData: purgeData,
     callback: purge,
+    callbackParamInfo: ['messageCount', 'userId'],
     helpInfo: {
       title: 'Purge Command',
       category: 'Moderation',

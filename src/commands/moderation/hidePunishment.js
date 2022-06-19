@@ -6,11 +6,11 @@ export default async function main(client) {
   const hidePunishmentData = new SlashCommandBuilder()
     .setName('hide-punishment')
     .setDescription('Hides punishment with specified punishment ID of given user')
-    .addUserOption(option => option.setName('user')
-      .setDescription('User whose modlog to delete')
-      .setRequired(true))
     .addStringOption(option => option.setName('punishment_id')
       .setDescription('Punishment ID of the punishment')
+      .setRequired(true))
+    .addUserOption(option => option.setName('user')
+      .setDescription('User whose modlog to delete')
       .setRequired(true));
 
   // Removes punishment with specificed caseID of given user from modlogs
@@ -44,7 +44,7 @@ export default async function main(client) {
       **Expires**: ${!punishmentToRemove.punishmentExpires ? '``false``' : `<t:${Math.floor(punishmentToRemove.punishmentExpires / 1000)}>`}` }
     ], { mod: moderator });
 
-    action.reply(await embed.commandSuccess(`Successfully hidden punishment with the ID \`\`${punishmentId}\`\``));
+    action.reply(await embed.commandSuccess(`Successfully hidden the punishment with ID \`\`${punishmentId}\`\``));
   }
 
   appendToCommandArray({
@@ -52,23 +52,24 @@ export default async function main(client) {
     requiredPerms: 'BAN_MEMBERS',
     slashData: hidePunishmentData,
     callback: hidePunishment,
+    callbackParamInfo: ['punishmentId', 'userId'],
     helpInfo: {
       title: 'Hide-punishment Command',
       category: 'Moderation',
       description: 'Hides punishment with specificed caseID of given user.',
-      usage: ['hide-punishment <user> <punshment ID>'],
+      usage: ['hide-punishment <punshment ID> <user>'],
       examples: ['hide-punishment @oxi#6219 dQw4w9WgXcQ'],
       aliases: ['hide-punishment', 'hide-modlog', 'del-warn'],
       arguments: [
         {
-          argument: '<user>',
-          description: 'The user whose punishment to hide.',
-          type: 'user or snowflake'
-        },
-        {
           argument: '<punishment ID>',
           description: 'The ID of the Punishment (found by using the modlogs command).',
           type: 'punishment ID'
+        },
+        {
+          argument: '<user>',
+          description: 'The user whose punishment to hide.',
+          type: 'user or snowflake'
         }
       ]
     }

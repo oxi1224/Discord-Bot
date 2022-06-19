@@ -65,9 +65,10 @@ export default async function main(client) {
   }
 
   appendToCommandArray({
-    aliases: ['user', 'user-info', 'userinfo', 'whois'], 
+    aliases: ['user', 'user-info', 'userinfo', 'whois', 'u'], 
     slashData: userInfoData,
     callback: getUserInfo,
+    callbackParamInfo: ['userId'],
     helpInfo: {
       title: 'User Info Command',
       category: 'Info',

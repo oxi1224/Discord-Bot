@@ -6,6 +6,11 @@ import { guildId } from './config/config.js';
 const rest = new REST({ version: '9' }).setToken(TOKEN);
 const commands = [];
 
+/**
+ * Updates slash commands with new ones.
+ * @param {object} data - Data of the slash command. 
+ * @param {string} name - The name of the slash command.
+ */
 export async function updateSlashCommands(data, name) {
   commands.push(data);
   try {

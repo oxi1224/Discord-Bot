@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { embed, appendToCommandArray } from '#lib';
 
 export default async function main() {
-  // create Heko slash commmand
+  // create Help slash commmand
   const helpData = new SlashCommandBuilder()
     .setName('help')
     .setDescription('get information about available commands')
@@ -64,6 +64,7 @@ ${arg.timeSuffixes ? `» **Time Suffixes**: ${arg.timeSuffixes.map(str => `\`\`$
     aliases: ['help'],
     slashData: helpData,
     callback: help,
+    callbackParamInfo: ['command'],
     helpInfo: {
       title: 'Help Command',
       category: 'Info',

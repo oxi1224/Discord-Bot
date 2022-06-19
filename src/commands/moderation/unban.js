@@ -40,6 +40,7 @@ export default async function main(client) {
     requiredPerms: 'BAN_MEMBERS',
     slashData: unBanData,
     callback: unBan,
+    callbackParamInfo: ['userId', 'reason'],
     helpInfo: {
       title: 'Unban Command',
       category: 'Moderation',

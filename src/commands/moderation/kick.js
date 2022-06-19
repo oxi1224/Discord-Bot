@@ -44,6 +44,7 @@ export default async function main(client) {
     requiredPerms: 'KICK_MEMBERS',
     slashData: kickData,
     callback: performKick,
+    callbackParamInfo: ['userId', 'reason'],
     helpInfo: {
       title: 'Kick Command',
       category: 'Moderation',

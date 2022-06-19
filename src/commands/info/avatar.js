@@ -24,6 +24,7 @@ export default async function main(client) {
     aliases: ['avatar', 'av'], 
     slashData: avatarData,
     callback: getAvatar,
+    callbackParamInfo: ['userId'],
     helpInfo: {
       title: 'Avatar Command',
       category: 'Info',

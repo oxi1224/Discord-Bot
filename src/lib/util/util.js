@@ -2,7 +2,7 @@ import * as db from '../common/db.js';
 import { MessageEmbed } from 'discord.js';
 import { loggingChannel } from '../config/config.js';
 
-// generates modlog id
+// Generates modlog id
 export function generateModLogID() {
   const chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890'.slice('');
   const id = [];
@@ -12,7 +12,12 @@ export function generateModLogID() {
   return id.join('');
 }
 
-// get punishment expiration date
+/**
+ * Get the expiration date of a punishment.
+ * @param {string} duration - x amount of minutes (min), hours (h), days (d), weeks (w) or months (m).
+ * @param {Timestamp} currentTime - The current time when executing this function.
+ * @returns Timestamp duration from now.
+ */
 export function getExpirationDate(duration, currentTime) {
 
   if (!duration) return null;
@@ -35,7 +40,14 @@ export function getExpirationDate(duration, currentTime) {
   }
 }
 
-// Log punishment to punishmentLogs database and to expiringPunishments if it expires
+/**
+ * Logs a punishment to the punishmentLogs database and crates user's row if they don't have one.
+ * @param {string} userId - ID of the user who the punishment was executed on.
+ * @param {string} reason - The reason of the punishment.
+ * @param {User} moderator - The moderator who executed the punishment. 
+ * @param {string} column - The column to which the punishment will be logged.
+ * @param {string} [duration] - The duration of the punishment. 
+ */
 export async function logToDb(userId, reason, moderator, column, duration) {
   if (!(await db.existsRow(userId))) await db.createUserRow(userId);
   // get the previous punishments
@@ -70,13 +82,24 @@ export async function logToDb(userId, reason, moderator, column, duration) {
   await db.updateExpiringPunishments(expiringPunishments.sort((a, b) => parseFloat(b.punishmentExpires) - parseFloat(a.punishmentExpires)));
 }
 
-// Dm's a user
+/**
+ * Sends a DM to specified user
+ * @param {UserResolvable} user - The user who will get DM'ed.
+ * @param {(string|MessagePayload|MessageOptions)} content - Any valid Discord.js message content.
+ */
 export async function dmUser(user, content) {
   await user.createDM();
   await user.send(content);
 }
 
-// Logs the action to the logging channel
+/**
+ * Generates a log and sends it to the logging channel by default.
+ * @param {string} title - The title of the embed.
+ * @param {object[]} fieldsToAdd - The fields that will be added to the embed.
+ * @param {object} [args] - Optional arguments to add to the embed.
+ * @param {string} [args.channelId=loggingChannel]
+ * @param {object} [args.mod=null]
+ */
 export async function logAction(title, fieldsToAdd, args) {
   const { client } = await import('../../bot.js');
   

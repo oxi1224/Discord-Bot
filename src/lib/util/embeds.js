@@ -1,6 +1,23 @@
 import { MessageEmbed } from 'discord.js';
 import * as config from '../config/config.js';
 
+/**
+ * Generates an embed based on given arguments.
+ * 
+ * @param {object} args - Arguments containing info about the embed.
+ * @param {string} [args.color=config.embedColors.base] - Color of the embed.
+ * @param {string} [args.title=null] - Title of the embed.
+ * @param {string} [args.emote=''] - Emote that will appear before description.
+ * @param {object[]} [args.fields=null] - Fields to be added to the embed.
+ * @param {string} [args.description=null] - Description of the embed.
+ * @param {string} [args.footer=null] - footer of the embed.
+ * @param {string} [args.image=null] - URL of the image of the embed.
+ * @param {boolean} [args.timestamp=false] - False - no timestamp True - timestamp.
+ * @param {author} [args.author=null] - Author of the embed.
+ * @param {string} [args.thumbnail=null] - URL of the thumbnail of the embed.
+ * 
+ * @returns {MessageEmbed} Discord.js embed.
+ */
 export async function createReplyEmbed(args) {
   // Get values from args
   const color = !args || !args.color ? config.embedColors.base : args.color;

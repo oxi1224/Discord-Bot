@@ -17,7 +17,7 @@ export default async function main(client) {
       .setRequired(false));
 
   // Bans given user
-  async function performBan({ action, userId, reason, duration, guild, moderator }) {
+  async function performBan({ action, userId, duration, reason, guild, moderator }) {
     if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
     const banList = await guild.bans.fetch();
     const user = await client.users.fetch(userId, false);
@@ -49,6 +49,7 @@ export default async function main(client) {
     requiredPerms: 'BAN_MEMBERS',
     slashData: banData,
     callback: performBan,
+    callbackParamInfo: ['userId', 'duration', 'reason'],
     helpInfo: {
       title: 'Ban Command',
       category: 'Moderation',

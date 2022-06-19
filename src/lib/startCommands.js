@@ -2,7 +2,7 @@ import * as command from '#commands';
 import * as listener from '#listeners';
 import { initializeCommands, appendToCommandArray } from './commandHandler.js';
 
-// Executes the main function from each command's file
+// Runs appendToCommandArray function in each file then runs initializeCommands.
 export async function startCommands(client) {
   // Moderation
   command.ban(client);

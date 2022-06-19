@@ -15,3 +15,4 @@ export { default as modlogs } from './moderation/modlogs.js';
 export { default as purge } from './moderation/purge.js';
 export { default as hidePunishment } from './moderation/hidePunishment.js';
 export { default as role } from './moderation/role.js';
+export { default as block } from './moderation/block.js';

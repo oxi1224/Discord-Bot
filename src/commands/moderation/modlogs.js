@@ -55,6 +55,7 @@ Modlog ID: \`\`${el.punishmentId}\`\``));
     requiredPerms: 'BAN_MEMBERS',
     slashData: modlogsData,
     callback: showModlogs,
+    callbackParamInfo: ['userId'],
     helpInfo: {
       title: 'Modlogs Command',
       category: 'Moderation',

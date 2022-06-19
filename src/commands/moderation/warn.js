@@ -40,6 +40,7 @@ export default async function main(client) {
     requiredPerms: 'MANAGE_NICKNAMES',
     slashData: warnData,
     callback: warn,
+    callbackParamInfo: ['userId', 'reason'],
     helpInfo: {
       title: 'Warn Command',
       category: 'Moderation',

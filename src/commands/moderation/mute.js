@@ -17,7 +17,7 @@ export default async function main() {
       .setRequired(false));
 
   // Mutes given user
-  async function mute({ action, userId, reason, duration, guild, moderator }) {
+  async function mute({ action, userId, duration, reason, guild, moderator }) {
     if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
     const member = await guild.members.fetch(userId);
     const user = member.user;
@@ -46,6 +46,7 @@ export default async function main() {
     requiredPerms: 'MUTE_MEMBERS',
     slashData: muteData,
     callback: mute,
+    callbackParamInfo: ['userId', 'duration', 'reason'],
     helpInfo: {
       title: 'Mute Command',
       category: 'Moderation',

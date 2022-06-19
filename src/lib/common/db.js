@@ -17,7 +17,7 @@ export const sequelize = new Sequelize(CONNECTION_URL, {
 const queryInterface = sequelize.getQueryInterface();
 let User, ExpiringPunishmentsRow;
 
-// Create main table if it doesnt exist
+// Creates main tables if they don't exist
 export async function createLogsTable() {
   await queryInterface.createTable('punishmentLogs', {
     id: {
@@ -67,7 +67,11 @@ export async function createUserRow(id) {
   user.save();
 }
 
-// Read row from the database
+/**
+ * Searches the punishmentLogs table to find punishment data of specificed user.
+ * @param {string} id - ID of the user whose information you want to get.
+ * @returns {(object[]|null)} Punishment data of specified user.
+ */
 export async function readFromDb(id) {
   const row = await User.findOne({
     where: {
@@ -77,26 +81,42 @@ export async function readFromDb(id) {
   return !row ? null : row.dataValues;
 }
 
-// Change one or many column values in a row
+/**
+ * Replaces a column in specified user's row with provided data.
+ * @param {string} id - ID of the user whose logs you want to modify.
+ * @param {string} column - The column which will get changed.
+ * @param {object[]} data - The data that will replace the old one.
+ */
 export async function changeColumnValues(id, column, data) {
   const user = await User.findOne({ where: { id: id } });
   user[column] = data;
   await user.save();
 }
 
-// Check if row exists
+/**
+ * Checks if user has a row.
+ * @param {string} id - ID of the user. 
+ * @returns {boolean}
+ */
 export async function existsRow(id) {
   const response = await readFromDb(id);
   return !response ? false : true;
 }
 
-// Update the expiringPunishments database with updated punishment list
+/**
+ * Replaces old information in the expiringPunishments table with new data.
+ * @param {object[]} expiringPunishments - Data that will replace the old information.
+ */
 export async function updateExpiringPunishments(expiringPunishments) {
   const row = await ExpiringPunishmentsRow.findOne({ where: { id: '0' } });
   row.punishmentInfo = expiringPunishments;
   await row.save();
 }
 
+/**
+ * Fetches data from the expiringPunishments table.
+ * @returns {object[]} The data of he expiringPunishments table.
+ */
 export async function fetchExpiringPunishments() {
   const response = await ExpiringPunishmentsRow.findOne({
     where: {

@@ -64,6 +64,7 @@ export default async function main() {
     requiredPerms: 'BAN_MEMBERS',
     slashData: roleData,
     callback: manageRole,
+    callbackParamInfo: ['roleFunction', 'userId', 'roleInfo'],
     helpInfo: {
       title: 'Role Command',
       category: 'Moderation',

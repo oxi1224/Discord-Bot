@@ -2,6 +2,22 @@ import { emotes, prefix } from './config/config.js';
 import { updateSlashCommands } from './updateSlashCommands.js';
 
 const commands = [];
+/**
+ * Appends data and options of commands to an array.
+ * 
+ * @param {object} command - Information about how a command behaves.
+ * @param {String[]} command.aliases - Aliases for a command.
+ * @param {String} [command.requiredPerms = SEND_MESSAGES] - Permissions required for running the command.
+ * @param {Boolean} [command.slash=true] - Information if the command includes a slash command.
+ * @param {Boolean} [command.prefixed=true] command - Information if the command includes a prefixed command.
+ * @param {object} command.slashData - Information about the slash command.
+ * @param {commandCallback} command.callback - The callback of the command.
+ * @param {[]} command.callbackParamInfo - Required parameters for the callback (Without action, guild and moderator).
+ * @param {Boolean} [command.finalize=false] - If true only returns the command array.
+ * @param {object} command.helpInfo - Info to get parsed when running the help command.
+ * 
+ * @returns {object[]} Array of objects which include information on how the command behaves.
+ */
 export async function appendToCommandArray({
   aliases = [],
   requiredPerms = 'SEND_MESSAGES',
@@ -9,6 +25,7 @@ export async function appendToCommandArray({
   prefixed = true,
   slashData,
   callback,
+  callbackParamInfo = [],
   finalize = false,
   helpInfo = {}
 }) {
@@ -19,6 +36,7 @@ export async function appendToCommandArray({
       prefixed,
       slashData,
       callback,
+      callbackParamInfo,
       helpInfo
     });
     slash ? await updateSlashCommands(slashData, aliases[0]) : null;
@@ -26,50 +44,40 @@ export async function appendToCommandArray({
   return commands;
 }
 
+/**
+ * Uses the command array to run commands when called.
+ * @param {object} client - Discord.js client. 
+ * @param {object[]} commandArray - Array which contains data of all commands.
+ */
 export async function initializeCommands(client, commandArray) {
-  const callbackParams = {};
   commandArray = await commandArray;
 
   client.on('messageCreate', async message => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
     const args = message.content.slice(1).trim().split(' ').filter(str => str !== '');
-    const command = args.shift().toLowerCase();
+    const commandName = args.shift().toLowerCase();
+    const command = commandArray.find(cmd => cmd.aliases.includes(commandName));
 
+    if (!command) return;
+    if (!command.prefixed) return;
+    if (!message.member.permissions.has(command.requiredPerms)) return message.react(emotes.error);
+    
+    const callbackParams = await getCallbackParams(command.callbackParamInfo, args, commandName);
     callbackParams.action = message;
-    callbackParams.roleFunction = (() => {
-      if (['ra', 'rm'].includes(command)) {
-        args.unshift(command);
-        return args[0];
-      }
-      return command === 'role' ? args[0] : null; 
-    })();
-    callbackParams.userId = await (async () => {
-      try {
-        const userId = !(message.mentions.users.first()) ? args[1 + args.indexOf(callbackParams.roleFunction)].replace(/[\\<>@#&!]/g, '') : message.mentions.users.first().id;
-        if (!userId.match(/^[0-9]{15,18}/)) return null;
-        return userId;
-      } catch { return null; }
-    })();
-    callbackParams.duration = (args[1] !== args.at(-1) && /^\d+(min|h|d|w|m)/.test(args[1]) || /^\d+(min|h|d|w|m)/.test(args[1])) ? args[1] : null;
-    callbackParams.reason = args.slice(!callbackParams.duration ? 1 : 1 + args.indexOf(callbackParams.duration)).join(' ') || null;
     callbackParams.moderator = message.author;
     callbackParams.guild = message.guild;
-    callbackParams.messageCount = !callbackParams.userId ? args[0] : args[1];
-    callbackParams.command = args.length === 0 ? null : args[0];
-    callbackParams.punishmentId = args.length === 0 ? null : args[1];
-    callbackParams.roleInfo = args.length === 0 ? null : args.slice(2);
 
-    commandArray.forEach(async cmd => {
-      if (!cmd.prefixed) return;
-      if (!cmd.aliases.includes(command)) return;
-      if (!message.member.permissions.has(cmd.requiredPerms)) return message.react(emotes.error);
-
-      await cmd.callback(callbackParams);
-    });
+    await command.callback(callbackParams);
   });
 
   client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
+    const commandName = interaction.commandName;
+    const command = commandArray.find(cmd => cmd.aliases.includes(commandName));
+    const callbackParams = {};
+
+    if (!command) return;
+    if (!interaction.member.permissions.has(command.requiredPerms)) return interaction.reply({ content: 'Insufficient Permissions', ephemeral: true });
 
     callbackParams.action = interaction;
     callbackParams.userId = !interaction.options.get('user') ? null : interaction.options.get('user').value;
@@ -82,12 +90,44 @@ export async function initializeCommands(client, commandArray) {
     callbackParams.punishmentId = !interaction.options.get('punishment_id') ? null : interaction.options.get('punishment_id').value;
     callbackParams.roleFunction = !interaction.options.get('function') ? null : interaction.options.get('function').value;
     callbackParams.roleInfo = !interaction.options.get('role') ? null : interaction.options.get('role').role.name;
-    
-    commandArray.forEach(async cmd => {
-      if (!cmd.aliases.includes(interaction.commandName)) return;
-      if (!interaction.member.permissions.has(cmd.requiredPerms)) return interaction.reply({ content: 'Insufficient Permissions', ephemeral: true });
-      
-      await cmd.callback(callbackParams);
-    });
+  
+    await command.callback(callbackParams);
   });
+}
+
+/**
+ * Gets specific callback params from args. 
+ * Note: callbackParamInfo includes any parameter that isn't action, guild or moderator
+ * 
+ * @param {string[]} callbackParamInfo - Array of callback parameters in order to more easily set them.
+ * @param {string[]} args - Message content split into an array without the command name.
+ * @param {string} commandName - Name of the command the params are for.
+ * @returns {object[]} Array of values of specified arguments in callbackParamInfo.
+ */
+function getCallbackParams(callbackParamInfo, args, commandName) {
+  const callbackParams = {};
+
+  callbackParamInfo.forEach((param, index) => {
+    switch (param) {
+    case 'roleFunction':
+      if (commandName === 'role') callbackParams.roleFunction = args[index];
+      if (commandName === 'ra' || commandName === 'rm') callbackParams.roleFunction = commandName;
+      break;
+    case 'userId':
+      return callbackParams.userId = args.length === 0 || !args[index] ? null : args[index].replace(/[\\<>@#&!]/g, '');
+    case 'duration':
+      return callbackParams.duration = args[index] !== args.at(-1) && /^\d+(min|h|d|w|m)/.test(args[index]) || /^\d+(min|h|d|w|m)/.test(args[index]) ? args[index] : null;
+    case 'reason':
+      return callbackParams.reason = args.slice(index).join(' ') || null;
+    case 'messageCount':
+      return callbackParams.messageCount = !callbackParams.userId ? args[0] : args[1];
+    case 'command':
+      return callbackParams.command = args.length === 0 || !args[index] ? null : args[index];
+    case 'punishmentId':
+      return callbackParams.punishmentId = args.length === 0 || !args[index] ? null : args[index];
+    case 'roleInfo':
+      return callbackParams.roleInfo = args.length === 0 || !args[index] ? null : args.slice(index);
+    }
+  });
+  return callbackParams;
 }
