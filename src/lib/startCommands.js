@@ -15,6 +15,8 @@ export async function startCommands(client) {
   command.mute();
   command.unmute();
   command.purge();
+  command.block();
+  command.unblock();
 
   // Listeners
   listener.actionListeners(client);

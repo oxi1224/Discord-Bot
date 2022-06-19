@@ -16,3 +16,4 @@ export { default as purge } from './moderation/purge.js';
 export { default as hidePunishment } from './moderation/hidePunishment.js';
 export { default as role } from './moderation/role.js';
 export { default as block } from './moderation/block.js';
+export { default as unblock } from './moderation/unblock.js';

@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { logToDb, dmUser, logAction, mutedRole, appendToCommandArray, embed, fetchExpiringPunishments, updateExpiringPunishments } from '#lib';
+import { logToDb, dmUser, logAction, mutedRole, appendToCommandArray, embed } from '#lib';
 
 export default async function main() {
   // Create unmute slash commmand
@@ -28,11 +28,6 @@ export default async function main() {
     } catch {
       await action.reply(await embed.dmFail(user));
     }
-
-    let expiringPunishments = await fetchExpiringPunishments();
-    // Filter out all mutes in the array that have the same user
-    expiringPunishments = expiringPunishments.filter(json => { return !(json.user == userId && json.punishmentType == 'mute'); });
-    await updateExpiringPunishments(expiringPunishments);
 
     logToDb(userId, reason, moderator, 'unmutes');
     logAction('Member Unmuted', [

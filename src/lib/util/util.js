@@ -19,8 +19,8 @@ export function generateModLogID() {
  * @returns Timestamp duration from now.
  */
 export function getExpirationDate(duration, currentTime) {
-
   if (!duration) return null;
+
   const numberInDuration = duration.match(/\d+/)[0];
   const sliceIndex = (() => { return numberInDuration.length > 2 ? numberInDuration[0].length - 1 : numberInDuration[0].length; })();
 
@@ -46,14 +46,16 @@ export function getExpirationDate(duration, currentTime) {
  * @param {string} reason - The reason of the punishment.
  * @param {User} moderator - The moderator who executed the punishment. 
  * @param {string} column - The column to which the punishment will be logged.
- * @param {string} [duration] - The duration of the punishment. 
+ * @param {string} [duration] - The duration of the punishment.
+ * @param {object} [additionalInfo] - Additional info regarding the punishment (e.g the channel when using block command).
  */
-export async function logToDb(userId, reason, moderator, column, duration) {
+export async function logToDb(userId, reason, moderator, column, duration, additionalInfo) {
   if (!(await db.existsRow(userId))) await db.createUserRow(userId);
-  // get the previous punishments
+  // Gets the previous punishments.
   const userPunishmentsList = !(await db.readFromDb(userId)) ? [] : (await db.readFromDb(userId))[column];
   const punishmentType = column.split('').slice(0, -1).join('');
-  // update the punishment list
+
+  // Updates the punishment list.
   userPunishmentsList.push({
     user: userId,
     moderator: moderator,
@@ -61,25 +63,28 @@ export async function logToDb(userId, reason, moderator, column, duration) {
     punishmentType: punishmentType,
     punishmentTime: new Date().getTime(),
     punishmentExpires: getExpirationDate(duration, new Date().getTime()),
-    punishmentId: generateModLogID()
+    punishmentId: generateModLogID(),
   });
-  // sort the updated ounishment list and update cell in db
+  if (column === 'blocks' || column === 'unblocks') userPunishmentsList.at(-1).additionalInfo = additionalInfo;
+
+  // Replaced old data with new information in specificed columnm of user's row.
   await db.changeColumnValues(userId, column, userPunishmentsList);
   
-  if (!(['bans', 'mutes', 'unbans', 'unmutes'].includes(column))) return;
-  // write to expiringPunishments db if there is a duration
+  if (!duration) return;
+  if (!(['bans', 'mutes', 'unbans', 'unmutes', 'blocks', 'unblocks'].includes(column))) return;
+  // Writes to expiringPunishments table if there is a duration.
   let expiringPunishments = await db.fetchExpiringPunishments();
-  if (column === 'unbans' || column === 'unmutes') {
-    expiringPunishments = expiringPunishments.filter(json => { return !(json.user == userId && json.punishmentType == punishmentType); });
-  }
-  if (duration) {
-    expiringPunishments.push({
-      user: userId,
-      punishmentType: punishmentType,
-      punishmentExpires: await getExpirationDate(duration, new Date().getTime()),
-    });
-  }
-  await db.updateExpiringPunishments(expiringPunishments.sort((a, b) => parseFloat(b.punishmentExpires) - parseFloat(a.punishmentExpires)));
+
+  if (['unbans', 'unmutes', 'unblocks'].includes(column)) expiringPunishments = expiringPunishments.filter(json => { return !(json.user == userId && json.punishmentType == punishmentType); });
+
+  expiringPunishments.push({
+    user: userId,
+    punishmentType: punishmentType,
+    punishmentExpires: await getExpirationDate(duration, new Date().getTime()),
+  });
+  if (column === 'blocks' || column === 'unblocks') expiringPunishments.at(-1).additionalInfo = additionalInfo;
+
+  await db.updateExpiringPunishments(expiringPunishments.sort((a, b) => parseInt(b.punishmentExpires) - parseInt(a.punishmentExpires)));
 }
 
 /**

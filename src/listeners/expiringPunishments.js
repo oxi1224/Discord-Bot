@@ -1,9 +1,11 @@
+/* eslint-disable no-case-declarations */
 import { dmUser, logToDb, logAction, updateExpiringPunishments, fetchExpiringPunishments, mutedRole, guildId, embed } from '#lib';
 
 export default async function main(client) {
   let expiringPunishments = await fetchExpiringPunishments();
+
   // Check if the expiration date from the punishment closest to expiring is greater than current date
-  if (expiringPunishments === null || !(expiringPunishments.at(-1) <= new Date().getTime())) return;
+  if (expiringPunishments.length === 0 || expiringPunishments.at(-1) <= new Date().getTime()) return;
 
   const guild = await client.guilds.fetch(guildId);
   const userId = expiringPunishments.at(-1).user;
@@ -13,9 +15,11 @@ export default async function main(client) {
   switch (expiringPunishments.at(-1).punishmentType) {
   case 'ban':
     try {
-      // Unban the user
       await guild.bans.remove(userId);
-      await logAction('Member Unbanned', [{ name: 'Reason', value: 'Punishment Expired' }], userId);
+      await logAction('Member Unbanned', [
+        { name: 'User', value: `${user}` },
+        { name: 'Reason', value: 'Punishment Expired' }
+      ], { mod: client.user });
       try { await dmUser(user, await embed.dm('unbanned', 'guild', 'Punishment expired')); } 
       catch {null;}
       // Filter out all bans in the array that have the same user
@@ -27,14 +31,43 @@ export default async function main(client) {
   case 'mute':
     try {
       await member.roles.remove(mutedRole);
-      await logAction('Member Unmuted', [{ name: 'Reason', value: 'Punishment Expired' }], userId);
+      await logAction('Member Unmuted', [
+        { name: 'User', value: `${user}` },
+        { name: 'Reason', value: 'Punishment Expired' }
+      ], { mod: client.user });
       try { await dmUser(user, await embed.dm('unmuted', 'guild', 'Punishment expired')); } 
       catch {null;}
       // Filter out all mutes in the array that have the same user
       expiringPunishments = expiringPunishments.filter(json => { return !(json.user == userId && json.punishmentType == 'mute'); });
       await logToDb(userId, 'Punishment expired.', client.user, 'unmutes');
     } catch {null;}
-    break;  
+    break;
+  
+  case 'block':
+    try {
+      const channel = await guild.channels.fetch(expiringPunishments.at(-1).additionalInfo.channel.id);
+      await channel.edit({
+        permissionOverwrites: [{
+          id: userId,
+          allow: ['VIEW_CHANNEL']
+        }]
+      });
+      await logAction('Member Unblocked', [
+        { name: 'User', value: `${user}` },
+        { name: 'Channel', value: `${channel}` },
+        { name: 'Reason', value: 'Punishment Expired' }
+      ], { mod: client.user });
+      try {
+        dmUser(member, await embed.createReplyEmbed({
+          title: `You've been unblocked from #${channel.name} in ${guild}.`,
+          description: 'Reason: ``Punishment expuired``.'
+        }));
+      } catch {null;}
+      // Filter out all blocks in the array that have the same user
+      expiringPunishments = expiringPunishments.filter(json => { return !(json.user == userId && json.punishmentType == 'block'); });
+      await logToDb(userId, 'Punishment expired.', client.user, 'unblocks');
+    } catch {null;}
+    break;
   }
 
   await updateExpiringPunishments(expiringPunishments);

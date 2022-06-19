@@ -58,7 +58,7 @@ export const dm = (action, guild, reason) => createReplyEmbed({
 });
 
 export const dmDuration = (action, guild, reason, duration) => createReplyEmbed({
-  title: `You've been ${action} ${duration == null ? 'permanently' : `for ${duration}`} in ${guild}.`,
+  title: `You've been ${action} ${!duration ? 'permanently' : `for ${duration}`} in ${guild}.`,
   description: `Reason: \`\`${reason}\`\`.`,
 });
 

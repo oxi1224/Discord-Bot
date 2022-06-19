@@ -90,6 +90,7 @@ export async function initializeCommands(client, commandArray) {
     callbackParams.punishmentId = !interaction.options.get('punishment_id') ? null : interaction.options.get('punishment_id').value;
     callbackParams.roleFunction = !interaction.options.get('function') ? null : interaction.options.get('function').value;
     callbackParams.roleInfo = !interaction.options.get('role') ? null : interaction.options.get('role').role.name;
+    callbackParams.roleInfo = !interaction.options.get('channel') ? null : interaction.options.get('channel').value;
   
     await command.callback(callbackParams);
   });
@@ -118,7 +119,7 @@ function getCallbackParams(callbackParamInfo, args, commandName) {
     case 'duration':
       return callbackParams.duration = args[index] !== args.at(-1) && /^\d+(min|h|d|w|m)/.test(args[index]) || /^\d+(min|h|d|w|m)/.test(args[index]) ? args[index] : null;
     case 'reason':
-      return callbackParams.reason = args.slice(index).join(' ') || null;
+      return callbackParams.reason = !callbackParams.duration && callbackParamInfo.includes('duration') ? args.slice(index - 1).join(' ') : args.slice(index).join(' ') || null;
     case 'messageCount':
       return callbackParams.messageCount = !callbackParams.userId ? args[0] : args[1];
     case 'command':
@@ -129,5 +130,6 @@ function getCallbackParams(callbackParamInfo, args, commandName) {
       return callbackParams.roleInfo = args.length === 0 || !args[index] ? null : args.slice(index);
     }
   });
+
   return callbackParams;
 }
