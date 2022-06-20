@@ -32,12 +32,13 @@ export default async function main() {
       await action.reply(await embed.dmFail(user));
     }
 
-    logToDb(userId, reason, moderator, 'mutes', duration);
-    logAction('Member Muted', [
+    await logToDb(userId, reason, moderator, 'mutes', duration);
+    await logAction('Member Muted', [
       { name: 'User', value: `${user}` },
       { name: 'Reason', value: `\`\`${reason}\`\`` },
       { name: 'Duration', value: !duration ? 'Permanent' : duration }
     ], { mod: moderator });
+    
     await member.roles.add(mutedRole);
   }
 

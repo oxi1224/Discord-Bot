@@ -20,21 +20,19 @@ export function generateModLogID() {
  */
 export function getExpirationDate(duration, currentTime) {
   if (!duration) return null;
-
   const numberInDuration = duration.match(/\d+/)[0];
-  const sliceIndex = (() => { return numberInDuration.length > 2 ? numberInDuration[0].length - 1 : numberInDuration[0].length; })();
 
-  switch (duration.split('').slice(sliceIndex, duration.length).join('')) {
+  switch (duration.split('').slice(numberInDuration.length, duration.length).join('')) {
   case 'min':
-    return (parseInt(numberInDuration[0]) * 60000) + currentTime;
+    return (parseInt(numberInDuration) * 60000) + currentTime;
   case 'h':
-    return (parseInt(numberInDuration[0]) * 3600000) + currentTime;
+    return (parseInt(numberInDuration) * 3600000) + currentTime;
   case 'd':
-    return (parseInt(numberInDuration[0]) * 86400000) + currentTime;
+    return (parseInt(numberInDuration) * 86400000) + currentTime;
   case 'w':
-    return (parseInt(numberInDuration[0]) * 604800000) + currentTime;
+    return (parseInt(numberInDuration) * 604800000) + currentTime;
   case 'm':
-    return (parseInt(numberInDuration[0]) * 2678400000) + currentTime;
+    return (parseInt(numberInDuration) * 2678400000) + currentTime;
   default:
     return null;
   }
@@ -120,6 +118,7 @@ export async function logAction(title, fieldsToAdd, args) {
 
   if (mod) {
     fields.unshift({ name: 'Moderator', value: `${mod}` });
+    if (mod === 'Automod') return;
     embed.setAuthor(mod.avatar ? 
       { name: `${mod.username}#${mod.discriminator}`, 
         iconURL: `https://cdn.discordapp.com/avatars/${mod.id}/${mod.avatar}.webp` } :

@@ -4,7 +4,7 @@ import { readFromDb } from '../lib/common/db.js';
 import { mutedRole } from '../lib/config/config.js';
 
 export default async function main(client) {
-
+  console.log('Action listeners started');
   // Listens for channel related changes
   for (const type of ['channelCreate', 'channelDelete', 'channelPinsUpdate', 'channelUpdate']) {
     client.on(type, async channel => {

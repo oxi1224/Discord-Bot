@@ -34,5 +34,11 @@
       "669264819899072532", "508780559292563457",
       "510463283258458115"
     ]
+  },
+  "automodConfig": {
+    "messageLimit": 7,
+    "timeDifference": 5000,
+    "expiryTime": 5000,
+    "muteDuration": "15min"
   }
 }

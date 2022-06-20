@@ -5,7 +5,7 @@ export default async function main(client) {
   let expiringPunishments = await fetchExpiringPunishments();
 
   // Check if the expiration date from the punishment closest to expiring is greater than current date
-  if (expiringPunishments.length === 0 || expiringPunishments.at(-1) <= new Date().getTime()) return;
+  if (expiringPunishments.length === 0 || expiringPunishments.at(-1).punishmentExpires >= new Date().getTime()) return;
 
   const guild = await client.guilds.fetch(guildId);
   const userId = expiringPunishments.at(-1).user;
@@ -20,12 +20,12 @@ export default async function main(client) {
         { name: 'User', value: `${user}` },
         { name: 'Reason', value: 'Punishment Expired' }
       ], { mod: client.user });
-      try { await dmUser(user, await embed.dm('unbanned', 'guild', 'Punishment expired')); } 
+      try { await dmUser(user, await embed.dm('unbanned', guild, 'Punishment expired')); } 
       catch {null;}
       // Filter out all bans in the array that have the same user
       expiringPunishments = expiringPunishments.filter(json => { return !(json.user == userId && json.punishmentType == 'ban'); });
       await logToDb(userId, 'Punishment expired.', client.user, 'unbans');
-    } catch {null;}
+    } catch {return;}
     break;
     
   case 'mute':
@@ -35,12 +35,12 @@ export default async function main(client) {
         { name: 'User', value: `${user}` },
         { name: 'Reason', value: 'Punishment Expired' }
       ], { mod: client.user });
-      try { await dmUser(user, await embed.dm('unmuted', 'guild', 'Punishment expired')); } 
+      try { await dmUser(user, await embed.dm('unmuted', guild, 'Punishment expired')); } 
       catch {null;}
       // Filter out all mutes in the array that have the same user
       expiringPunishments = expiringPunishments.filter(json => { return !(json.user == userId && json.punishmentType == 'mute'); });
       await logToDb(userId, 'Punishment expired.', client.user, 'unmutes');
-    } catch {null;}
+    } catch {return;}
     break;
   
   case 'block':
@@ -66,7 +66,7 @@ export default async function main(client) {
       // Filter out all blocks in the array that have the same user
       expiringPunishments = expiringPunishments.filter(json => { return !(json.user == userId && json.punishmentType == 'block'); });
       await logToDb(userId, 'Punishment expired.', client.user, 'unblocks');
-    } catch {null;}
+    } catch {return;}
     break;
   }
 
