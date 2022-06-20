@@ -103,6 +103,6 @@ export default async function main(client) {
 
     await member.roles.add(mutedRole);
     message.channel.bulkDelete(messages);
-    message.channel.send('Please don not spam.');
+    message.channel.send('Please do not spam.');
   }  
 }
