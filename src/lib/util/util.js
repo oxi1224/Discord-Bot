@@ -68,18 +68,19 @@ export async function logToDb(userId, reason, moderator, column, duration, addit
   // Replaced old data with new information in specificed columnm of user's row.
   await db.changeColumnValues(userId, column, userPunishmentsList);
   
-  if (!duration) return;
-  if (!(['bans', 'mutes', 'unbans', 'unmutes', 'blocks', 'unblocks'].includes(column))) return;
+  if (!['bans', 'mutes', 'unbans', 'unmutes', 'blocks', 'unblocks'].includes(column)) return;
   // Writes to expiringPunishments table if there is a duration.
   let expiringPunishments = await db.fetchExpiringPunishments();
 
-  if (['unbans', 'unmutes', 'unblocks'].includes(column)) expiringPunishments = expiringPunishments.filter(json => { return !(json.user == userId && json.punishmentType == punishmentType); });
-
-  expiringPunishments.push({
-    user: userId,
-    punishmentType: punishmentType,
-    punishmentExpires: await getExpirationDate(duration, new Date().getTime()),
-  });
+  if (['bans', 'mutes', 'blocks'].includes(column) && duration) {
+    expiringPunishments.push({
+      user: userId,
+      punishmentType: punishmentType,
+      punishmentExpires: await getExpirationDate(duration, new Date().getTime()),
+    });
+  }
+  
+  if (['unbans', 'unmutes', 'unblocks'].includes(column)) expiringPunishments = expiringPunishments.filter(json => json.user === userId && json.punishmentType === punishmentType);
   if (column === 'blocks' || column === 'unblocks') expiringPunishments.at(-1).additionalInfo = additionalInfo;
 
   await db.updateExpiringPunishments(expiringPunishments.sort((a, b) => parseInt(b.punishmentExpires) - parseInt(a.punishmentExpires)));
