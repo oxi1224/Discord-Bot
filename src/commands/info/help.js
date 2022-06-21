@@ -12,7 +12,7 @@ export default async function main() {
 
   async function help({ action, command }) {
     const commands = (await appendToCommandArray({ finalize: true })).map(obj => obj.helpInfo);
-    if (command && !commands.map(obj => obj.aliases).flat().includes(command)) return action.reply(await embed.commandFail('This command doesnt exist.'));
+    if (command && !commands.map(obj => obj.aliases).flat().includes(command)) return action.reply(embed.commandFail('This command doesnt exist.'));
     if (!command) {
       const fields = [];
       // Get all unique fields
@@ -26,7 +26,7 @@ export default async function main() {
         fields.push({ name: category, value: categoryField.join(' ') });
       });
 
-      await action.reply(await embed.createReplyEmbed({
+      await action.reply(embed.createReplyEmbed({
         fields: fields,
         footer: { text: 'For more information on a command do help [command].' }
       }));
@@ -52,7 +52,7 @@ ${arg.timeSuffixes ? `» **Time Suffixes**: ${arg.timeSuffixes.map(str => `\`\`$
       );
       if (commandArgs.length !== 0) fields.push({ name: 'Arguments', value: commandArgs.join('\n') });
       
-      await action.reply(await embed.createReplyEmbed({
+      await action.reply(embed.createReplyEmbed({
         title: matchingCommand.title,
         description: matchingCommand.description,
         fields: fields

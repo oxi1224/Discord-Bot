@@ -25,7 +25,7 @@ export default async function main(client) {
     const reason = 'Sending a scam link.';
     const member = await guild.members.fetch(user);
 
-    await dmUser(user, await embed.dmDuration('muted', guild, reason, null)).catch(null);
+    await dmUser(user, embed.dmDuration('muted', guild, reason, null)).catch(null);
 
     logToDb(userId, reason, 'Automod', 'mutes');
     logAction('Member Muted', [
@@ -92,7 +92,7 @@ export default async function main(client) {
     const member = await guild.members.fetch(user);
     if (!member.kickable) return;
     
-    await dmUser(user, await embed.dmDuration('muted', guild, reason, muteDuration)).catch(null);
+    await dmUser(user, embed.dmDuration('muted', guild, reason, muteDuration)).catch(null);
 
     logToDb(userId, reason, 'Automod', 'mutes', muteDuration);
     logAction('Member Muted', [

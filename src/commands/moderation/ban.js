@@ -18,20 +18,20 @@ export default async function main(client) {
 
   // Bans given user
   async function performBan({ action, userId, duration, reason, guild, moderator }) {
-    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid User.'));
     const banList = await guild.bans.fetch();
     const user = await client.users.fetch(userId, false);
     const member = await guild.members.fetch(userId).catch(() => {return null;});
     reason = !reason ? 'None' : reason;
 
-    if (!(banList.find(x => x.user.id === userId) === undefined)) return action.reply(await embed.commandFail('User already banned.'));
-    if (!member.bannable) return action.reply(await embed.commandFail(`${member} is not bannable.`));
+    if (!(banList.find(x => x.user.id === userId) === undefined)) return action.reply(embed.commandFail('User already banned.'));
+    if (!member.bannable) return action.reply(embed.commandFail(`${member} is not bannable.`));
     
     try {
-      dmUser(user, await embed.dmDuration('banned', guild, reason, duration));
-      await action.reply(await embed.punishmentReply('banned', user));
+      dmUser(user, embed.dmDuration('banned', guild, reason, duration));
+      await action.reply(embed.punishmentReply('banned', user));
     } catch {
-      await action.reply(await embed.dmFail(user));
+      await action.reply(embed.dmFail(user));
     }
 
     logToDb(userId, reason, moderator, 'bans', duration);

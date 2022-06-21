@@ -20,7 +20,7 @@ export default async function main(client) {
         { name: 'User', value: `${user}` },
         { name: 'Reason', value: 'Punishment Expired' }
       ], { mod: client.user });
-      try { await dmUser(user, await embed.dm('unbanned', guild, 'Punishment expired')); } 
+      try { await dmUser(user, embed.dm('unbanned', guild, 'Punishment expired')); } 
       catch {null;}
       // Filter out all bans in the array that have the same user
       expiringPunishments = expiringPunishments.filter(json => { return !(json.user == userId && json.punishmentType == 'ban'); });
@@ -35,7 +35,7 @@ export default async function main(client) {
         { name: 'User', value: `${user}` },
         { name: 'Reason', value: 'Punishment Expired' }
       ], { mod: client.user });
-      try { await dmUser(user, await embed.dm('unmuted', guild, 'Punishment expired')); } 
+      try { await dmUser(user, embed.dm('unmuted', guild, 'Punishment expired')); } 
       catch {null;}
       // Filter out all mutes in the array that have the same user
       expiringPunishments = expiringPunishments.filter(json => { return !(json.user == userId && json.punishmentType == 'mute'); });
@@ -58,7 +58,7 @@ export default async function main(client) {
         { name: 'Reason', value: 'Punishment Expired' }
       ], { mod: client.user });
       try {
-        dmUser(member, await embed.createReplyEmbed({
+        dmUser(member, embed.createReplyEmbed({
           title: `You've been unblocked from #${channel.name} in ${guild}.`,
           description: 'Reason: ``Punishment expuired``.'
         }));

@@ -15,18 +15,18 @@ export default async function main() {
 
   // Unmutes given user
   async function unmute({ action, userId, reason, guild, moderator }) {
-    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid User.'));
     const member = await guild.members.fetch(userId, false);
     const user = member.user;
     reason = !reason ? 'None' : reason;
     
     if (!(member)) return action.reply(`${user} is not in the server`);
-    if (!(member.roles.cache.some(role => role.id === mutedRole))) return action.reply(await embed.commandFail(`${user} is not muted.`));
+    if (!(member.roles.cache.some(role => role.id === mutedRole))) return action.reply(embed.commandFail(`${user} is not muted.`));
     try {
-      await dmUser(user, await embed.dm('unmuted', guild, reason));
-      await action.reply(await embed.punishmentReply('unmuted', user));
+      await dmUser(user, embed.dm('unmuted', guild, reason));
+      await action.reply(embed.punishmentReply('unmuted', user));
     } catch {
-      await action.reply(await embed.dmFail(user));
+      await action.reply(embed.dmFail(user));
     }
 
     logToDb(userId, reason, moderator, 'unmutes');

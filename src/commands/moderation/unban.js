@@ -12,19 +12,19 @@ export default async function main(client) {
 
   // Unbans given user
   async function unBan({ action, userId, reason, guild, moderator }) {
-    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid User.'));
     const user = await client.users.fetch(userId, false);
     const banList = await action.guild.bans.fetch();
     reason = !reason ? 'None' : reason;
 
-    if (banList.find(x => x.user.id === userId) === undefined) return action.reply(await embed.commandFail(`${user} is not banned.`));
+    if (banList.find(x => x.user.id === userId) === undefined) return action.reply(embed.commandFail(`${user} is not banned.`));
     if (!userId) throw new Error('BAN_RESOLVE_ID');
     await guild.bans.remove(userId);
     try {
-      await dmUser(user, await embed.dm('unbanned', guild, reason));
-      await action.reply(await embed.punishmentReply('unbanned', user));
+      await dmUser(user, embed.dm('unbanned', guild, reason));
+      await action.reply(embed.punishmentReply('unbanned', user));
     } catch {
-      await action.reply(await embed.dmFail(user));
+      await action.reply(embed.dmFail(user));
     }
     
     logToDb(userId, reason, moderator, 'unbans');

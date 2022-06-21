@@ -17,6 +17,8 @@ export async function startCommands(client) {
   command.purge();
   command.block();
   command.unblock();
+  command.timeout();
+  command.untimeout();
 
   // Listeners
   listener.actionListeners(client);

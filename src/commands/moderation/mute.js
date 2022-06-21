@@ -18,23 +18,22 @@ export default async function main() {
 
   // Mutes given user
   async function mute({ action, userId, duration, reason, guild, moderator }) {
-    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid User.'));
     const member = await guild.members.fetch(userId);
-    const user = member.user;
     reason = !reason ? 'None' : reason;
 
-    if (!member) return action.reply(await embed.notInServer(user));
-    if (member.roles.cache.some(role => role.id === mutedRole)) return action.reply(await embed.commandFail(`${user} is already muted.`));
+    if (!member) return action.reply(embed.notInServer(member));
+    if (member.roles.cache.some(role => role.id === mutedRole)) return action.reply(embed.commandFail(`${member} is already muted.`));
     try {
-      await dmUser(user, await embed.dmDuration('muted', guild, reason, duration));
-      await action.reply(await embed.punishmentReply('muted', user));
+      await dmUser(member, embed.dmDuration('muted', guild, reason, duration));
+      await action.reply(embed.punishmentReply('muted', member));
     } catch {
-      await action.reply(await embed.dmFail(user));
+      await action.reply(embed.dmFail(member));
     }
 
     await logToDb(userId, reason, moderator, 'mutes', duration);
     await logAction('Member Muted', [
-      { name: 'User', value: `${user}` },
+      { name: 'User', value: `${member}` },
       { name: 'Reason', value: `\`\`${reason}\`\`` },
       { name: 'Duration', value: !duration ? 'Permanent' : duration }
     ], { mod: moderator });

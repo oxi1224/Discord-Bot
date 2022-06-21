@@ -18,7 +18,7 @@ import * as config from '../config/config.js';
  * 
  * @returns {MessageEmbed} Discord.js embed.
  */
-export async function createReplyEmbed(args) {
+export function createReplyEmbed(args) {
   // Get values from args
   const color = !args || !args.color ? config.embedColors.base : args.color;
   const title = !args || !args.title ? null : args.title;

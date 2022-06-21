@@ -14,8 +14,8 @@ export default async function main() {
       .setRequired(false));
     
   async function purge({ action, messageCount, userId, moderator }) {
-    if (messageCount > 100 || messageCount < 1 || messageCount === undefined) return action.reply(await embed.commandFail('Message count must be between 1 and 100.'));
-    if (userId && !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
+    if (messageCount > 100 || messageCount < 1 || messageCount === undefined) return action.reply(embed.commandFail('Message count must be between 1 and 100.'));
+    if (userId && !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid User.'));
     const channel = action.channel;
     const messages = (await channel.messages
       .fetch({ limit: messageCount, before: action.id }))
@@ -24,10 +24,10 @@ export default async function main() {
         return msg.author.id === userId;
       });
 
-    if (messages.size === 0) return action.reply(await embed.commandFail(`No messages found from <@${userId}> in specified range.`));
+    if (messages.size === 0) return action.reply(embed.commandFail(`No messages found from <@${userId}> in specified range.`));
     await channel.bulkDelete(messages);
 
-    action.reply(await embed.commandSuccess(`Successfully purged ${messages.size} messages${!userId ? '.' : ` from <@${userId}>.`}`));
+    action.reply(embed.commandSuccess(`Successfully purged ${messages.size} messages${!userId ? '.' : ` from <@${userId}>.`}`));
     
     logAction('Messages Purged', [
       { name: 'Amount', value: messages.size.toString() },

@@ -12,7 +12,7 @@ export default async function main(client) {
       .setRequired(false));
 
   async function getUserInfo({ action, userId, guild }) {
-    if (userId && !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
+    if (userId && !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid User.'));
     const user = userId ? await client.users.fetch(userId) : action.author || action.member.user;
     const member = await (async () => { 
       try { 
@@ -48,7 +48,7 @@ export default async function main(client) {
         value: `${member._roles.length !== 0 ? member._roles.map(role => `<@&${role}>`).join(' ') : 'User has no roles'}` }) : null;
       embedTemplate.color = member.displayHexColor;
     }
-    await action.reply(await embed.createReplyEmbed(embedTemplate));
+    await action.reply(embed.createReplyEmbed(embedTemplate));
   }
 
   function getActivities(member) {

@@ -15,23 +15,23 @@ export default async function main() {
 
   // Unblocks given user from a channel
   async function unblock({ action, userId, reason, guild, moderator }) {
-    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid User.'));
 
     const member = await guild.members.fetch(userId).catch(() => {return null;});
     const channel = action.channel;
     reason = !reason ? 'None' : reason;
 
-    if (channel.permissionsFor(member).has('VIEW_CHANNEL')) return action.reply(await embed.commandFail(`${member} can already access this channel.`));
-    if (!member) return action.reply(await embed.notInServer(member));
+    if (channel.permissionsFor(member).has('VIEW_CHANNEL')) return action.reply(embed.commandFail(`${member} can already access this channel.`));
+    if (!member) return action.reply(embed.notInServer(member));
 
     try {
-      dmUser(member, await embed.createReplyEmbed({
+      dmUser(member, embed.createReplyEmbed({
         title: `You've been unblocked from #${channel.name} in ${guild}.`,
         description: `Reason: \`\`${reason}\`\`.`
       }));
-      await action.reply(await embed.punishmentReply('unblocked', member));
+      await action.reply(embed.punishmentReply('unblocked', member));
     } catch {
-      await action.reply(await embed.dmFail(member));
+      await action.reply(embed.dmFail(member));
     }
 
     logToDb(userId, reason, moderator, 'unblocks', null, { channel: channel });

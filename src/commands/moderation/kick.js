@@ -15,19 +15,19 @@ export default async function main(client) {
 
   // Kicks given user
   async function performKick({ action, userId, reason, guild, moderator }) {
-    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid User.'));
     const user = await client.users.fetch(userId, false);
     const member = await guild.members.fetch(userId).catch(() => {return null;});
     reason = !reason ? 'None' : reason;
 
-    if (!(await guild.members.fetch(userId))) return action.reply(await embed.notInServer(user));
-    if (!member.kickable) return action.reply(await embed.commandFail(`${member} is not kickable.`));
+    if (!(await guild.members.fetch(userId))) return action.reply(embed.notInServer(user));
+    if (!member.kickable) return action.reply(embed.commandFail(`${member} is not kickable.`));
 
     try {
-      await dmUser(user, await embed.dm('kicked', guild, reason));
-      await action.reply(await embed.punishmentReply('kicked', user));
+      await dmUser(user, embed.dm('kicked', guild, reason));
+      await action.reply(embed.punishmentReply('kicked', user));
     } catch {
-      await action.reply(await embed.dmFail(user));
+      await action.reply(embed.dmFail(user));
     }
     
     logToDb(userId, reason, moderator, 'kicks');

@@ -22,9 +22,9 @@ export default async function main() {
 
   // Adds or removes a role from given user
   async function manageRole({ action, roleFunction, userId, roleInfo, guild }) {
-    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid User.'));
     const member = await guild.members.fetch(userId, false);
-    if (!member) return action.reply(await embed.notInServer(`<@${userId}>`));
+    if (!member) return action.reply(embed.notInServer(`<@${userId}>`));
 
     roleInfo = Array.isArray(roleInfo) ? roleInfo.join(' ') : roleInfo;
 
@@ -33,8 +33,8 @@ export default async function main() {
       if (roleInfo.match(/^\d+/)) return blacklistedRoles.ids.includes(roleInfo) ? 'blacklisted role' : await guild.roles.cache.find(Role => Role.id === roleInfo);
       return blacklistedRoles.names.includes(roleInfo.toLowerCase()) ? 'blacklisted role' : await guild.roles.cache.find(Role => Role.name === roleInfo);
     })();
-    if (role === 'blacklisted role') return action.reply(await embed.commandFail('Cannot modify blacklisted roles.'));
-    if (!role) return action.reply(await embed.commandFail('No such role found.'));
+    if (role === 'blacklisted role') return action.reply(embed.commandFail('Cannot modify blacklisted roles.'));
+    if (!role) return action.reply(embed.commandFail('No such role found.'));
 
     switch (roleFunction.toLowerCase()) {
 
@@ -42,20 +42,20 @@ export default async function main() {
     case 'add':
       try {
         await member.roles.add(role);
-        action.reply(await embed.commandSuccess(`Successfully added ${role} to ${member}.`));
-      } catch { action.reply(await embed.commandFail(`${role} is higher in hierarchy than me.`)); }
+        action.reply(embed.commandSuccess(`Successfully added ${role} to ${member}.`));
+      } catch { action.reply(embed.commandFail(`${role} is higher in hierarchy than me.`)); }
       break;
 
     case 'rm':
     case 'remove':
       try {
         await member.roles.remove(role);
-        action.reply(await embed.commandSuccess(`Successfully removed ${role} from ${member}.`));
-      } catch { action.reply(await embed.commandFail(`${role} is higher in hierarchy than me.`)); }
+        action.reply(embed.commandSuccess(`Successfully removed ${role} from ${member}.`));
+      } catch { action.reply(embed.commandFail(`${role} is higher in hierarchy than me.`)); }
       break;
 
     default:
-      action.reply(await embed.commandFail('Unknow function (must be add or remove)'));
+      action.reply(embed.commandFail('Unknow function (must be add or remove)'));
     }
   }
 

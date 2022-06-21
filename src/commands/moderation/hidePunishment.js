@@ -15,10 +15,10 @@ export default async function main(client) {
 
   // Removes punishment with specificed caseID of given user from modlogs
   async function hidePunishment({ action, userId, moderator, punishmentId }) {
-    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid User.'));
     
     const punishmentsJson = await readFromDb(userId);
-    if (!punishmentsJson) return action.reply(await embed.commandFail(`${user} has no punishment history.`));
+    if (!punishmentsJson) return action.reply(embed.commandFail(`${user} has no punishment history.`));
 
     const user = await client.users.fetch(userId, false);
     // Connect all punishment type arrays into one
@@ -27,7 +27,7 @@ export default async function main(client) {
       punishmentsJson.bans, punishmentsJson.unbans, 
       punishmentsJson.kicks);
     const punishmentToRemove = usersPunishments.find(punishment => punishment.punishmentId === punishmentId);
-    if (!punishmentToRemove) return action.reply(await embed.commandFail('No punishment with such ID found'));
+    if (!punishmentToRemove) return action.reply(embed.commandFail('No punishment with such ID found'));
 
     // Punishment type array without specificed modlog 
     const finalPunishmentArray = punishmentsJson[`${punishmentToRemove.punishmentType}s`];
@@ -44,7 +44,7 @@ export default async function main(client) {
       **Expires**: ${!punishmentToRemove.punishmentExpires ? '``false``' : `<t:${Math.floor(punishmentToRemove.punishmentExpires / 1000)}>`}` }
     ], { mod: moderator });
 
-    action.reply(await embed.commandSuccess(`Successfully hidden the punishment with ID \`\`${punishmentId}\`\``));
+    action.reply(embed.commandSuccess(`Successfully hidden the punishment with ID \`\`${punishmentId}\`\``));
   }
 
   appendToCommandArray({
