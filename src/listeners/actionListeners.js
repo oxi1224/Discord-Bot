@@ -1,7 +1,6 @@
 /* eslint-disable no-case-declarations */
-import { logAction } from '../lib/util/util.js';
-import { readFromDb } from '../lib/common/db.js';
-import { mutedRole } from '../lib/config/config.js';
+import { logAction, readFromDb, mutedRole, dmUser, embed, embedColors } from '#lib';
+
 
 export default async function main(client) {
   console.log('Action listeners started');
@@ -107,8 +106,34 @@ export default async function main(client) {
     }
   });
   
+  const rules = [
+    '<:starry_blob:941271221738303549>   » **Follow Discord and Roblox Terms of Services**',
+    '<:blob_heart:941271083078791168> » **Respect your fellow members! Any forms of disrespect/harassment will not be tolerated!**',
+    '<:blob_glasses:941271069480853504> » **Swearing __is__ allowed, however the following is not:**',
+    '» *Excessive swearing*',
+    '» *Sexual/Inappropriate topics*',
+    '» *Derogatory terms*',
+    '<:blob_scared:941271116796817439> » **Disruptive behavior/controversial subjects are not allowed! (Religion/Politics)**',
+    '<:blob_crying:941271055572533320> » **NSFW content is strictly prohibited!**',
+    '<:blob_crying:941271055572533320> » **Spamming is not allowed!**',
+    '<:happy_blob:941271190603976705> » **Do not excessively ping roles!**',
+    '<:happy_blob:941271190603976705> » **Advertising of any form is not allowed! (Includes DMs!)**',
+    '<:blob_skull:941271133217509436>  » **Any discussion that breaks Roblox TOS is not allowed!**',
+    '» *Cheating/Exploiting*',
+    '» *Cross-trading*',
+    '**In general, just be a good person. Think if your mom was here, would she approve?**'
+  ];
+
   // Listens for new members
   client.on('guildMemberAdd', async (member) => {
+    dmUser(member, embed.createReplyEmbed({
+      color: embedColors.error,
+      title: `Welcome to ${member.guild}! Please make sure to check out our rules:`,
+      description: rules.join('\n').trim(),
+      timestamp: true
+    }
+    ));
+
     const mutes = await readFromDb(member.user.id);
     if (mutes === null) return;
     if (mutes.at(-1).punishmentExpires <= new Date().getTime() || mutes.at(-1).punishmentExpires === null) member.roles.add(mutedRole);
