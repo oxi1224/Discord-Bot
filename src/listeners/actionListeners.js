@@ -70,15 +70,13 @@ export default async function main(client) {
   });
 
   // Listens for role updates
-  for (const type of ['roleCreate', 'roleDelete', 'roleUpdate']) {
+  for (const type of ['roleCreate', 'roleDelete']) {
     client.on(type, async role => {
       switch (type) {
       case ('roleCreate'):
         return await logAction('Role Created', [{ name: 'Role', value: `${role}` }]);
       case ('roleDelete'):
         return await logAction('Role Deleted', [{ name: 'Role', value: `${role}` }]);
-      case ('roleUpdate'):
-        return await logAction('Role Updated', [{ name: 'Role', value: `${role}` }]);
       }
     });
   }

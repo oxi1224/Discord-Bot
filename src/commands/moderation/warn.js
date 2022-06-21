@@ -15,7 +15,7 @@ export default async function main(client) {
 
   // Warns given user
   async function warn({ action, userId, reason, moderator, guild }) {
-    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
+    // if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(await embed.commandFail('Invalid User.'));
     if (!reason) return action.reply(await embed.commandFail('Reason cannot be empty.'));
     const user = await client.users.fetch(userId, false);
     reason = !reason ? 'None' : reason;
