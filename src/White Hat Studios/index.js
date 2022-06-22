@@ -1,1 +1,1 @@
-export { default as stats } from './playerCount.js';
+export { default as stats } from './stats.js';
