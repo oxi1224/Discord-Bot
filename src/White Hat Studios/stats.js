@@ -18,12 +18,12 @@ async function playerCount(guild) {
 }
 
 async function guildMembers(guild) {
-  const channel = await guild.channels.fetch(statsChannels.groupMembers);
-  await channel.setName(`Members: ${guild.size}`);
+  const channel = await guild.channels.fetch(statsChannels.guildMembers);
+  await channel.setName(`Members: ${guild.memberCount}`);
 }
 
 async function groupMembers(guild) {
   const data = await (await fetch('https://groups.roblox.com/v1/groups/2851520')).json();
-  const channel = await guild.channels.fetch(statsChannels.guildMembers);
+  const channel = await guild.channels.fetch(statsChannels.groupMembers);
   await channel.setName(`Fans: ${data.memberCount}`);
 }
