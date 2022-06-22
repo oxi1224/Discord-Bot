@@ -4,8 +4,8 @@ import { guildId, statsChannels } from '#lib';
 export default async function main(client) {
   const guild = await client.guilds.fetch(guildId);
   playerCount(guild);
-  members(guild);
   guildMembers(guild);
+  groupMembers(guild);
 }
 
 async function playerCount(guild) {
@@ -17,12 +17,12 @@ async function playerCount(guild) {
   await channel.setName(`Playing Now: ${results.reduce((curr, prev) => curr + prev, 0)}`);
 }
 
-async function members(guild) {
+async function guildMembers(guild) {
   const channel = await guild.channels.fetch(statsChannels.groupMembers);
   await channel.setName(`Members: ${guild.size}`);
 }
 
-async function guildMembers(guild) {
+async function groupMembers(guild) {
   const data = await (await fetch('https://groups.roblox.com/v1/groups/2851520')).json();
   const channel = await guild.channels.fetch(statsChannels.guildMembers);
   await channel.setName(`Fans: ${data.memberCount}`);
