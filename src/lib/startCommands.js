@@ -1,5 +1,6 @@
 import * as command from '#commands';
 import * as listener from '#listeners';
+import * as whs from '#WHS';
 import { initializeCommands, appendToCommandArray } from './commandHandler.js';
 
 // Runs appendToCommandArray function in each file then runs initializeCommands.
@@ -31,6 +32,9 @@ export async function startCommands(client) {
   command.avatar(client);
   command.userInfo(client);
   command.help();
+
+  // WHS stuff
+  setInterval(() => whs.stats(client), 60000);
 
   initializeCommands(client, appendToCommandArray({ finalize: true }));
 }

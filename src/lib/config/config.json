@@ -40,5 +40,10 @@
     "timeDifference": 5000,
     "expiryTime": 5000,
     "muteDuration": "15min"
+  },
+  "statsChannels": {
+    "players": "989158296185368626",
+    "groupMembers": "989158452800655410",
+    "guildMembers": "989158585529401354"
   }
 }

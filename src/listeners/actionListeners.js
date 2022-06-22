@@ -5,7 +5,7 @@ import { logAction, readFromDb, mutedRole, dmUser, embed, embedColors } from '#l
 export default async function main(client) {
   console.log('Action listeners started');
   // Listens for channel related changes
-  for (const type of ['channelCreate', 'channelDelete', 'channelPinsUpdate', 'channelUpdate']) {
+  for (const type of ['channelCreate', 'channelDelete', 'channelPinsUpdate']) {
     client.on(type, async channel => {
       switch (type) {
       case ('channelCreate'):
@@ -14,8 +14,6 @@ export default async function main(client) {
         return await logAction('Channel Deleted', [{ name: 'Channel', value: `${channel}` }]);
       case ('channelPinsUpdate'):
         return await logAction('Pins Updated', [{ name: 'Channel', value: `${channel}` }]);
-      case ('channelUpdate'):
-        await logAction('Channel Updated', [{ name: 'Channel', value: `${channel}` }]);
       }
     });
   }
