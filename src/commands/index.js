@@ -19,3 +19,6 @@ export { default as block } from './moderation/block.js';
 export { default as unblock } from './moderation/unblock.js';
 export { default as timeout } from './moderation/timeout.js';
 export { default as untimeout } from './moderation/untimeout.js';
+
+// Dev
+export { default as evalCode } from './dev/eval.js';

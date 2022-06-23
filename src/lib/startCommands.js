@@ -33,8 +33,11 @@ export async function startCommands(client) {
   command.userInfo(client);
   command.help();
 
+  // Dev
+  command.evalCode(client);
+
   // WHS stuff
-  setInterval(() => whs.stats(client), 60000);
+  setInterval(() => whs.stats(client), 10000);
 
   initializeCommands(client, appendToCommandArray({ finalize: true }));
 }

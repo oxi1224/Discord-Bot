@@ -124,13 +124,13 @@ export default async function main(client) {
 
   // Listens for new members
   client.on('guildMemberAdd', async (member) => {
-    dmUser(member, embed.createReplyEmbed({
+    await dmUser(member, embed.createReplyEmbed({
       color: embedColors.error,
       title: `Welcome to ${member.guild}! Please make sure to check out our rules:`,
       description: rules.join('\n').trim(),
       timestamp: true
     }
-    ));
+    )).catch(null);
 
     const mutes = await readFromDb(member.user.id);
     if (mutes === null) return;

@@ -16,6 +16,7 @@ export const blacklistedRoles = config.blacklistedRoles;
  * muteDuration - Duration of the issued mute.
  */
 export const automodConfig = config.automodConfig;
+export const owners = config.owners;
 
 // WHS
 export const statsChannels = config.statsChannels;
