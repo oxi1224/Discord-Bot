@@ -26,14 +26,14 @@ async function fansCount(guild) {
   // eslint-disable-next-line no-undef
   const headers = new Headers();
   headers.append('Authorization', `Bearer ${TWITTER_BEARER}`);
-  const groupMembers = (await (await fetch('https://groups.roblox.com/v1/groups/2851520')).json()).memberCount;
+  const groupMembers = await (await fetch('https://groups.roblox.com/v1/groups/2851520')).json();
   const discordMembers = guild.memberCount;
-  const twitterFollowers = (await (await fetch ('https://api.twitter.com/2/users/1057388018515038208?user.fields=public_metrics', { 
+  const twitterFollowers = await (await fetch ('https://api.twitter.com/2/users/1057388018515038208?user.fields=public_metrics', { 
     method: 'GET',
     headers: headers,
     redirect: 'follow'
-  })).json()).data.public_metrics.followers_count;
+  })).json();
 
   const channel = await guild.channels.fetch(statsChannels.groupMembers);
-  await channel.setName(`Fans: ${groupMembers + discordMembers + twitterFollowers}`);
+  await channel.setName(`Fans: ${groupMembers.memberCount + discordMembers + twitterFollowers.data.public_metrics.followers_count}`);
 }

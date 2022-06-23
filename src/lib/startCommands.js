@@ -25,7 +25,7 @@ export async function startCommands(client) {
   listener.actionListeners(client);
   listener.errorListeners(client);
   listener.automod(client);
-  setInterval(() => listener.expiringPunishments(client), 10000);
+  setInterval(() => listener.expiringPunishments(client), 60000);
 
   // Info
   command.ping(client);
