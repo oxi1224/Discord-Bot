@@ -11,8 +11,8 @@ export default async function main() {
       .setRequired(false));
 
   async function help({ action, command }) {
-    const commands = (await appendToCommandArray({ finalize: true })).map(obj => obj ? obj.category : null);
-    if (command && !commands.map(obj => obj.aliases).flat().includes(command)) return action.reply(embed.commandFail('This command doesnt exist.'));
+    const commands = (await appendToCommandArray({ finalize: true })).map(obj => obj.helpInfo);
+    if (command && !commands.map(obj => obj ? obj.aliases : null).flat().includes(command)) return action.reply(embed.commandFail('This command doesnt exist.'));
     if (!command) {
       const fields = [];
       // Get all unique fields
@@ -35,7 +35,7 @@ export default async function main() {
     }
     if (command) {
       const fields = [];
-      const matchingCommand = commands.filter(obj => obj.aliases.includes(command))[0];
+      const matchingCommand = commands.filter(obj => obj ? obj.aliases.includes(command) : null)[0];
       const commandArgs = [];
 
       matchingCommand.arguments.forEach(arg => {
