@@ -1,14 +1,12 @@
 import fetch from 'node-fetch';
-import { guildId, statsChannels } from '#lib';
+import { statsChannels, guildId } from '#lib';
 import { TWITTER_BEARER } from '#auth';
 
 export default async function main(client) {
   const guild = await client.guilds.fetch(guildId);
-  try {
-    await playerCount(guild);
-    await guildMembers(guild);
-    await fansCount(guild);
-  } catch {null;}
+  await playerCount(guild).catch(() => { return null; });
+  await guildMembers(guild).catch(() => { return null; });
+  await fansCount(guild).catch(() => { return null; });
 }
 
 async function playerCount(guild) {

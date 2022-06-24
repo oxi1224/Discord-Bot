@@ -3,4 +3,6 @@
 .pnpm-debug.log
 .yarn/cache
 .yarn/install-state.gz
+src/lib/config/configDev.json
+src/lib/config/configWhs.json
 /sequelize/
