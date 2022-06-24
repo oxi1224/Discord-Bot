@@ -20,7 +20,7 @@ import { config } from '#lib';
  */
 export function createReplyEmbed(args) {
   // Get values from args
-  const color = !args || !args.color ? config.config.embedColors.base : args.color;
+  const color = !args || !args.color ? config.embedColors.base : args.color;
   const title = !args || !args.title ? null : args.title;
   const emote = !args || !args.emote ? '' : args.emote;
   const fields = !args || !args.fields ? null : args.fields;
@@ -47,7 +47,7 @@ export function createReplyEmbed(args) {
 }
 
 export const dmFail = (user) => createReplyEmbed({
-  color: config.config.embedColors.info,
+  color: config.embedColors.info,
   description: `Failed to dm ${user} action still performed.`,
   emote: config.infoEmote
 });
@@ -63,25 +63,25 @@ export const dmDuration = (action, guild, reason, duration) => createReplyEmbed(
 });
 
 export const punishmentReply = (action, user) => createReplyEmbed({
-  color: config.config.embedColors.success,
+  color: config.embedColors.success,
   description: `${user} has been ${action}.`,
-  emote: config.config.emotes.success
+  emote: config.emotes.success
 });
 
 export const notInServer = (user) => createReplyEmbed({
-  color: config.config.embedColors.error,
+  color: config.embedColors.error,
   description: `${user} is not in the server.`,
-  emote: config.config.emotes.error
+  emote: config.emotes.error
 });
 
 export const commandFail = (text) => createReplyEmbed({
   description: text,
-  color: config.config.embedColors.error,
-  emote: config.config.emotes.error
+  color: config.embedColors.error,
+  emote: config.emotes.error
 });
 
 export const commandSuccess = (text) => createReplyEmbed({
   description: text,
-  color: config.config.embedColors.success,
-  emote: config.config.emotes.success
+  color: config.embedColors.success,
+  emote: config.emotes.success
 });
