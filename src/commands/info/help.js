@@ -16,11 +16,13 @@ export default async function main() {
     if (!command) {
       const fields = [];
       // Get all unique fields
-      const categories = [...new Set(commands.map(obj => obj.category))];
+      const categories = [...new Set(commands.map(obj => obj ? obj.category : null))];
       
       categories.forEach(category => {
+        if (!category) return;
         const categoryField = [];
         commands.forEach(cmd => {
+          if (!cmd) return;
           if (cmd.category.includes(category)) categoryField.push(`\`\`${cmd.aliases[0]}\`\``);
         });
         fields.push({ name: category, value: categoryField.join(' ') });

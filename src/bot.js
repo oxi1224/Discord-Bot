@@ -1,4 +1,5 @@
-import { TOKEN, startCommands, createLogsTable } from '#lib';
+import { startCommands, createLogsTable } from '#lib';
+import { TOKEN } from '#auth';
 import { Client } from 'discord.js';
 
 

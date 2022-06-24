@@ -1,7 +1,7 @@
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
-import { CLIENT_ID, TOKEN } from './common/auth.js';
-import { guildId } from './config/config.js';
+import { CLIENT_ID, TOKEN } from '#auth';
+import { guildId } from '#lib';
 
 const rest = new REST({ version: '9' }).setToken(TOKEN);
 const commands = [];

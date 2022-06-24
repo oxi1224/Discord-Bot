@@ -1,6 +1,6 @@
 {
   "name": "discord-bot",
-  "version": "3.5.4",
+  "version": "3.6.4",
   "description": "A simple bot for the chatting app discord.",
   "type": "module",
   "main": "bot.js",
@@ -18,6 +18,9 @@
     "#listeners": {
       "default": "./src/listeners/index.js"
     },
+    "#auth": {
+      "default": "./src/lib/common/auth.js"
+    },
     "#WHS": {
       "default": "./src/White Hat Studios/index.js"
     }
@@ -28,6 +31,7 @@
     "@babel/core": ">=7.11.0",
     "@discordjs/builders": "^0.13.0",
     "@discordjs/rest": "^0.4.1",
+    "conf": "^10.1.2",
     "discord-api-types": "^0.32.1",
     "discord.js": "13.6.0",
     "dotenv": "^16.0.1",

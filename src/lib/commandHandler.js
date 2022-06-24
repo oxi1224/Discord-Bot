@@ -1,5 +1,4 @@
-import { emotes, prefix } from './config/config.js';
-import { updateSlashCommands } from './updateSlashCommands.js';
+import { emotes, prefix, updateSlashCommands } from '#lib';
 
 const commands = [];
 /**
@@ -27,7 +26,7 @@ export async function appendToCommandArray({
   callback,
   callbackParamInfo = [],
   finalize = false,
-  helpInfo = {}
+  helpInfo = null
 }) {
   if (!finalize) {
     commands.push({

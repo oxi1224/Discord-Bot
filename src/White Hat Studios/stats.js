@@ -1,11 +1,14 @@
 import fetch from 'node-fetch';
-import { guildId, statsChannels, TWITTER_BEARER } from '#lib';
+import { guildId, statsChannels } from '#lib';
+import { TWITTER_BEARER } from '#auth';
 
 export default async function main(client) {
   const guild = await client.guilds.fetch(guildId);
-  playerCount(guild);
-  guildMembers(guild);
-  fansCount(guild);
+  try {
+    await playerCount(guild);
+    await guildMembers(guild);
+    await fansCount(guild);
+  } catch {null;}
 }
 
 async function playerCount(guild) {
@@ -26,8 +29,9 @@ async function fansCount(guild) {
   // eslint-disable-next-line no-undef
   const headers = new Headers();
   headers.append('Authorization', `Bearer ${TWITTER_BEARER}`);
-  const groupMembers = await (await fetch('https://groups.roblox.com/v1/groups/2851520')).json();
   const discordMembers = guild.memberCount;
+
+  const groupMembers = await (await fetch('https://groups.roblox.com/v1/groups/2851520')).json();
   const twitterFollowers = await (await fetch ('https://api.twitter.com/2/users/1057388018515038208?user.fields=public_metrics', { 
     method: 'GET',
     headers: headers,

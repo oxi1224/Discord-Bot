@@ -1,4 +1,4 @@
-import { CONNECTION_URL } from './auth.js'; 
+import { CONNECTION_URL } from '#auth'; 
 import { Sequelize, DataTypes } from 'sequelize';
 
 export const sequelize = new Sequelize(CONNECTION_URL, {

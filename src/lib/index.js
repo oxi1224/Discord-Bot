@@ -4,7 +4,6 @@ export * from './startCommands.js';
 export * from './updateSlashCommands.js';
 
 // Common
-export * from './common/auth.js';
 export * from './common/db.js';
 
 // Config

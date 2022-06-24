@@ -9,7 +9,6 @@
 		"ecmaVersion": 2021,
 		"sourceType": "module"
   },
-	"ignorePatterns": ["src/lib/config/config.js"],
 	"rules": {
 		"arrow-spacing": ["warn", { "before": true, "after": true }],
 		"comma-dangle": ["error", "only-multiline"],

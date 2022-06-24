@@ -1,6 +1,6 @@
 import * as db from '../common/db.js';
 import { MessageEmbed } from 'discord.js';
-import { loggingChannel } from '../config/config.js';
+import { loggingChannel } from '#lib';
 
 // Generates modlog id
 export function generateModLogID() {
