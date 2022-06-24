@@ -1,5 +1,5 @@
 /* eslint-disable no-case-declarations */
-import { dmUser, logToDb, logAction, updateExpiringPunishments, fetchExpiringPunishments, mutedRole, guildId, embed } from '#lib';
+import { dmUser, logToDb, logAction, updateExpiringPunishments, fetchExpiringPunishments, config, embed } from '#lib';
 
 export default async function main(client) {
   let expiringPunishments = await fetchExpiringPunishments();
@@ -7,7 +7,7 @@ export default async function main(client) {
   // Check if the expiration date from the punishment closest to expiring is greater than current date
   if (expiringPunishments.length === 0 || expiringPunishments.at(-1).punishmentExpires >= new Date().getTime()) return;
 
-  const guild = await client.guilds.fetch(guildId);
+  const guild = await client.guilds.fetch(config.guild);
   const userId = expiringPunishments.at(-1).user;
   const member = await guild.members.fetch(userId, false);
   const user = member.user;
@@ -30,7 +30,7 @@ export default async function main(client) {
     
   case 'mute':
     try {
-      await member.roles.remove(mutedRole);
+      await member.roles.remove(config.mutedRole);
       await logAction('Member Unmuted', [
         { name: 'User', value: `${user}` },
         { name: 'Reason', value: 'Punishment Expired' }

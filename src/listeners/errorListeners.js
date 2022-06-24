@@ -1,5 +1,4 @@
-import { logAction } from '../lib/util/util.js';
-import { errorsChannel } from '../lib/config/config.js';
+import { logAction, config } from '#lib';
 
 export default function main() {
   console.log('Error listeners started');
@@ -10,7 +9,7 @@ export default function main() {
         { name: 'Error:', value: `\`\`\`${err}\`\`\`` },
         { name: 'Call Stack:', value: `\`\`\`js\n${err.stack} \`\`\`` }
       ],
-      { channelId: errorsChannel }
+      { channelId: config.errorsChannel }
     ));
 
   process.on('uncaughtException', 
@@ -20,6 +19,6 @@ export default function main() {
         { name: 'Error:', value: `\`\`\`${err}\`\`\`` },
         { name: 'Call Stack:', value: `\`\`\`js\n${err.stack} \`\`\`` }
       ],
-      { channelId: errorsChannel }
+      { channelId: config.errorsChannel }
     ));
 }

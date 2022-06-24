@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { embed, appendToCommandArray } from '#lib';
+import { appendToCommandArray, embed } from '#lib';
 
 export default async function main() {
   // create Help slash commmand

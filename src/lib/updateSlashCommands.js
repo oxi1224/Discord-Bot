@@ -1,7 +1,7 @@
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 import { CLIENT_ID, TOKEN } from '#auth';
-import { guildId } from '#lib';
+import { config } from '#lib';
 
 const rest = new REST({ version: '9' }).setToken(TOKEN);
 const commands = [];
@@ -16,7 +16,7 @@ export async function updateSlashCommands(data, name) {
   try {
     console.log(`Updating ${name} (/) command`);
     await rest.put(
-      Routes.applicationGuildCommands(CLIENT_ID, guildId),
+      Routes.applicationGuildCommands(CLIENT_ID, config.guildId),
       { body: commands },
     );
     console.log(`Successfully reloaded ${name} (/) command.`);

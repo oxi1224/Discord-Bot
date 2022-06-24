@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { appendToCommandArray, embed, blacklistedRoles } from '#lib';
+import { appendToCommandArray, embed, config } from '#lib';
 
 export default async function main() {
   // Create role slash command
@@ -30,8 +30,8 @@ export default async function main() {
 
     // Check if roleInfo is the name or ID of a role then get role object
     const role = await (async () => {
-      if (roleInfo.match(/^\d+/)) return blacklistedRoles.ids.includes(roleInfo) ? 'blacklisted role' : await guild.roles.cache.find(Role => Role.id === roleInfo);
-      return blacklistedRoles.names.includes(roleInfo.toLowerCase()) ? 'blacklisted role' : await guild.roles.cache.find(Role => Role.name === roleInfo);
+      if (roleInfo.match(/^\d+/)) return config.blacklistedRoles.ids.includes(roleInfo) ? 'blacklisted role' : await guild.roles.cache.find(Role => Role.id === roleInfo);
+      return config.blacklistedRoles.names.includes(roleInfo.toLowerCase()) ? 'blacklisted role' : await guild.roles.cache.find(Role => Role.name === roleInfo);
     })();
     if (role === 'blacklisted role') return action.reply(embed.commandFail('Cannot modify blacklisted roles.'));
     if (!role) return action.reply(embed.commandFail('No such role found.'));

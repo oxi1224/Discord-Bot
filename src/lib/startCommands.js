@@ -1,10 +1,12 @@
 import * as command from '#commands';
 import * as listener from '#listeners';
 import * as whs from '#WHS';
-import { initializeCommands, appendToCommandArray } from './commandHandler.js';
+import { initializeCommands, appendToCommandArray, config } from '#lib';
 
 // Runs appendToCommandArray function in each file then runs initializeCommands.
 export async function startCommands(client) {
+  await config;
+
   // Moderation
   command.ban(client);
   command.unban(client);

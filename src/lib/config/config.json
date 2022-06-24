@@ -1,0 +1,68 @@
+{
+  "config": {
+    "guildId": "613024666079985702",
+    "loggingChannel": "977566053062303764",
+    "errorsChannel": "980478015412772884",
+    "mutedRole": "980484262652416080",
+    "prefix": "!",
+    "owners": [
+      "344452070360875008"
+    ],
+    "emotes": {
+      "error": "<:error:980866363461599292>",
+      "success": "<:success:980866382323396723>",
+      "info": "<:info:980866381283201025>"
+    },
+    "colors": {
+      "base": "#0099ff",
+      "error": "#ef4047",
+      "success": "#3fa45d",
+      "info": "#cb8715"
+    },
+    "blacklistedRoles": {
+      "names": [],
+      "ids": []
+    },
+    "automodConfig": {
+      "messageLimit": 7,
+      "timeDifference": 5000,
+      "expiryTime": 5000,
+      "muteDuration": "15min"
+    },
+    "autoDelete": [
+      2
+    ]
+  },
+  "guildId": "613024666079985702",
+  "loggingChannel": "977566053062303764",
+  "errorsChannel": "980478015412772884",
+  "mutedRole": "980484262652416080",
+  "prefix": "!",
+  "emotes": {
+    "error": "<:error:980866363461599292>",
+    "success": "<:success:980866382323396723>",
+    "info": "<:info:980866381283201025>"
+  },
+  "embedColors": {
+    "base": "#0099ff",
+    "error": "#ef4047",
+    "success": "#3fa45d",
+    "info": "#cb8715"
+  },
+  "blacklistedRoles": {
+    "names": [],
+    "ids": []
+  },
+  "automodConfig": {
+    "messageLimit": 7,
+    "timeDifference": 5000,
+    "expiryTime": 5000,
+    "muteDuration": "15min"
+  },
+  "owners": [
+    "344452070360875008"
+  ],
+  "autoDelete": [
+    "1"
+  ]
+}

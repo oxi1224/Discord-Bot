@@ -1,6 +1,5 @@
 /* eslint-disable no-case-declarations */
-import { logAction, readFromDb, mutedRole, dmUser, embed, embedColors } from '#lib';
-
+import { logAction, readFromDb, config, dmUser, embed } from '#lib';
 
 export default async function main(client) {
   console.log('Action listeners started');
@@ -126,7 +125,7 @@ export default async function main(client) {
   client.on('guildMemberAdd', async (member) => {
     try {
       await dmUser(member, embed.createReplyEmbed({
-        color: embedColors.error,
+        color: config.embedColors.error,
         title: `Welcome to ${member.guild}! Please make sure to check out our rules:`,
         description: rules.join('\n').trim(),
         timestamp: true
@@ -136,6 +135,6 @@ export default async function main(client) {
 
     const mutes = await readFromDb(member.user.id);
     if (mutes === null) return;
-    if (mutes.at(-1).punishmentExpires <= new Date().getTime() || mutes.at(-1).punishmentExpires === null) member.roles.add(mutedRole);
+    if (mutes.at(-1).punishmentExpires <= new Date().getTime() || mutes.at(-1).punishmentExpires === null) member.roles.add(config.mutedRole);
   });
 }

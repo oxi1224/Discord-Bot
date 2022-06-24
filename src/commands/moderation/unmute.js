@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { logToDb, dmUser, logAction, mutedRole, appendToCommandArray, embed } from '#lib';
+import { logToDb, dmUser, logAction, config, appendToCommandArray, embed } from '#lib';
 
 export default async function main() {
   // Create unmute slash commmand
@@ -21,7 +21,7 @@ export default async function main() {
     reason = !reason ? 'None' : reason;
     
     if (!(member)) return action.reply(`${user} is not in the server`);
-    if (!(member.roles.cache.some(role => role.id === mutedRole))) return action.reply(embed.commandFail(`${user} is not muted.`));
+    if (!(member.roles.cache.some(role => role.id === config.mutedRole))) return action.reply(embed.commandFail(`${user} is not muted.`));
     try {
       await dmUser(user, embed.dm('unmuted', guild, reason));
       await action.reply(embed.punishmentReply('unmuted', user));
@@ -34,7 +34,7 @@ export default async function main() {
       { name: 'User', value: `${user}` },
       { name: 'Reason', value: `\`\`${reason}\`\`` }
     ], { mod: moderator });
-    await member.roles.remove(mutedRole);
+    await member.roles.remove(config.mutedRole);
   }
 
   appendToCommandArray({

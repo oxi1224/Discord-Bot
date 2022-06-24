@@ -1,10 +1,10 @@
 import { default as badLinks } from './badLinks.js';
-import { embed, dmUser, logToDb, logAction, mutedRole, automodConfig } from '#lib';
+import { embed, dmUser, logToDb, logAction, config } from '#lib';
 
 export default async function main(client) {
   console.log('Automod started');
   const usersMap = new Map();
-  const { messageLimit, timeDifference, expiryTime, muteDuration } = automodConfig;
+  const { messageLimit, timeDifference, expiryTime, muteDuration } = config.automodConfig;
 
   client.on('messageCreate', async message => {
     if (message.author.bot) return;
@@ -34,7 +34,7 @@ export default async function main(client) {
       { name: 'Duration', value: 'Permanent' }
     ], { mod: '**Automod**' });
 
-    await member.roles.add(mutedRole);
+    await member.roles.add(config.mutedRole);
     message.delete();
   }
 
@@ -101,7 +101,7 @@ export default async function main(client) {
       { name: 'Duration', value: muteDuration }
     ], { mod: '**Automod**' });
 
-    await member.roles.add(mutedRole);
+    await member.roles.add(config.mutedRole);
     message.channel.bulkDelete(messages);
     message.channel.send('Please do not spam.');
   }  

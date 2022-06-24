@@ -1,4 +1,4 @@
-import { emotes, prefix, updateSlashCommands } from '#lib';
+import { config, updateSlashCommands } from '#lib';
 
 const commands = [];
 /**
@@ -52,14 +52,14 @@ export async function initializeCommands(client, commandArray) {
   commandArray = await commandArray;
 
   client.on('messageCreate', async message => {
-    if (!message.content.startsWith(prefix) || message.author.bot) return;
+    if (!message.content.startsWith(config.prefix) || message.author.bot) return;
     const args = message.content.slice(1).trim().split(' ').filter(str => str !== '');
     const commandName = args.shift().toLowerCase();
     const command = commandArray.find(cmd => cmd.aliases.includes(commandName));
 
     if (!command) return;
     if (!command.prefixed) return;
-    if (!message.member.permissions.has(command.requiredPerms)) return message.react(emotes.error);
+    if (!message.member.permissions.has(command.requiredPerms)) return message.react(config.emotes.error);
     
     const callbackParams = await getCallbackParams(command.callbackParamInfo, args, commandName);
     callbackParams.action = message;

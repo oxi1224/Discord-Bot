@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { logToDb, dmUser, logAction, mutedRole, appendToCommandArray, embed } from '#lib';
+import { logToDb, dmUser, logAction, appendToCommandArray, embed, config } from '#lib';
+
 
 export default async function main() {
   // Create mute slash commmand
@@ -23,7 +24,7 @@ export default async function main() {
     reason = !reason ? 'None' : reason;
 
     if (!member) return action.reply(embed.notInServer(member));
-    if (member.roles.cache.some(role => role.id === mutedRole)) return action.reply(embed.commandFail(`${member} is already muted.`));
+    if (member.roles.cache.some(role => role.id === config.mutedRole)) return action.reply(embed.commandFail(`${member} is already muted.`));
     try {
       await dmUser(member, embed.dmDuration('muted', guild, reason, duration));
       await action.reply(embed.punishmentReply('muted', member));
@@ -38,7 +39,7 @@ export default async function main() {
       { name: 'Duration', value: !duration ? 'Permanent' : duration }
     ], { mod: moderator });
     
-    await member.roles.add(mutedRole);
+    await member.roles.add(config.mutedRole);
   }
 
   appendToCommandArray({

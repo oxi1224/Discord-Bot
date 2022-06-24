@@ -2,7 +2,6 @@ import { startCommands, createLogsTable } from '#lib';
 import { TOKEN } from '#auth';
 import { Client } from 'discord.js';
 
-
 export const client = new Client({ intents: 32767 });
 
 client.login(TOKEN);
