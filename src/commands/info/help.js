@@ -12,7 +12,7 @@ export default async function main() {
 
   async function help({ action, command }) {
     const commands = (await appendToCommandArray({ finalize: true })).map(obj => obj.helpInfo);
-    if (command && !commands.map(obj => obj.aliases).flat().includes(command)) return action.reply(embed.commandFail('This command doesnt exist.'));
+    if (!command || !commands.map(obj => obj.aliases).flat().includes(command)) return action.reply(embed.commandFail('This command doesnt exist.'));
     if (!command) {
       const fields = [];
       // Get all unique fields
