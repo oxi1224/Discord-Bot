@@ -33,26 +33,26 @@
         "669264819899072532", "508780559292563457",
         "510463283258458115"
       ]
-    },
-    "emotes": {
-      "error": "<:error:988494191946522696>",
-      "success": "<:success:988494169108529262>",
-      "info":  "<:info:988494211009618021>"
-    },
-    "colors": {
-      "base": "#0099ff",
-      "error": "#ef4047",
-      "success": "#3fa45d",
-      "info": "#cb8715"
-    },
-    "automod": {
-      "antiSpam": {
-        "messageLimit": 7,
-        "timeDifference": 5000,
-        "expiryTime": 5000,
-        "muteDuration": "15min"
-      },
-      "autoDelete": []
     }
+  },
+  "emotes": {
+    "error": "<:error:988494191946522696>",
+    "success": "<:success:988494169108529262>",
+    "info":  "<:info:988494211009618021>"
+  },
+  "colors": {
+    "base": "#0099ff",
+    "error": "#ef4047",
+    "success": "#3fa45d",
+    "info": "#cb8715"
+  },
+  "automod": {
+    "antiSpam": {
+      "messageLimit": 7,
+      "timeDifference": 5000,
+      "expiryTime": 5000,
+      "muteDuration": "15min"
+    },
+    "autoDelete": []
   }
 } 
