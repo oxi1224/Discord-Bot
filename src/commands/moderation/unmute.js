@@ -21,7 +21,7 @@ export default async function main() {
     reason = !reason ? 'None' : reason;
     
     if (!(member)) return action.reply(`${user} is not in the server`);
-    if (!(member.roles.cache.some(role => role.id === config.mutedRole))) return action.reply(embed.commandFail(`${user} is not muted.`));
+    if (!(member.roles.cache.some(role => role.id === config.roles.muted))) return action.reply(embed.commandFail(`${user} is not muted.`));
     try {
       await dmUser(user, embed.dm('unmuted', guild, reason));
       await action.reply(embed.punishmentReply('unmuted', user));
@@ -34,7 +34,7 @@ export default async function main() {
       { name: 'User', value: `${user}` },
       { name: 'Reason', value: `\`\`${reason}\`\`` }
     ], { mod: moderator });
-    await member.roles.remove(config.mutedRole);
+    await member.roles.remove(config.roles.muted);
   }
 
   appendToCommandArray({

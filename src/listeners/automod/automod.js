@@ -4,7 +4,7 @@ import { embed, dmUser, logToDb, logAction, config } from '#lib';
 export default async function main(client) {
   console.log('Automod started');
   const usersMap = new Map();
-  const { messageLimit, timeDifference, expiryTime, muteDuration } = config.automodConfig;
+  const { messageLimit, timeDifference, expiryTime, muteDuration } = config.automod.antiSpam;
 
   client.on('messageCreate', async message => {
     if (message.author.bot) return;
@@ -34,7 +34,7 @@ export default async function main(client) {
       { name: 'Duration', value: 'Permanent' }
     ], { mod: '**Automod**' });
 
-    await member.roles.add(config.mutedRole);
+    await member.roles.add(config.roles.muted);
     message.delete();
   }
 
@@ -101,7 +101,7 @@ export default async function main(client) {
       { name: 'Duration', value: muteDuration }
     ], { mod: '**Automod**' });
 
-    await member.roles.add(config.mutedRole);
+    await member.roles.add(config.roles.muted);
     message.channel.bulkDelete(messages);
     message.channel.send('Please do not spam.');
   }  

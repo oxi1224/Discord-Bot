@@ -27,7 +27,7 @@ export async function startCommands(client) {
   listener.actionListeners(client);
   listener.errorListeners(client);
   listener.automod(client);
-  setInterval(() => listener.expiringPunishments(client), 60000);
+  setInterval(() => listener.expiringPunishments(client), 10000);
 
   // Info
   command.ping(client);
@@ -39,7 +39,7 @@ export async function startCommands(client) {
   command.evalCode(client);
 
   // WHS stuff
-  setInterval(() => whs.stats(client), 10000);
+  setInterval(() => whs.stats(client), 60000);
 
   initializeCommands(client, appendToCommandArray({ finalize: true }));
 }

@@ -24,7 +24,7 @@ export default async function main() {
     reason = !reason ? 'None' : reason;
 
     if (!member) return action.reply(embed.notInServer(member));
-    if (member.roles.cache.some(role => role.id === config.mutedRole)) return action.reply(embed.commandFail(`${member} is already muted.`));
+    if (member.roles.cache.some(role => role.id === config.roles.muted)) return action.reply(embed.commandFail(`${member} is already muted.`));
     try {
       await dmUser(member, embed.dmDuration('muted', guild, reason, duration));
       await action.reply(embed.punishmentReply('muted', member));
@@ -39,7 +39,7 @@ export default async function main() {
       { name: 'Duration', value: !duration ? 'Permanent' : duration }
     ], { mod: moderator });
     
-    await member.roles.add(config.mutedRole);
+    await member.roles.add(config.roles.muted);
   }
 
   appendToCommandArray({

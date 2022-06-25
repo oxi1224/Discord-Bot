@@ -30,7 +30,7 @@ export default async function main(client) {
     
   case 'mute':
     try {
-      await member.roles.remove(config.mutedRole);
+      await member.roles.remove(config.roles.muted);
       await logAction('Member Unmuted', [
         { name: 'User', value: `${user}` },
         { name: 'Reason', value: 'Punishment Expired' }

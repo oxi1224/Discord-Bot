@@ -24,26 +24,24 @@ export default async function main(client) {
       author: { name: `${user.username}#${user.discriminator}`, iconURL: user.displayAvatarURL() },
       thumbnail: user.displayAvatarURL(),
       description: `${user}`,
-      fields: [
-        { 
-          name: 'Created at:', 
-          value: `<t:${Math.floor(user.createdTimestamp / 1000)}>\n(${humanizeDuration(user.createdTimestamp - new Date().getTime(), { largest: 3 })})`,
-          inline: true 
-        },
-      ],
+      fields: [{ 
+        name: 'Created at:', 
+        value: `<t:${Math.floor(user.createdTimestamp / 1000)}>\n(${humanizeDuration(user.createdTimestamp - new Date().getTime(), { largest: 3 })})`,
+        inline: true 
+      }],
       footer: { text: `ID: ${user.id}` },
       timestamp: true
     };
 
     if (member) {
-      embedTemplate.fields.push(
-        { 
-          name: 'Joined at:', 
-          value: `<t:${Math.floor(member.joinedTimestamp / 1000)}>\n(${humanizeDuration(member.joinedTimestamp - new Date().getTime(), { largest: 3 })})`,
-          inline: true 
-        },
-        { name: 'Presence', value: `» **Status**: ${member.presence.status} \n${getActivities(member)}` }
-      );
+      embedTemplate.fields.push({ 
+        name: 'Joined at:', 
+        value: `<t:${Math.floor(member.joinedTimestamp / 1000)}>\n(${humanizeDuration(member.joinedTimestamp - new Date().getTime(), { largest: 3 })})`,
+        inline: true 
+      });
+      if (member.presence) embedTemplate.fields.push({ name: 'Presence', value: `» **Status**: ${member.presence.status} \n${getActivities(member)}` });
+      if (!member.presence) embedTemplate.fields.push({ name: 'Presence', value: '» **Status**: offline' });
+
       member._roles ? embedTemplate.fields.push({ name: `Roles [${member._roles.length}]`, 
         value: `${member._roles.length !== 0 ? member._roles.map(role => `<@&${role}>`).join(' ') : 'User has no roles'}` }) : null;
       embedTemplate.color = member.displayHexColor;

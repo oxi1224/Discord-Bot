@@ -101,7 +101,7 @@ export async function dmUser(user, content) {
  * @param {string} title - The title of the embed.
  * @param {object[]} fieldsToAdd - The fields that will be added to the embed.
  * @param {object} [args] - Optional arguments to add to the embed.
- * @param {string} [args.channelId=config.loggingChannel]
+ * @param {string} [args.channelId=config.channels.logging]
  * @param {object} [args.mod=null]
  */
 export async function logAction(title, fieldsToAdd, args) {
@@ -109,7 +109,7 @@ export async function logAction(title, fieldsToAdd, args) {
   
   // Get values from args
   const mod = !args || !args.mod ? null : args.mod;
-  const channelId = !args || !args.channelId ? config.loggingChannel : args.channelId;
+  const channelId = !args || !args.channelId ? config.channels.logging : args.channelId;
   
   const fields = fieldsToAdd;
   const embed = new MessageEmbed()

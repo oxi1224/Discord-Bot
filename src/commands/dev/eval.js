@@ -16,10 +16,10 @@ export default async function main(client) {
 
     try {
       const output = await eval(input);
-      evalEmbedConf.color = lib.config.embedColors.success;
+      evalEmbedConf.color = lib.config.colors.success;
       evalEmbedConf.fields.push({ name: 'Success', value: `\`\`\`${output}\`\`\`` });
     } catch (e) {
-      evalEmbedConf.color = lib.config.embedColors.error;
+      evalEmbedConf.color = lib.config.colors.error;
       evalEmbedConf.fields.push({ name: 'Error', value: `\`\`\`js\n${e}\`\`\`\n\`\`\`js\n${e.stack}\`\`\`` });
     }
     await action.reply(lib.embed.createReplyEmbed(evalEmbedConf));

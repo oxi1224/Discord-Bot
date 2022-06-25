@@ -125,7 +125,7 @@ export default async function main(client) {
   client.on('guildMemberAdd', async (member) => {
     try {
       await dmUser(member, embed.createReplyEmbed({
-        color: config.embedColors.error,
+        color: config.colors.error,
         title: `Welcome to ${member.guild}! Please make sure to check out our rules:`,
         description: rules.join('\n').trim(),
         timestamp: true
@@ -135,6 +135,6 @@ export default async function main(client) {
 
     const mutes = await readFromDb(member.user.id);
     if (mutes === null) return;
-    if (mutes.at(-1).punishmentExpires <= new Date().getTime() || mutes.at(-1).punishmentExpires === null) member.roles.add(config.mutedRole);
+    if (mutes.at(-1).punishmentExpires <= new Date().getTime() || mutes.at(-1).punishmentExpires === null) member.roles.add(config.roles.muted);
   });
 }

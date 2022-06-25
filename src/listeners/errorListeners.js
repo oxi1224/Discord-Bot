@@ -9,7 +9,7 @@ export default function main() {
         { name: 'Error:', value: `\`\`\`${err}\`\`\`` },
         { name: 'Call Stack:', value: `\`\`\`js\n${err.stack} \`\`\`` }
       ],
-      { channelId: config.errorsChannel }
+      { channelId: config.channels.error }
     ));
 
   process.on('uncaughtException', 
@@ -19,6 +19,6 @@ export default function main() {
         { name: 'Error:', value: `\`\`\`${err}\`\`\`` },
         { name: 'Call Stack:', value: `\`\`\`js\n${err.stack} \`\`\`` }
       ],
-      { channelId: config.errorsChannel }
+      { channelId: config.channels.error }
     ));
 }

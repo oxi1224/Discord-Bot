@@ -59,6 +59,7 @@ export async function initializeCommands(client, commandArray) {
 
     if (!command) return;
     if (!command.prefixed) return;
+    if (!message.channelId.includes(config.channels.command) && message.member.kickable) return message.react(config.emotes.error);
     if (!message.member.permissions.has(command.requiredPerms)) return message.react(config.emotes.error);
     
     const callbackParams = await getCallbackParams(command.callbackParamInfo, args, commandName);
@@ -76,6 +77,7 @@ export async function initializeCommands(client, commandArray) {
     const callbackParams = {};
 
     if (!command) return;
+    if (!interaction.channelId.includes(config.channels.command) && interaction.member.kickable) return interaction.reply({ content: 'Commands must be done in #bot-commands', ephemeral: true });
     if (!interaction.member.permissions.has(command.requiredPerms)) return interaction.reply({ content: 'Insufficient Permissions', ephemeral: true });
 
     callbackParams.action = interaction;
