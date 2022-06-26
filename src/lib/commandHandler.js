@@ -61,7 +61,7 @@ export async function initializeCommands(client, commandArray) {
 
     if (!command) return;
     if (!command.prefixed) return;
-    if (!message.channelId.includes(config.channels.command) && message.member.kickable) return message.react(config.emotes.error);
+    if (!config.channels.command.includes(message.channelId) && message.member.kickable) return message.react(config.emotes.error);
     if (!message.member.permissions.has(command.requiredPerms)) return message.react(config.emotes.error);
     
     const callbackParams = await getCallbackParams(command.callbackParamInfo, args, commandName);
