@@ -125,6 +125,7 @@ export async function logAction(title, fieldsToAdd, args) {
         iconURL: `https://cdn.discordapp.com/avatars/${mod.id}/${mod.avatar}.webp` } :
       { name: `${mod.username}#${mod.discriminator}` });
   }
+
   // Add fields from fieldsToAdd to the embed
   fields.forEach(obj => embed.addField(obj.name, obj.value));
   await client.channels.cache.get(channelId).send({ embeds: [embed] });

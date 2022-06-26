@@ -20,5 +20,9 @@ export { default as unblock } from './moderation/unblock.js';
 export { default as timeout } from './moderation/timeout.js';
 export { default as untimeout } from './moderation/untimeout.js';
 
+// Config
+export { default as setAutoDeleteConfig } from './config/setAutoDeleteConfig.js';
+export { default as toggleAutomod } from './config/toggleAutomod.js';
+
 // Dev
 export { default as evalCode } from './dev/eval.js';

@@ -53,6 +53,8 @@ export async function initializeCommands(client, commandArray) {
 
   client.on('messageCreate', async message => {
     if (!message.content.startsWith(config.prefix) || message.author.bot) return;
+    if (message.content === config.prefix) return;
+
     const args = message.content.slice(1).trim().split(' ').filter(str => str !== '');
     const commandName = args.shift().toLowerCase();
     const command = commandArray.find(cmd => cmd.aliases.includes(commandName));
@@ -91,8 +93,10 @@ export async function initializeCommands(client, commandArray) {
     callbackParams.punishmentId = !interaction.options.get('punishment_id') ? null : interaction.options.get('punishment_id').value;
     callbackParams.roleFunction = !interaction.options.get('function') ? null : interaction.options.get('function').value;
     callbackParams.roleInfo = !interaction.options.get('role') ? null : interaction.options.get('role').role.name;
-    callbackParams.roleInfo = !interaction.options.get('channel') ? null : interaction.options.get('channel').value;
-  
+    callbackParams.channelId = !interaction.options.get('channel') ? null : interaction.options.get('channel').value;
+    callbackParams.position = !interaction.options.get('position') ? null : interaction.options.get('position').value;
+    callbackParams.content = !interaction.options.get('content') ? null : interaction.options.get('content').value;
+
     await command.callback(callbackParams);
   });
 }
@@ -115,20 +119,27 @@ function getCallbackParams(callbackParamInfo, args, commandName) {
       if (commandName === 'role') callbackParams.roleFunction = args[index];
       if (commandName === 'ra' || commandName === 'rm') callbackParams.roleFunction = commandName;
       break;
+    case 'channelId':
     case 'userId':
-      return callbackParams.userId = args.length === 0 || !args[index] ? null : args[index].replace(/[\\<>@#&!]/g, '');
+      return callbackParams[param] = args.length === 0 || !args[index] ? null : args[index].replace(/[\\<>@#&!]/g, '');
     case 'duration':
       return callbackParams.duration = args[index] !== args.at(-1) && /^\d+(min|h|d|w|m)/.test(args[index]) || /^\d+(min|h|d|w|m)/.test(args[index]) ? args[index] : null;
     case 'reason':
       return callbackParams.reason = !callbackParams.duration && callbackParamInfo.includes('duration') ? args.slice(index - 1).join(' ') : args.slice(index).join(' ') || null;
     case 'messageCount':
       return callbackParams.messageCount = !callbackParams.userId ? args[0] : args[1];
+    case 'position':
     case 'command':
-      return callbackParams.command = args.length === 0 || !args[index] ? null : args[index];
     case 'punishmentId':
-      return callbackParams.punishmentId = args.length === 0 || !args[index] ? null : args[index];
+      return callbackParams[param] = args.length === 0 || !args[index] ? null : args[index];
+    case 'content':
     case 'roleInfo':
-      return callbackParams.roleInfo = args.length === 0 || !args[index] ? null : args.slice(index);
+      return callbackParams[param] = args.length === 0 || !args[index] ? null : args.slice(index);
+    case 'flag':
+      if (args.length === 0) return callbackParams[param] = null;
+      if (callbackParams.reason && callbackParams.reason.split(' ').at(-1).match(/--.*/)) return callbackParams[param] = callbackParams.split(' ').pop();
+      if (callbackParams.content && callbackParams.content.at(-1).match(/--.*/)) return callbackParams[param] = callbackParams.content.pop();
+      return callbackParams[param] = null;
     }
   });
 

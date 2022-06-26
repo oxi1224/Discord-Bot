@@ -1,5 +1,6 @@
 import * as fs from 'fs/promises';
 import * as configRaw from './config.json' assert {type: 'json'}
+import set from 'lodash/set.js';
 
 class Config {
   constructor(config) {
@@ -19,8 +20,9 @@ class Config {
   }
 
   async setKey(key, value) {
-    this.config[key] = value;
-    await fs.writeFile('src/lib/config/config.json', JSON.stringify(config, null, 2));
+    key = key.split('.');
+    set(this.config, key, value);
+    await fs.writeFile('src/lib/config/config.json', JSON.stringify(this.config, null, 2));
     this.#updateConfig(this.config);
   }
 }
