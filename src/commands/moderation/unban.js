@@ -12,7 +12,7 @@ export default async function main(client) {
 
   // Unbans given user
   async function unBan({ action, userId, reason, guild, moderator }) {
-    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid user.'));
     const user = await client.users.fetch(userId, false);
     const banList = await action.guild.bans.fetch();
     reason = !reason ? 'None' : reason;

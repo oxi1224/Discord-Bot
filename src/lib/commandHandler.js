@@ -61,7 +61,7 @@ export async function initializeCommands(client, commandArray) {
 
     if (!command) return;
     if (!command.prefixed) return;
-    if (!config.channels.command.includes(message.channelId) && message.member.kickable) return message.react(config.emotes.error);
+    if (!config.channels.command.includes(message.channelId) && !message.member.roles.cache.some(role => role.id.includes(config.roles.automodImmune))) return message.react(config.emotes.error);
     if (!message.member.permissions.has(command.requiredPerms)) return message.react(config.emotes.error);
     
     const callbackParams = await getCallbackParams(command.callbackParamInfo, args, commandName);
@@ -79,7 +79,7 @@ export async function initializeCommands(client, commandArray) {
     const callbackParams = {};
 
     if (!command) return;
-    if (!interaction.channelId.includes(config.channels.command) && interaction.member.kickable) return interaction.reply({ content: 'Commands must be done in #bot-commands', ephemeral: true });
+    if (!interaction.channelId.includes(config.channels.command) && !interaction.member.roles.cache.some(role => role.id.includes(config.roles.automodImmune))) return interaction.reply({ content: 'Commands must be done in #bot-commands', ephemeral: true });
     if (!interaction.member.permissions.has(command.requiredPerms)) return interaction.reply({ content: 'Insufficient Permissions', ephemeral: true });
 
     callbackParams.action = interaction;
@@ -96,6 +96,7 @@ export async function initializeCommands(client, commandArray) {
     callbackParams.channelId = !interaction.options.get('channel') ? null : interaction.options.get('channel').value;
     callbackParams.position = !interaction.options.get('position') ? null : interaction.options.get('position').value;
     callbackParams.content = !interaction.options.get('content') ? null : interaction.options.get('content').value;
+    callbackParams.flag = !interaction.options.get('flag') ? null : interaction.options.get('flag').value;
 
     await command.callback(callbackParams);
   });
@@ -123,7 +124,7 @@ function getCallbackParams(callbackParamInfo, args, commandName) {
     case 'userId':
       return callbackParams[param] = args.length === 0 || !args[index] ? null : args[index].replace(/[\\<>@#&!]/g, '');
     case 'duration':
-      return callbackParams.duration = args[index] !== args.at(-1) && /^\d+(min|h|d|w|m)/.test(args[index]) || /^\d+(min|h|d|w|m)/.test(args[index]) ? args[index] : null;
+      return callbackParams.duration = args[index] && /^\d+(min|h|d|w|m)$/.test(args[index]) ? args[index] : null;
     case 'reason':
       return callbackParams.reason = !callbackParams.duration && callbackParamInfo.includes('duration') ? args.slice(index - 1).join(' ') : args.slice(index).join(' ') || null;
     case 'messageCount':

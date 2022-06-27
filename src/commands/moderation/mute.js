@@ -19,7 +19,7 @@ export default async function main() {
 
   // Mutes given user
   async function mute({ action, userId, duration, reason, guild, moderator }) {
-    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid user.'));
     const member = await guild.members.fetch(userId);
     reason = !reason ? 'None' : reason;
 

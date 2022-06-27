@@ -15,12 +15,12 @@ export default async function main() {
 
   // Untimeouts given user
   async function untimeout({ action, userId, reason, guild, moderator }) {
-    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid user.'));
     const member = await guild.members.fetch(userId);
     reason = !reason ? 'None' : reason;
 
     if (!member) return action.reply(embed.notInServer(member));
-    if (!member.communicationDisabled) return action.reply(embed.commandFail(`${member} is not timedout.`));
+    if (!member.communicationDisabledUntil) return action.reply(embed.commandFail(`${member} is not timedout.`));
 
     try {
       await dmUser(member, embed.dm('untimedout', guild, reason));

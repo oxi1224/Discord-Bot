@@ -15,7 +15,7 @@ export default async function main() {
     
   async function purge({ action, messageCount, userId, moderator }) {
     if (messageCount > 100 || messageCount < 1 || messageCount === undefined) return action.reply(embed.commandFail('Message count must be between 1 and 100.'));
-    if (userId && !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid User.'));
+    if (userId && !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid user.'));
     const channel = action.channel;
     const messages = (await channel.messages
       .fetch({ limit: messageCount, before: action.id }))

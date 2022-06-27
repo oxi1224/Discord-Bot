@@ -15,7 +15,7 @@ export default async function main(client) {
 
   // Removes punishment with specificed caseID of given user from modlogs
   async function hidePunishment({ action, userId, moderator, punishmentId }) {
-    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid user.'));
     
     const punishmentsJson = await readFromDb(userId);
     if (!punishmentsJson) return action.reply(embed.commandFail(`${user} has no punishment history.`));

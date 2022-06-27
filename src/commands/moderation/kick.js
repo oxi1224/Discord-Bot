@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { logToDb, dmUser, logAction, appendToCommandArray, embed } from '#lib';
+import { logToDb, dmUser, logAction, appendToCommandArray, embed, config } from '#lib';
 
 export default async function main(client) {
   // Create kick slash commmand
@@ -15,13 +15,13 @@ export default async function main(client) {
 
   // Kicks given user
   async function performKick({ action, userId, reason, guild, moderator }) {
-    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid user.'));
     const user = await client.users.fetch(userId, false);
     const member = await guild.members.fetch(userId).catch(() => {return null;});
     reason = !reason ? 'None' : reason;
 
     if (!(await guild.members.fetch(userId))) return action.reply(embed.notInServer(user));
-    if (!member.kickable) return action.reply(embed.commandFail(`${member} is not kickable.`));
+    if (member.roles.cache.some(role => role.id.includes(config.roles.staff))) return action.reply(embed.commandFail(`${member} is not kickable.`));
 
     try {
       await dmUser(user, embed.dm('kicked', guild, reason));

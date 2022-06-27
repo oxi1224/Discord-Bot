@@ -12,7 +12,7 @@ export default async function main(client) {
       .setRequired(true));
 
   async function showModlogs({ action, userId }) {
-    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid user.'));
     const punishmentsJson = await readFromDb(userId);
     if (!punishmentsJson) return await action.reply(embed.commandFail('User has no modlogs'));
     const usersPunishments = (punishmentsJson.warns).concat(

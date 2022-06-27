@@ -7,7 +7,7 @@ export default async function main(client) {
   // Check if the expiration date from the punishment closest to expiring is greater than current date
   if (expiringPunishments.length === 0 || expiringPunishments.at(-1).punishmentExpires >= new Date().getTime()) return;
 
-  const guild = await client.guilds.fetch(config.guild);
+  const guild = await client.guilds.fetch(config.guildId);
   const userId = expiringPunishments.at(-1).user;
   const member = await guild.members.fetch(userId, false);
   const user = member.user;

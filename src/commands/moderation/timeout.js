@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { logToDb, dmUser, logAction, appendToCommandArray, embed, getExpirationDate } from '#lib';
+import { logToDb, dmUser, logAction, appendToCommandArray, embed, getExpirationDate, config } from '#lib';
 
 export default async function main() {
   // Create timeout slash commmand
@@ -18,14 +18,14 @@ export default async function main() {
 
   // Timeouts given user
   async function timeout({ action, userId, duration, reason, guild, moderator }) {
-    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid user.'));
     const member = await guild.members.fetch(userId);
-    const currentDate = new Date().getTime;
+    const currentDate = new Date().getTime();
     reason = !reason ? 'None' : reason;
 
     if (!member) return action.reply(embed.notInServer(member));
-    if (!member.kickable) return action.reply(embed.commandFail(`Can't timeout ${member}.`));
-    if (member.communicationDisabled) return action.reply(embed.commandFail(`${member} already timedout.`));
+    if (member.roles.cache.some(role => role.id.includes(config.roles.staff))) return action.reply(embed.commandFail(`Can't timeout ${member}.`));
+    if (member.communicationDisabledUntil) return action.reply(embed.commandFail(`${member} already timedout.`));
     if (!duration) return action.reply(embed.commandFail('Invalid duration.'));
     if (getExpirationDate('27d', currentDate) < getExpirationDate(duration, currentDate)) return action.reply(embed.commandFail('Duration must be below 27 days.'));
 

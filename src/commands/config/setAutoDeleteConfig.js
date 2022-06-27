@@ -20,7 +20,14 @@ export default async function main() {
       ))
     .addStringOption(option => option.setName('content')
       .setDescription('Enter the content which will be searched for.')
-      .setRequired(true));
+      .setRequired(true))
+    .addStringOption(option => option.setName('flag')
+      .setDescription('Flag to modify what the command does.')
+      .setRequired(false)
+      .addChoices(
+        { name: 'delete', value: '--delete' },
+        { name: 'not', value: '--not' }
+      ));
 
   // Sets auto delete config
   async function setAutoDeleteConfig({ action, channelId, position, content, flag, guild }) {
@@ -28,19 +35,20 @@ export default async function main() {
     if (!channel) return action.reply(embed.commandFail('Invalid channel.'));
     if (!['start', 'any', 'end'].includes(position)) return action.reply(embed.commandFail('Invalid position value.'));
 
-    if (flag && !['--del', '--delete'].includes(flag)) return action.reply(embed.commandFail('Invalid flag.'));
+    if (flag && !['--del', '--delete', '--not'].includes(flag)) return action.reply(embed.commandFail('Invalid flag.'));
     const configValues = config.automod.autoDelete;
-    content = content.join(' ').trim();
+    content = typeof content === 'string' ? content.trim() : content.join(' ').trim();
     const newValue = {
       channelId: channelId,
       position: position,
-      content: content
+      content: content,
+      invert: flag === '--not' ? true : false
     };
     
-    if (!flag) {
+    if (flag !== '--del' || flag !== '--delete') {
       if (configValues.some(val => isEqual(val, newValue))) return action.reply(embed.commandFail('Entry already exists.'));
       configValues.push(newValue);
-    } else if (flag) {
+    } else if (flag === '--del' || flag === '--delete') {
       const configToRemove = configValues.find(val => isEqual(val, newValue));
       if (!configToRemove) return action.reply(embed.commandFail('No such entry found'));
       configValues.splice(configValues.indexOf(configToRemove), 1);
@@ -86,8 +94,8 @@ export default async function main() {
         },
         {
           argument: '[flag]',
-          description: 'Whether or not to remove specified entry.',
-          type: '--delete or --del'
+          description: 'Flag to modify what the command does. \n--delete - removes entry with given values. \n--not - inverts the logic (do not add when deleting).',
+          type: '--delete (--del) or --not.'
         }
       ]
     }

@@ -15,7 +15,7 @@ export default async function main() {
 
   // Unblocks given user from a channel
   async function unblock({ action, userId, reason, guild, moderator }) {
-    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid user.'));
 
     const member = await guild.members.fetch(userId).catch(() => {return null;});
     const channel = action.channel;

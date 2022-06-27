@@ -15,7 +15,7 @@ export default async function main() {
 
   // Unmutes given user
   async function unmute({ action, userId, reason, guild, moderator }) {
-    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid user.'));
     const member = await guild.members.fetch(userId, false);
     const user = member.user;
     reason = !reason ? 'None' : reason;

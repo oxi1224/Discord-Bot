@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { logToDb, dmUser, logAction, appendToCommandArray, embed } from '#lib';
+import { logToDb, dmUser, logAction, appendToCommandArray, embed, config } from '#lib';
 
 export default async function main(client) {
   // Create ban slash command
@@ -18,14 +18,14 @@ export default async function main(client) {
 
   // Bans given user
   async function performBan({ action, userId, duration, reason, guild, moderator }) {
-    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid user.'));
     const banList = await guild.bans.fetch();
     const user = await client.users.fetch(userId, false);
     const member = await guild.members.fetch(userId).catch(() => {return null;});
     reason = !reason ? 'None' : reason;
 
     if (!(banList.find(x => x.user.id === userId) === undefined)) return action.reply(embed.commandFail('User already banned.'));
-    if (!member.bannable) return action.reply(embed.commandFail(`${member} is not bannable.`));
+    if (member.roles.cache.some(role => role.id.includes(config.roles.staff))) return action.reply(embed.commandFail(`${member} is not bannable.`));
     
     try {
       dmUser(user, embed.dmDuration('banned', guild, reason, duration));

@@ -9,7 +9,7 @@ export default async function main(client) {
   client.on('messageCreate', async message => {
     if (config.automod.disabled) return;
     if (message.author.bot) return;
-    if (!message.member.kickable) return;
+    if (message.member.roles.cache.some(role => role.id.includes(config.roles.staff))) return;
     scamLinks(message);
     antiSpam(message);
     autoDelete(message);

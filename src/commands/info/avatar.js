@@ -11,7 +11,7 @@ export default async function main(client) {
       .setRequired(false));
 
   async function getAvatar({ action, userId }) {
-    if (userId && !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid User.'));
+    if (userId && !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid user.'));
     const user = userId ? await client.users.fetch(userId) : action.author || action.member.user;
     await action.reply(embed.createReplyEmbed({
       title: `${user.username}#${user.discriminator}'s Avatar`,

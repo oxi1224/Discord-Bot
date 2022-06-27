@@ -1,6 +1,6 @@
 import * as command from '#commands';
 import * as listener from '#listeners';
-import * as whs from '#WHS';
+import * as whs from '#whs';
 import { initializeCommands, appendToCommandArray, config } from '#lib';
 
 // Runs appendToCommandArray function in each file then runs initializeCommands.
@@ -43,7 +43,7 @@ export async function startCommands(client) {
   listener.actionListeners(client);
   listener.errorListeners(client);
   listener.automod(client);
-  setInterval(() => listener.expiringPunishments(client), 10000);
+  setInterval(() => listener.expiringPunishments(client), 60000);
 
   initializeCommands(client, appendToCommandArray({ finalize: true }));
 }

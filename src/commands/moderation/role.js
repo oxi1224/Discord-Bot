@@ -22,7 +22,7 @@ export default async function main() {
 
   // Adds or removes a role from given user
   async function manageRole({ action, roleFunction, userId, roleInfo, guild }) {
-    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid User.'));
+    if (!userId || !(userId.match(/^[0-9]{15,18}/))) return action.reply(embed.commandFail('Invalid user.'));
     const member = await guild.members.fetch(userId, false);
     if (!member) return action.reply(embed.notInServer(`<@${userId}>`));
 
