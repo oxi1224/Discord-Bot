@@ -69,6 +69,11 @@
       "expiryTime": 5000,
       "muteDuration": "15min"
     },
-    "autoDelete": []
+    "autoDelete": [{
+      "channelId": "940376709402873877",
+      "position": "start",
+      "content": "*suggest",
+      "invert": true
+     }]
   }
 }

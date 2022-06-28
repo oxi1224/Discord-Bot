@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { appendToCommandArray, embed, config, dmUser } from '#lib';
 import isEqual from 'lodash/isEqual.js';
+import omit from 'lodash/omit.js'
 
 export default async function main() {
   // Create autoDeleteConfig slash command
@@ -44,12 +45,12 @@ export default async function main() {
       content: content,
       invert: flag === '--not' ? true : false
     };
-    
-    if (flag !== '--del' || flag !== '--delete') {
-      if (configValues.some(val => isEqual(val, newValue))) return action.reply(embed.commandFail('Entry already exists.'));
+
+    if (!(flag === '--del' || flag === '--delete')) {
+      if (configValues.some(val => isEqual(omit(val, 'invert'), omit(newValue, 'invert')))) return action.reply(embed.commandFail('Entry already exists.'));
       configValues.push(newValue);
     } else if (flag === '--del' || flag === '--delete') {
-      const configToRemove = configValues.find(val => isEqual(val, newValue));
+      const configToRemove = configValues.find(val => isEqual(omit(val, 'invert'), omit(newValue, 'invert')));
       if (!configToRemove) return action.reply(embed.commandFail('No such entry found'));
       configValues.splice(configValues.indexOf(configToRemove), 1);
     }

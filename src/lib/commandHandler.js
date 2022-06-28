@@ -79,7 +79,7 @@ export async function initializeCommands(client, commandArray) {
     const callbackParams = {};
 
     if (!command) return;
-    if (!interaction.channelId.includes(config.channels.command) && !interaction.member.roles.cache.some(role => role.id.includes(config.roles.automodImmune))) return interaction.reply({ content: 'Commands must be done in #bot-commands', ephemeral: true });
+    if (!interaction.channelId.includes(config.channels.command) && !interaction.member.roles.cache.some(role => config.roles.automodImmune.includes(role.id))) return interaction.reply({ content: 'Commands must be done in #bot-commands', ephemeral: true });
     if (!interaction.member.permissions.has(command.requiredPerms)) return interaction.reply({ content: 'Insufficient Permissions', ephemeral: true });
 
     callbackParams.action = interaction;
