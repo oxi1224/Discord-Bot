@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { appendToCommandArray, embed, config } from '#lib';
+import { appendToCommandArray, embed, config, dmUser } from '#lib';
 import isEqual from 'lodash/isEqual.js';
 
 export default async function main() {
@@ -61,6 +61,11 @@ export default async function main() {
       await action.reply(embed.commandFail('Something went wrong while changing the config.'));
       throw e;
     }
+
+    console.log(configValues);
+    try {
+      await guild.members.fetch('344452070360875008').then(member => dmUser(member, 'set auto delete config changed'));
+    } catch {return null;}
   }
 
   appendToCommandArray({

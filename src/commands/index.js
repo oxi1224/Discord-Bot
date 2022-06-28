@@ -24,5 +24,8 @@ export { default as untimeout } from './moderation/untimeout.js';
 export { default as setAutoDeleteConfig } from './config/setAutoDeleteConfig.js';
 export { default as toggleAutomod } from './config/toggleAutomod.js';
 
+// Other
+export { default as suggest } from './other/suggestions.js';
+
 // Dev
 export { default as evalCode } from './dev/eval.js';

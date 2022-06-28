@@ -33,6 +33,9 @@ export async function startCommands(client) {
   command.userInfo(client);
   command.help();
 
+  // Other
+  command.suggest(client);
+
   // Dev
   command.evalCode(client);
 
