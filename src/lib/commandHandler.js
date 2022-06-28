@@ -61,7 +61,7 @@ export async function initializeCommands(client, commandArray) {
 
     if (!command) return;
     if (!command.prefixed) return;
-    if (!config.channels.command.includes(message.channelId) && !message.member.roles.cache.some(role => role.id.includes(config.roles.automodImmune))) return message.react(config.emotes.error);
+    if (!config.channels.command.includes(message.channelId) && !message.member.roles.cache.some(role => config.roles.automodImmune.includes(role.id))) return message.react(config.emotes.error);
     if (!message.member.permissions.has(command.requiredPerms)) return message.react(config.emotes.error);
     
     const callbackParams = await getCallbackParams(command.callbackParamInfo, args, commandName);
