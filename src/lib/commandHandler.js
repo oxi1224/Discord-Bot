@@ -140,7 +140,7 @@ function getCallbackParams(callbackParamInfo, args, commandName) {
       if (args.length === 0) return callbackParams[param] = null;
       if (callbackParams.reason && callbackParams.reason.split(' ').at(-1).match(/--.*/)) return callbackParams[param] = callbackParams.split(' ').pop();
       if (callbackParams.content && callbackParams.content.at(-1).match(/--.*/)) return callbackParams[param] = callbackParams.content.pop();
-      return callbackParams[param] = null;
+      return callbackParams[param] = (args.length !== 0 && args[index]) && args[index].match(/--.*/) ? callbackParams[param] = args[index] : null;
     }
   });
 

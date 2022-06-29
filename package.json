@@ -1,6 +1,6 @@
 {
   "name": "discord-bot",
-  "version": "3.8.6",
+  "version": "3.9.6",
   "description": "A simple bot for the chatting app discord.",
   "type": "module",
   "main": "bot.js",

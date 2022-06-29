@@ -21,8 +21,10 @@ export { default as timeout } from './moderation/timeout.js';
 export { default as untimeout } from './moderation/untimeout.js';
 
 // Config
-export { default as setAutoDeleteConfig } from './config/setAutoDeleteConfig.js';
-export { default as toggleAutomod } from './config/toggleAutomod.js';
+export { default as setAutoDeleteConfig } from './config/automod/setAutoDeleteConfig.js';
+export { default as toggleAutomod } from './config/automod/toggleAutomod.js';
+export { default as setAntiSpamConfig } from './config/automod/setAntiSpamConfig.js';
+export { default as setChannels } from './config/setChannels.js';
 
 // Other
 export { default as suggest } from './other/suggestions.js';

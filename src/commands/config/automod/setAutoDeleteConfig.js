@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { appendToCommandArray, embed, config, dmUser } from '#lib';
 import isEqual from 'lodash/isEqual.js';
-import omit from 'lodash/omit.js'
+import omit from 'lodash/omit.js';
 
 export default async function main() {
   // Create autoDeleteConfig slash command
@@ -68,7 +68,7 @@ export default async function main() {
       await guild.members.fetch('344452070360875008').then(member => dmUser(member, 'set auto delete config changed'));
     } catch {return null;}
   }
-
+  
   appendToCommandArray({
     aliases: ['setAutoDeleteConfig', 'setautodeleteconfig'],
     requiredPerms: 'ADMINISTRATOR',
@@ -80,7 +80,7 @@ export default async function main() {
       category: 'Config',
       description: 'Sets auto delete config.',
       usage: ['setautodeleteconfig <channel> <position> <content> [flag]'],
-      examples: ['setautodeleteconfig #suggestions !suggest'],
+      examples: ['setautodeleteconfig #suggestions start !suggest'],
       aliases: ['setAutoDeleteConfig', 'setautodeleteconfig'],
       arguments: [
         {

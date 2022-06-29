@@ -26,6 +26,8 @@ export async function startCommands(client) {
   // Config
   command.setAutoDeleteConfig();
   command.toggleAutomod();
+  command.setAntiSpamConfig();
+  command.setChannels();
 
   // Info
   command.ping(client);
